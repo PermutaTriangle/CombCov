@@ -41,6 +41,18 @@ class StringSetTest(unittest.TestCase):
         self.assertTrue(self.ss.contains('ab'))
         self.assertTrue(self.ss.contains('bababa'))
 
+    def test_sunny_strings_of_length(self):
+        length_five_strings = self.ss.of_length(5)
+        actual_valid_strings = ['ababa', 'babab']
+        self.assertEqual(length_five_strings, actual_valid_strings)
+
+    def test_rainy_strings_of_length(self):
+        length_zero_strings = self.ss.of_length(0)
+        self.assertEqual(length_zero_strings, [''])
+
+        negative_length_strgins = self.ss.of_length(-1)
+        self.assertEqual(negative_length_strgins, [])
+
     def test_equality(self):
         ss_eq = StringSet(self.alphabet, self.avoid)
         self.assertEqual(self.ss, ss_eq)

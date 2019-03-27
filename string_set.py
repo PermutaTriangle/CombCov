@@ -53,6 +53,17 @@ class StringSet(Generator):
     def throw(self, type=None, value=None, traceback=None):
         raise StopIteration
 
+    def of_length(self, n=0):
+        strings_of_length = []
+        string_to_consider = self.alphabet[0] * n
+
+        while len(string_to_consider) == n:
+            if self.contains(string_to_consider):
+                strings_of_length.append(string_to_consider)
+            string_to_consider = self.next_lexicographical_string(string_to_consider)
+
+        return strings_of_length
+
     def __eq__(self, other):
         """Overrides the default implementation"""
         if isinstance(other, StringSet):
