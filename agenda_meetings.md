@@ -1,3 +1,12 @@
+2019-03-28
+==========
+
+- [ ] Explain to me again the concept of rules and rule generators in PermStruct, and how that maps on to CombCov.
+- [ ] Help me go from `StringSet` generator (all strings in the set, or of specific length) to bitstrings.
+- [ ] (From last week) Discuss deploying new version of Permuta to Pypi.
+
+
+
 2019-03-21
 ==========
 
