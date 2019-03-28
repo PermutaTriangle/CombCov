@@ -4,9 +4,9 @@ from collections import Generator
 class StringSet(Generator):
     """The set of strings over alphabet ∑ avoiding a set of strings A."""
 
-    def __init__(self, alphabet=['a', 'b'], avoid=[]):
+    def __init__(self, alphabet=['a', 'b'], avoid=set()):
         self.alphabet = alphabet
-        self.avoid = avoid
+        self.avoid = frozenset(avoid)
 
         # Relating to the generator function
         self._nr = 0
@@ -63,6 +63,24 @@ class StringSet(Generator):
             string_to_consider = self.next_lexicographical_string(string_to_consider)
 
         return strings_of_length
+
+    @staticmethod
+    def _get_all_substrings_of(s):
+        return sorted(list(set(s[i:j + 1] for i in range(len(s)) for j in range(i, len(s)))))
+
+    # TODO: This is an approximation, need to make it correct before running more complex examples
+    def get_all_avoiding_subsets(self):
+        avoiding_substrings = set()
+        for string in self.avoid:
+            subset_of_avoid = set(self.avoid.copy())
+            subset_of_avoid.remove(string)
+            for substring in self._get_all_substrings_of(string):
+                subset_of_avoid_with_substring = subset_of_avoid.copy()
+                subset_of_avoid_with_substring.add(substring)
+                if subset_of_avoid_with_substring not in avoiding_substrings:
+                    avoiding_substrings.add(frozenset(subset_of_avoid_with_substring))
+
+        return avoiding_substrings
 
     def __eq__(self, other):
         """Overrides the default implementation"""
