@@ -1,9 +1,36 @@
 2019-03-28
 ==========
 
-- [ ] Explain to me again the concept of rules and rule generators in PermStruct, and how that maps on to CombCov.
-- [ ] Help me go from `StringSet` generator (all strings in the set, or of specific length) to bitstrings.
+- [x] Explain to me again the concept of rules and rule generators in PermStruct, and how that maps on to CombCov.
+- [x] Help me go from `StringSet` generator (all strings in the set, or of specific length) to bitstrings.
 - [ ] (From last week) Discuss deploying new version of Permuta to Pypi.
+
+### Summary
+
+We discussed the Rules and RuleGenerators in PermStruct and how that maps on to CombCov, and specifically in context
+with the `StringSet` class that I'll be focusing on for now.
+
+In PermStruct terminology, our "root object" will be the `StringSet` class itself and this is what CombCov will be 
+trying to find a cover for. The root object is represented as a string of `n` 1's, simply meaning that it contains 
+it's `n` first elements. What Gurobi then does is finding a (binary) linear combinatin of strings that is a mix of
+0's and 1's that cover the 11...1 string.
+
+When running CombCov for `StringSet` (easily generalized for other combinatorial object) the user specifies a
+`max_elmt_size` variable (default value might be 9 for now) which will result in the `StringSet` class generating 
+all valid strings of length up to (and including) this number. Let the total number of these strings be `n`.
+
+Then we need a RuleGenerator of string sets. Each Rule will be on the form `prefix + StringSet`. We'll be picking
+prefixes from the root object and string sets as subsets of the root object (meaning the avoiding condition is 
+stricter, i.e. now avoiding substring(s) of the avoiding string(s)). For each Rule we'll generate all strings in it 
+of length `<= max_string_length` and only accept the Rule if all these strings are in the root object. Then we'll 
+convert the Rule into a binary string for which the i'th position (from right) is 1 if the root's i'th string is in 
+the Rule, else 0.
+
+We'll use all possible prefixes up to a specific (but user overridable) length (e.g. 3). Note that the `n` is the
+same as `validcnt` in PermStruct, and `max_elmt_size` corresponds to `perm_bound`.
+
+For the last agenda item, Christan will sort out the correct import logic and then we'll deploy a new version of
+Permuta.
 
 
 
