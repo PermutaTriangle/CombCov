@@ -76,6 +76,29 @@ class StringSetTest(unittest.TestCase):
         # ])
         # self.assertEqual(actually_expected_subsets, subsets)
 
+    def test_rule_creation(self):
+        string_set = StringSet(self.alphabet, self.avoid)
+
+        prefix = "ab"
+        max_string_length = 5
+        avoiding_subset = self.avoid[1:]
+        sub_string_set = StringSet(self.alphabet, avoiding_subset)
+
+        rule = string_set.create_rule(prefix, sub_string_set, max_string_length)
+        self.assertGreaterEqual(max_string_length, max(len(elmnt) for elmnt in rule))
+
+        expected_rule = ['ab', 'aba', 'abaa', 'abab', 'abaaa', 'abaab', 'ababa']
+        self.assertEqual(rule, expected_rule)
+        self.assertFalse(string_set.accept_rule(rule))
+        self.assertTrue(string_set.accept_rule(['ab', 'ba']))
+
+    def test_rule_generation(self):
+        string_set = StringSet(self.alphabet, self.avoid)
+        rules = string_set.rule_generator(prefix_size=3, max_string_length=9)
+
+        self.assertNotIn(None, rules)
+        self.assertTrue(all(string_set.accept_rule(rule) for rule in rules))
+
     def test_equality(self):
         string_set = StringSet(self.alphabet, self.avoid)
         string_set_eq = StringSet(self.alphabet, self.avoid)

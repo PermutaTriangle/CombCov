@@ -82,6 +82,33 @@ class StringSet(Generator):
 
         return avoiding_substrings
 
+    def create_rule(self, prefix, string_set, max_string_length):
+        rule = []
+        for n in range(max_string_length - len(prefix) + 1):
+            for elmnt in string_set.of_length(n):
+                string = prefix + elmnt
+                if string_set.contains(string):
+                    rule.append(string)
+
+        return rule
+
+    def accept_rule(self, rule):
+        return all(self.contains(string) for string in rule)
+
+    def rule_generator(self, prefix_size=3, max_string_length=9):
+        prefixes = []
+        for n in range(prefix_size):
+            prefixes += self.of_length(n + 1)
+
+        rules = []
+        for prefix in prefixes:
+            for avoiding_subset in self.get_all_avoiding_subsets():
+                sub_string_set = StringSet(self.alphabet, avoiding_subset)
+                rule = self.create_rule(prefix, sub_string_set, max_string_length)
+                rules.append(rule if self.accept_rule(rule) else None)
+
+        return rules
+
     def __eq__(self, other):
         """Overrides the default implementation"""
         if isinstance(other, StringSet):
