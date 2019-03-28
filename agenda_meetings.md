@@ -22,7 +22,7 @@ all valid strings of length up to (and including) this number. Let the total num
 Then we need a RuleGenerator of string sets. Each Rule will be on the form `prefix + StringSet`. We'll be picking
 prefixes from the root object and string sets as subsets of the root object (meaning the avoiding condition is 
 stricter, i.e. now avoiding substring(s) of the avoiding string(s)). For each Rule we'll generate all strings in it 
-of length `<= max_string_length` and only accept the Rule if all these strings are in the root object. Then we'll 
+of length `<= max_elmt_size` and only accept the Rule if all these strings are in the root object. Then we'll 
 convert the Rule into a binary string for which the i'th position (from right) is 1 if the root's i'th string is in 
 the Rule, else 0.
 
