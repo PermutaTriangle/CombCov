@@ -63,7 +63,7 @@ class StringSetTest(unittest.TestCase):
 
     def test_avoiding_subsets(self):
         string_set = StringSet(self.alphabet, self.avoid)
-        expected_subsets = set([frozenset({"aa", "bb"}), frozenset({"aa", "b"}), frozenset({"a", "bb"})])
+        expected_subsets = {frozenset({"aa", "bb"}), frozenset({"aa", "b"}), frozenset({"a", "bb"})}
         subsets = string_set.get_all_avoiding_subsets()
         self.assertEqual(expected_subsets, subsets)
 
@@ -87,10 +87,10 @@ class StringSetTest(unittest.TestCase):
         rule = string_set.create_rule(prefix, sub_string_set, max_string_length)
         self.assertGreaterEqual(max_string_length, max(len(elmnt) for elmnt in rule))
 
-        expected_rule = ['ab', 'aba', 'abaa', 'abab', 'abaaa', 'abaab', 'ababa']
+        expected_rule = frozenset(['ab', 'aba', 'abaa', 'abab', 'abaaa', 'abaab', 'ababa'])
         self.assertEqual(rule, expected_rule)
         self.assertFalse(string_set.accept_rule(rule))
-        self.assertTrue(string_set.accept_rule(['ab', 'ba']))
+        self.assertTrue(string_set.accept_rule(frozenset(['ab', 'ba'])))
 
     def test_rule_generation(self):
         string_set = StringSet(self.alphabet, self.avoid)

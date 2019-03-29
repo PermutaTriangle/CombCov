@@ -12,7 +12,7 @@ with the `StringSet` class that I'll be focusing on for now.
 
 In PermStruct terminology, our "root object" will be the `StringSet` class itself and this is what CombCov will be 
 trying to find a cover for. The root object is represented as a string of `n` 1's, simply meaning that it contains 
-it's `n` first elements. What Gurobi then does is finding a (binary) linear combinatin of strings that is a mix of
+it's `n` first elements. What Gurobi then does is finding a (binary) linear combination of strings that is a mix of
 0's and 1's that cover the 11...1 string.
 
 When running CombCov for `StringSet` (easily generalized for other combinatorial object) the user specifies a

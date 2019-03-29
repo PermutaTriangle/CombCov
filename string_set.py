@@ -4,7 +4,7 @@ from collections import Generator
 class StringSet(Generator):
     """The set of strings over alphabet ∑ avoiding a set of strings A."""
 
-    def __init__(self, alphabet=['a', 'b'], avoid=set()):
+    def __init__(self, alphabet=['a', 'b'], avoid=frozenset()):
         self.alphabet = alphabet
         self.avoid = frozenset(avoid)
 
@@ -20,23 +20,23 @@ class StringSet(Generator):
             return ""
 
         else:
-            str = list(from_string)
+            string = list(from_string)
 
-            # Increasing last character by one wand carry over if needed
-            for i in range(len(str)):
+            # Increasing last character by one and carry over if needed
+            for i in range(len(string)):
                 pos = -(i + 1)
-                char = str[pos]
+                char = string[pos]
                 index = self.alphabet.index(char)
                 next_index = index + 1
                 if next_index == len(self.alphabet):
-                    str[pos] = self.alphabet[0]
+                    string[pos] = self.alphabet[0]
                     # ...and carry one over
                 else:
-                    str[pos] = self.alphabet[next_index]
-                    return "".join(str)
+                    string[pos] = self.alphabet[next_index]
+                    return "".join(string)
 
             # If we get this far we need to increase the length of the string
-            return self.alphabet[0] + "".join(str)
+            return self.alphabet[0] + "".join(string)
 
     def contains(self, str):
         return all(av not in str for av in self.avoid)
@@ -90,7 +90,7 @@ class StringSet(Generator):
                 if string_set.contains(string):
                     rule.append(string)
 
-        return rule
+        return frozenset(rule)
 
     def accept_rule(self, rule):
         return all(self.contains(string) for string in rule)
