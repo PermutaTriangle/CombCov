@@ -24,8 +24,8 @@ class Rule:
 class StringSet(Generator):
     """The set of strings over alphabet ∑ avoiding a set of strings A."""
 
-    def __init__(self, alphabet=['a', 'b'], avoid=frozenset()):
-        self.alphabet = alphabet
+    def __init__(self, alphabet=list(), avoid=frozenset()):
+        self.alphabet = list(alphabet)
         self.avoid = frozenset(avoid)
 
         # Relating to the generator function
@@ -111,7 +111,7 @@ class StringSet(Generator):
             prefixes.extend(self.of_length(n + 1))
 
         rules = []
-        empty_string_set = StringSet(alphabet=self.alphabet, avoid=self.alphabet)
+        empty_string_set = StringSet(alphabet=self.alphabet, avoid=frozenset(self.alphabet))
         empty_string_rule = Rule(prefix='', string_set=empty_string_set, max_string_length=0)
         rules.append(empty_string_rule)
         for prefix in prefixes:
