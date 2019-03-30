@@ -28,7 +28,7 @@ class GurobiExactCover(unittest.TestCase):
     av_21_solution = [0, 5]
     cover_string_length = 5
 
-    def test_gurobi_writing_temp_files(self):
+    def test_perm_av_21_with_gurobi_mocked_out(self):
         with patch.object(exact_cover, '_call_Popen', _mocked_call_Popen):
             solutions = exact_cover.exact_cover_gurobi(self.av_21_bitstrings, self.cover_string_length)
             first_solution = solutions.__next__()

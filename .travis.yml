@@ -5,17 +5,11 @@ language: python
 sudo: false
 
 python:
-  - "3.5"
   - "3.6"
   - "3.7"
   - "3.7-dev"
   - "3.8-dev"
   - "nightly"
-
-matrix:
-  include:
-    - python: "pypy3"
-      dist: trusty
 
 install:
   - pip install --upgrade pip
