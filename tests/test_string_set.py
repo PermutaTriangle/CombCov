@@ -1,7 +1,7 @@
 import unittest
 from collections import Generator
 
-from string_set import StringSet
+from string_set import Rule, StringSet
 
 
 class StringSetTest(unittest.TestCase):
@@ -84,13 +84,12 @@ class StringSetTest(unittest.TestCase):
         avoiding_subset = self.avoid[1:]
         sub_string_set = StringSet(self.alphabet, avoiding_subset)
 
-        rule = string_set.create_rule(prefix, sub_string_set, max_string_length)
-        self.assertGreaterEqual(max_string_length, max(len(elmnt) for elmnt in rule))
+        rule = Rule(prefix, sub_string_set, max_string_length)
+        self.assertGreaterEqual(max_string_length, max(len(elmnt) for elmnt in rule.get_elmnts()))
 
         expected_rule = frozenset(['ab', 'aba', 'abaa', 'abab', 'abaaa', 'abaab', 'ababa'])
-        self.assertEqual(rule, expected_rule)
+        self.assertEqual(rule.get_elmnts(), expected_rule)
         self.assertFalse(string_set.accept_rule(rule))
-        self.assertTrue(string_set.accept_rule(frozenset(['ab', 'ba'])))
 
     def test_rule_generation(self):
         string_set = StringSet(self.alphabet, self.avoid)

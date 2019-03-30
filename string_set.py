@@ -1,6 +1,26 @@
 from collections import Generator
 
 
+class Rule:
+    def __init__(self, prefix, string_set, max_string_length):
+        self.prefix = prefix
+        self.string_set = string_set
+        self.max_string_length = max_string_length
+
+        self.strings = []
+        for n in range(max_string_length - len(prefix) + 1):
+            for elmnt in string_set.of_length(n):
+                string = prefix + elmnt
+                if string_set.contains(string):
+                    self.strings.append(string)
+
+    def get_elmnts(self):
+        return frozenset(self.strings)
+
+    def __str__(self):
+        return "'{}'*{}".format(self.prefix, self.string_set)
+
+
 class StringSet(Generator):
     """The set of strings over alphabet ∑ avoiding a set of strings A."""
 
@@ -82,30 +102,24 @@ class StringSet(Generator):
 
         return avoiding_substrings
 
-    def create_rule(self, prefix, string_set, max_string_length):
-        rule = []
-        for n in range(max_string_length - len(prefix) + 1):
-            for elmnt in string_set.of_length(n):
-                string = prefix + elmnt
-                if string_set.contains(string):
-                    rule.append(string)
-
-        return frozenset(rule)
-
     def accept_rule(self, rule):
-        return all(self.contains(string) for string in rule)
+        return rule.get_elmnts() is not frozenset([]) and all(self.contains(string) for string in rule.get_elmnts())
 
     def rule_generator(self, prefix_size=3, max_string_length=9):
         prefixes = []
         for n in range(prefix_size):
-            prefixes += self.of_length(n + 1)
+            prefixes.extend(self.of_length(n + 1))
 
         rules = []
+        empty_string_set = StringSet(alphabet=self.alphabet, avoid=self.alphabet)
+        empty_string_rule = Rule(prefix='', string_set=empty_string_set, max_string_length=0)
+        rules.append(empty_string_rule)
         for prefix in prefixes:
             for avoiding_subset in self.get_all_avoiding_subsets():
                 sub_string_set = StringSet(self.alphabet, avoiding_subset)
-                rule = self.create_rule(prefix, sub_string_set, max_string_length)
-                rules.append(rule if self.accept_rule(rule) else None)
+                rule = Rule(prefix, sub_string_set, max_string_length)
+                if self.accept_rule(rule):
+                    rules.append(rule)
 
         return rules
 
