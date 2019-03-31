@@ -80,14 +80,14 @@ class StringSetTest(unittest.TestCase):
         string_set = StringSet(self.alphabet, self.avoid)
 
         prefix = "ab"
-        max_string_length = 5
-        avoiding_subset = self.avoid[1:]
+        max_string_length = 4
+        avoiding_subset = ['bb']
         sub_string_set = StringSet(self.alphabet, avoiding_subset)
 
         rule = Rule(prefix, sub_string_set, max_string_length)
         self.assertGreaterEqual(max_string_length, max(len(elmnt) for elmnt in rule.get_elmnts()))
 
-        expected_rule = frozenset(['ab', 'aba', 'abaa', 'abab', 'abaaa', 'abaab', 'ababa'])
+        expected_rule = frozenset(['ab', 'aba', 'abb', 'abaa', 'abab', 'abba'])
         self.assertEqual(rule.get_elmnts(), expected_rule)
         self.assertFalse(string_set.accept_rule(rule))
 

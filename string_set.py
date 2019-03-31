@@ -10,9 +10,7 @@ class Rule:
         self.strings = []
         for n in range(max_string_length - len(prefix) + 1):
             for elmnt in string_set.of_length(n):
-                string = prefix + elmnt
-                if string_set.contains(string):
-                    self.strings.append(string)
+                self.strings.append(prefix + elmnt)
 
     def get_elmnts(self):
         return frozenset(self.strings)
@@ -106,14 +104,19 @@ class StringSet(Generator):
         return rule.get_elmnts() is not frozenset([]) and all(self.contains(string) for string in rule.get_elmnts())
 
     def rule_generator(self, prefix_size=3, max_string_length=9):
+        rules = []
         prefixes = []
         for n in range(prefix_size):
             prefixes.extend(self.of_length(n + 1))
 
-        rules = []
-        empty_string_set = StringSet(alphabet=self.alphabet, avoid=frozenset(self.alphabet))
-        empty_string_rule = Rule(prefix='', string_set=empty_string_set, max_string_length=0)
-        rules.append(empty_string_rule)
+        # Singleton rules, on the form prefix + empty StringSet
+        for prefix in [''] + prefixes:
+            empty_string_set = StringSet(alphabet=self.alphabet, avoid=frozenset(self.alphabet))
+            rule = Rule(prefix=prefix, string_set=empty_string_set, max_string_length=len(prefix))
+            if self.accept_rule(rule):
+                rules.append(rule)
+
+        # Regular rules of the from prefix + non-empty StringSet
         for prefix in prefixes:
             for avoiding_subset in self.get_all_avoiding_subsets():
                 sub_string_set = StringSet(self.alphabet, avoiding_subset)
