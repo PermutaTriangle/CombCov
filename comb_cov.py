@@ -15,16 +15,15 @@ class CombCov():
         print("(Enumeration: {})".format(self.enumeration))
         self._find_cover()
 
-        try:
-            solutions = self.get_solutions()
-            print("SUCCESS! Found at least one solution")
+        solutions = self.get_solutions()
+        if solutions.__len__() > 0:
+            print("SUCCESS! Found {} solution(s).".format(solutions.__len__()))
             for nr, solution in enumerate(solutions, start=1):
                 print("Solution nr. {}:".format(nr))
                 for rule in solution:
                     print(" - {}".format(rule))
-        except Exception as e:
+        else:
             print("FAILURE. No solutions found.")
-            raise (e)
 
     def _enumerate_all_elmnts_up_to_max_size(self):
         elmnts = []
@@ -42,7 +41,6 @@ class CombCov():
         self.rules_dict = {}
         self.rules = self.root_object.rule_generator(max_string_length=self.max_elmnt_size)
         for rule in self.rules:
-            # print("rule:", rule)
             binary_string = 0
             for elmnt in rule.get_elmnts():
                 binary_string += 2 ** (self.elmnts_dict[elmnt])
