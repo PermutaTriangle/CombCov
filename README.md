@@ -26,11 +26,12 @@ comb_cov = CombCov(string_set, max_elmnt_size)
 It prints out the following:
 
 ```text
-Trying to find a cover for 'Av(aa) over ∑={a,b}' up to size 7 using 14 self-generated rules.
-(Enumeration: [1, 2, 3, 5, 8, 13, 21, 34])
-SUCCESS! Found at least one solution
+Trying to find a cover for 'Av(aa) over ∑={a,b}' up to size 5 using 27 self-generated rules.
+(Enumeration: [1, 2, 3, 5, 8, 13])
+SUCCESS! Found 1 solution(s).
 Solution nr. 1:
  - ''*Av(a,b) over ∑={a,b}
- - 'a'*Av(aa) over ∑={a,b}
+ - 'a'*Av(a,b) over ∑={a,b}
  - 'b'*Av(aa) over ∑={a,b}
+ - 'ab'*Av(aa) over ∑={a,b}
 ```
