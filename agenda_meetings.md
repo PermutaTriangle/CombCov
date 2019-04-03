@@ -1,3 +1,14 @@
+2019-04-04
+==========
+
+- [ ] Review the current status of the repo and run various `StringSet` examples.
+- [ ] What licence is appropriate for the GitHub repo?
+- [ ] Discuss how we would like other people such as Rögnvaldur Möller use and interact with this library.
+      Aspects ranging from practical stuff (like installation) to programming paradigms (such as class interfaces).
+- [ ] (From previously) Discuss deploying a new version of Permuta to Pypi.
+
+
+
 2019-03-28
 ==========
 
