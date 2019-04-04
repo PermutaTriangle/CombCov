@@ -1,3 +1,4 @@
+import itertools
 from collections import Generator
 
 
@@ -56,8 +57,8 @@ class StringSet(Generator):
             # If we get this far we need to increase the length of the string
             return self.alphabet[0] + "".join(string)
 
-    def contains(self, str):
-        return all(av not in str for av in self.avoid)
+    def contains(self, string):
+        return all(av not in string for av in self.avoid)
 
     def send(self, ignored_arg):
         while True:
@@ -84,21 +85,12 @@ class StringSet(Generator):
 
     @staticmethod
     def _get_all_substrings_of(s):
+        # list of set because we don't want duplicates
         return sorted(list(set(s[i:j + 1] for i in range(len(s)) for j in range(i, len(s)))))
 
-    # TODO: This is an approximation, need to make it correct before running more complex examples
     def get_all_avoiding_subsets(self):
-        avoiding_substrings = set()
-        for string in self.avoid:
-            subset_of_avoid = set(self.avoid.copy())
-            subset_of_avoid.remove(string)
-            for substring in self._get_all_substrings_of(string):
-                subset_of_avoid_with_substring = subset_of_avoid.copy()
-                subset_of_avoid_with_substring.add(substring)
-                if subset_of_avoid_with_substring not in avoiding_substrings:
-                    avoiding_substrings.add(frozenset(subset_of_avoid_with_substring))
-
-        return avoiding_substrings
+        avoiding_substrings = [self._get_all_substrings_of(avoid) for avoid in self.avoid]
+        return {frozenset(product) for product in itertools.product(*avoiding_substrings)}
 
     def accept_rule(self, rule):
         return rule.get_elmnts() is not frozenset([]) and all(self.contains(string) for string in rule.get_elmnts())

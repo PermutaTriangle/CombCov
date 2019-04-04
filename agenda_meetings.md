@@ -1,11 +1,27 @@
 2019-04-04
 ==========
 
-- [ ] Review the current status of the repo and run various `StringSet` examples.
+- [x] Review the current status of the repo and run various `StringSet` examples.
 - [ ] What licence is appropriate for the GitHub repo?
 - [ ] Discuss how we would like other people such as Rögnvaldur Möller use and interact with this library.
       Aspects ranging from practical stuff (like installation) to programming paradigms (such as class interfaces).
+- [ ] What examples to use in the REM paper?
 - [ ] (From previously) Discuss deploying a new version of Permuta to Pypi.
+
+### Summary
+
+Ran some examples with `CombCov` over the alphabet `{a, b}`. Some examples were solved fine like `Av{'aa'}` but others
+not, like `Av('aa', 'bb'}`. Our current method of generating rules on the form `prefix + Av(ss)` where ss is a subset
+of `{'aa', 'bb'}` simply cannot handle the set of strings with alternating `a`'s and `b`'s.
+
+We fixed the `StringSet.get_all_avoiding_subsets` function. E.g. for the avoiding set `{'aa', 'bb'}` it naively 
+generated `[ {'aa', 'bb'}, {'aa', 'b'}, {'a', 'bb'} ]` but now it (correctly) also generates `{'a', 'b'}`.
+
+Discussed avoiding non-consecutive substrings as well as consecutive as we do now. Then we'd need to implement 
+`StringSet.contains` method differently, something along the lines of
+ 1. Set `S` of strings avoiding non-consecutive `'aba'`
+ 2. String `s` is _not_ in `S` if there exist a index set `I = {i_1, i_2, i_3}` with `i_1 < i_2 < i_3` such that
+    `s[i_1] == a` and `s[i_2] == b` and `s[i_3] == a`
 
 
 

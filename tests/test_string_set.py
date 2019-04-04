@@ -61,20 +61,18 @@ class StringSetTest(unittest.TestCase):
         negative_length_strings = string_set.of_length(-1)
         self.assertListEqual(negative_length_strings, [])
 
+    def test_all_substrings_of_string(self):
+        string = 'aba'
+        substrings = StringSet._get_all_substrings_of(string)
+        expected_substrings = ['a', 'ab', 'aba', 'b', 'ba']
+        self.assertEqual(expected_substrings, substrings)
+
     def test_avoiding_subsets(self):
         string_set = StringSet(self.alphabet, self.avoid)
-        expected_subsets = {frozenset({"aa", "bb"}), frozenset({"aa", "b"}), frozenset({"a", "bb"})}
+        expected_subsets = {frozenset({"aa", "bb"}), frozenset({"aa", "b"}), frozenset({"a", "bb"}),
+                            frozenset({'a', 'b'})}
         subsets = string_set.get_all_avoiding_subsets()
         self.assertEqual(expected_subsets, subsets)
-
-        # TODO: run below test after fixing `_get_all_avoiding_subsets` function
-        # actually_expected_subsets = set([
-        #    frozenset({"aa", "bb"}),
-        #    frozenset({"aa", "b"}),
-        #    frozenset({"a", "bb"}),
-        #    frozenset({'a', 'b'})
-        # ])
-        # self.assertEqual(actually_expected_subsets, subsets)
 
     def test_rule_creation(self):
         string_set = StringSet(self.alphabet, self.avoid)
