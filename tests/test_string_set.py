@@ -111,6 +111,11 @@ class StringSetTest(unittest.TestCase):
         string_set_rev = StringSet(self.alphabet, list(reversed(self.avoid)))
         self.assertEqual(string_set, string_set_rev)
 
+    def test_equality_nonsense(self):
+        string_set = StringSet(self.alphabet, self.avoid)
+        self.assertNotEqual(string_set, "nonsense")
+        self.assertNotEqual(string_set, None)
+
 
 if __name__ == '__main__':
     unittest.main()

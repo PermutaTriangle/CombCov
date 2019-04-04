@@ -1,10 +1,11 @@
 # CombCov
 
 [![Build Status](https://travis-ci.org/PermutaTriangle/CombCov.svg?branch=master)](https://travis-ci.org/PermutaTriangle/CombCov)
-[![Coverage Status](https://coveralls.io/repos/github/PermutaTriangle/CombCov/badge.svg?branch=master)](https://coveralls.io/github/PermutaTriangle/CombCov?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/PermutaTriangle/CombCov/badge.svg)](https://coveralls.io/github/PermutaTriangle/CombCov)
 
 A generalization of the permutation-specific algorithm [Struct](https://github.com/PermutaTriangle/PermStruct) -- 
 extended for other types of combinatorial objects.
+
 
 ## Example usage
 
@@ -34,4 +35,14 @@ Solution nr. 1:
  - 'a'*Av(b,a) over ∑={a,b}
  - 'b'*Av(aa) over ∑={a,b}
  - 'ab'*Av(aa) over ∑={a,b}
+```
+
+
+## Development
+
+Run unittests:
+
+```bash
+pip install -r tests/requirements.txt
+pytest
 ```
