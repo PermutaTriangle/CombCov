@@ -17,7 +17,10 @@ install:
   - pip install -r tests/requirements.txt
 
 script:
-  - python -m unittest discover -s tests -t tests
+  - pytest --cov=. --cov-report=term-missing
+
+after_success:
+  - coveralls
 
 notifications:
   email: false
