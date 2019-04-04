@@ -1,7 +1,7 @@
 # CombCov
 
 [![Build Status](https://travis-ci.org/PermutaTriangle/CombCov.svg?branch=master)](https://travis-ci.org/PermutaTriangle/CombCov)
-
+[![Coverage Status](https://coveralls.io/repos/github/PermutaTriangle/CombCov/badge.svg?branch=master)](https://coveralls.io/github/PermutaTriangle/CombCov?branch=master)
 
 A generalization of the permutation-specific algorithm [Struct](https://github.com/PermutaTriangle/PermStruct) -- 
 extended for other types of combinatorial objects.
