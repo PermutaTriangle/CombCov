@@ -1,3 +1,15 @@
+2019-04-11
+==========
+
+- [ ] Decide next meeting time (because of Easter and Bjarni's 3-week course in May).
+- [ ] What licence is appropriate for the GitHub repo?
+- [ ] CombCov comes up with rules such as 'a'*Av(b,ab) and 'b'*Av(b,bb). How do we filter them out?
+- [ ] Discuss how we would like other people such as Rögnvaldur Möller use and interact with this library.
+      Aspects ranging from practical stuff (like installation) to programming paradigms (such as class interfaces).
+- [ ] (From previously) Discuss deploying a new version of Permuta to Pypi.
+
+
+
 2019-04-04
 ==========
 
@@ -5,7 +17,7 @@
 - [ ] What licence is appropriate for the GitHub repo?
 - [ ] Discuss how we would like other people such as Rögnvaldur Möller use and interact with this library.
       Aspects ranging from practical stuff (like installation) to programming paradigms (such as class interfaces).
-- [ ] What examples to use in the REM paper?
+- [x] What examples to use in the REM paper?
 - [ ] (From previously) Discuss deploying a new version of Permuta to Pypi.
 
 ### Summary
