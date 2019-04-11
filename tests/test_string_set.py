@@ -4,6 +4,35 @@ from collections import Generator
 from string_set import Rule, StringSet
 
 
+class RuleTest(unittest.TestCase):
+    alphabet = ['a', 'b']
+    avoid = ['aa', 'bb']
+    avoid_subset = ['bb']
+
+    def test_rule_creation(self):
+        string_set = StringSet(self.alphabet, self.avoid)
+
+        prefix = "ab"
+        max_string_length = 4
+        avoiding_subset = ['bb']
+        sub_string_set = StringSet(self.alphabet, avoiding_subset)
+
+        rule = Rule(prefix, sub_string_set, max_string_length)
+        self.assertFalse(string_set.accept_rule(rule))
+        self.assertGreaterEqual(max_string_length, max(len(elmnt) for elmnt in rule.get_elmnts()))
+
+        expected_rule_elmnts = frozenset(['ab', 'aba', 'abb', 'abaa', 'abab', 'abba'])
+        self.assertEqual(rule.get_elmnts(), expected_rule_elmnts)
+
+    def test_rule_generation(self):
+        string_set = StringSet(self.alphabet, self.avoid)
+        max_string_length = 9
+        rules = string_set.rule_generator(max_string_length)
+
+        self.assertNotIn(None, rules)
+        self.assertTrue(all(string_set.accept_rule(rule) for rule in rules))
+
+
 class StringSetTest(unittest.TestCase):
     alphabet = ['a', 'b']
     avoid = ['aa', 'bb']
@@ -73,28 +102,6 @@ class StringSetTest(unittest.TestCase):
                             frozenset({'a', 'b'})}
         subsets = string_set.get_all_avoiding_subsets()
         self.assertEqual(expected_subsets, subsets)
-
-    def test_rule_creation(self):
-        string_set = StringSet(self.alphabet, self.avoid)
-
-        prefix = "ab"
-        max_string_length = 4
-        avoiding_subset = ['bb']
-        sub_string_set = StringSet(self.alphabet, avoiding_subset)
-
-        rule = Rule(prefix, sub_string_set, max_string_length)
-        self.assertGreaterEqual(max_string_length, max(len(elmnt) for elmnt in rule.get_elmnts()))
-
-        expected_rule = frozenset(['ab', 'aba', 'abb', 'abaa', 'abab', 'abba'])
-        self.assertEqual(rule.get_elmnts(), expected_rule)
-        self.assertFalse(string_set.accept_rule(rule))
-
-    def test_rule_generation(self):
-        string_set = StringSet(self.alphabet, self.avoid)
-        rules = string_set.rule_generator(prefix_size=3, max_string_length=9)
-
-        self.assertNotIn(None, rules)
-        self.assertTrue(all(string_set.accept_rule(rule) for rule in rules))
 
     def test_equality(self):
         string_set = StringSet(self.alphabet, self.avoid)

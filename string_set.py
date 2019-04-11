@@ -26,6 +26,10 @@ class StringSet(Generator):
     def __init__(self, alphabet=list(), avoid=frozenset()):
         self.alphabet = list(alphabet)
         self.avoid = frozenset(avoid)
+        if self.avoid is not frozenset():
+            self.max_prefix_size = max(len(av) for av in self.avoid)
+        else:
+            self.max_prefix_size = 0
 
         # Relating to the generator function
         self._nr = 0
@@ -93,12 +97,12 @@ class StringSet(Generator):
         return {frozenset(product) for product in itertools.product(*avoiding_substrings)}
 
     def accept_rule(self, rule):
-        return rule.get_elmnts() is not frozenset([]) and all(self.contains(string) for string in rule.get_elmnts())
+        return rule.get_elmnts() is not frozenset() and all(self.contains(string) for string in rule.get_elmnts())
 
-    def rule_generator(self, prefix_size=3, max_string_length=9):
+    def rule_generator(self, max_string_length=0):
         rules = []
         prefixes = []
-        for n in range(prefix_size):
+        for n in range(self.max_prefix_size):
             prefixes.extend(self.of_length(n + 1))
 
         # Singleton rules, on the form prefix + empty StringSet
@@ -111,8 +115,8 @@ class StringSet(Generator):
         # Regular rules of the from prefix + non-empty StringSet
         for prefix in prefixes:
             for avoiding_subset in self.get_all_avoiding_subsets():
-                sub_string_set = StringSet(self.alphabet, avoiding_subset)
-                rule = Rule(prefix, sub_string_set, max_string_length)
+                substring_set = StringSet(self.alphabet, avoiding_subset)
+                rule = Rule(prefix, substring_set, max_string_length)
                 if self.accept_rule(rule):
                     rules.append(rule)
 
