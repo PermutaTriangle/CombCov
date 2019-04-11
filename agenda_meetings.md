@@ -1,12 +1,30 @@
 2019-04-11
 ==========
 
-- [ ] Decide next meeting time (because of Easter and Bjarni's 3-week course in May).
-- [ ] What licence is appropriate for the GitHub repo?
-- [ ] CombCov comes up with rules such as 'a'*Av(b,ab) and 'b'*Av(b,bb). How do we filter them out?
-- [ ] Discuss how we would like other people such as Rögnvaldur Möller use and interact with this library.
+- [x] Decide next meeting time (because of Easter and Bjarni's 3-week course in May).
+- [x] What licence is appropriate for the GitHub repo?
+- [x] CombCov comes up with rules such as 'a'*Av(b,ab) and 'b'*Av(b,bb). How do we filter them out?
+- [x] Discuss how we would like other people such as Rögnvaldur Möller use and interact with this library.
       Aspects ranging from practical stuff (like installation) to programming paradigms (such as class interfaces).
 - [ ] (From previously) Discuss deploying a new version of Permuta to Pypi.
+
+### Summary
+
+First discussed the nonsense rules that CombCov currently comes up with and how to avoid that by doing some kind of 
+`init` for the avoiding set of strings: Sort them by length and check containment "upwards".
+
+Bjarni will not be in Iceland next week so next meeting is scheduled tomorrow, Fri 12 Apr 2019, at 11:00.
+
+Permuta is licenced under "BSD-3-Clause" but Émile suggested GPL licence (v3) for CombCov as it enforces others that 
+use the library to keep their code open source. We'll probably go with GPL then.
+
+Discussed some refactoring of the code which makes it clearer what Rögnvaldur Möller needs to implement to use this 
+library. After that refactoring is done Christian will try to use CombCov with tilings.
+
+Enforcing Gurobi as a requirement to run CombCov is not user friendly so we need a fallback linear solver that works
+without the need to install anything (besides the `pip install CombCov`). [PuLP](https://github.com/coin-or/pulp) seems 
+to support solving linear equations without the need for 3rd party libraries, but also support using Gurobi if it's 
+installed. I will look into this and evaluate whether it's shiny promises are true.
 
 
 
