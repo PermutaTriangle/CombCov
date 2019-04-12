@@ -1,8 +1,19 @@
 2019-04-12
 ==========
 
+- [x] (From previously) Discuss deploying a new version of Permuta to Pypi.
 - [ ] Refactor code with the goal of Christian being able to use CombCov with his Tilings objects.
-- [ ] Decide upon next meeting time.
+- [x] Decide upon next meeting time.
+
+### Summary
+
+We discussed what needs to be done in order to deploy a new version of Permuta to Pypi. We edited the Travis CI config
+file so it builds and pushes Permuta straight to Pypi on successful builds (passing unittests) on the master branch of
+the GitHub repo. Christian was working on refactoring the Permuta code on the version2 branch so we can soon merge it
+to master.
+
+Next meeting time is Thu 2 May at 13:00 unless Bjarni will be in class at that time, in which case he contacts Henning
+and Christan to reschedule.
 
 
 
