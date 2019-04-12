@@ -1,3 +1,11 @@
+2019-04-12
+==========
+
+- [ ] Refactor code with the goal of Christian being able to use CombCov with his Tilings objects.
+- [ ] Decide upon next meeting time.
+
+
+
 2019-04-11
 ==========
 
@@ -19,7 +27,7 @@ Permuta is licenced under "BSD-3-Clause" but Émile suggested GPL licence (v3) f
 use the library to keep their code open source. We'll probably go with GPL then.
 
 Discussed some refactoring of the code which makes it clearer what Rögnvaldur Möller needs to implement to use this 
-library. After that refactoring is done Christian will try to use CombCov with tilings.
+library. After that refactoring is done Christian will try to use CombCov with Tilings.
 
 Enforcing Gurobi as a requirement to run CombCov is not user friendly so we need a fallback linear solver that works
 without the need to install anything (besides the `pip install CombCov`). [PuLP](https://github.com/coin-or/pulp) seems 
