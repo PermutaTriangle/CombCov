@@ -1,3 +1,24 @@
+2019-05-02
+==========
+
+- [x] Review using `PuLP` to interface with Gurobi as there's a fallback on naive LPS when Gurobi isn't available
+- [ ] Decide upon next meeting time.
+
+### Summary
+
+Using `GuLP` to define the optimization problem and calling Gurobi upon works really well as demonstrated in a small
+PoC. It is easy to check whether Gurobi is installed on the system or not, and fall back on a "naive" Linear
+Programming Solver if it isn't.
+
+We discussed that the next step in the project is to refactor the CombCov code to make it easy to "plug and play" other
+combinatorial objects. We want to try _Tilings_, _Permutations_ and _Mesh patterns_ with CombCov. This goes a long way
+of constituting the whole thesis work.
+
+Bjarni is currently taking a 3-week course and will thus have little time to work on CombCov in the meantime. Next
+meeting time wasn't discussed or decided upon.
+
+
+
 2019-04-12
 ==========
 
