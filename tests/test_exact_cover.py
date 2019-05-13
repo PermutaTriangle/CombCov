@@ -8,7 +8,7 @@ import exact_cover
 
 
 def _mocked_call_Popen(inp, outp):
-    dir = Path(__file__).parents[0]
+    dir = str(Path(__file__).parents[0])
     av_21_inp_lp = os.path.join(dir, 'av_21', 'inp.lp')
     av_21_out_sol = os.path.join(dir, 'av_21', 'out.sol')
 

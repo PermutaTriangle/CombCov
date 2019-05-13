@@ -21,7 +21,7 @@ def exact_cover_gurobi(bitstrings, cover_string_length):
     used = set()
     anything = False
     try:
-        tdir = tempfile.mkdtemp(prefix='combcov_tmp')
+        tdir = str(tempfile.mkdtemp(prefix='combcov_tmp'))
         inp = os.path.join(tdir, 'inp.lp')
         outp = os.path.join(tdir, 'out.sol')
 
