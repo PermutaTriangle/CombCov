@@ -4,10 +4,10 @@ from pathlib import Path
 from subprocess import Popen, DEVNULL
 from unittest.mock import patch
 
-import exact_cover
+from combcov import ExactCover
 
 
-def _mocked_call_Popen(inp, outp):
+def _mocked_call_Popen(self, inp, outp):
     dir = str(Path(__file__).parents[0])
     av_21_inp_lp = os.path.join(dir, 'av_21', 'inp.lp')
     av_21_out_sol = os.path.join(dir, 'av_21', 'out.sol')
@@ -29,8 +29,9 @@ class GurobiExactCover(unittest.TestCase):
     cover_string_length = 5
 
     def test_perm_av_21_with_gurobi_mocked_out(self):
-        with patch.object(exact_cover, '_call_Popen', _mocked_call_Popen):
-            solutions = exact_cover.exact_cover_gurobi(self.av_21_bitstrings, self.cover_string_length)
+        with patch.object(ExactCover, '_call_Popen', _mocked_call_Popen):
+            ec = ExactCover(self.av_21_bitstrings, self.cover_string_length)
+            solutions = ec.exact_cover_gurobi()
             first_solution = solutions.__next__()
             self.assertEqual(first_solution, self.av_21_solution)
             self.assertRaises(StopIteration, solutions.__next__)
