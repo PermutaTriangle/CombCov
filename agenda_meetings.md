@@ -1,3 +1,31 @@
+2019-05-23
+==========
+
+- [x] Status of code refactoring before Christian can use it with his _Tilings_
+- [ ] Bjarni needs 2 ECTS units of course work. Can he do a reading course in Elliptic Curves?
+
+### Summary
+
+We reviewed the code factoring that had been done so far and then finished it with the aid of Christian. `StringSet`
+has been moved into a new `demo` module (where it can serve as an example on how to use CombCov) and `CombCov` was
+moved into the new `combcov` module (which will be published to PyPy in due time).
+
+The rough layout is like this: `CombCov` takes in a `Rule` object (such as `StringSet` or `Tiling`) which is an
+abstract class that needs to implement the following methods:
+
+- `get_elmnts(of_size)`: return all elements in Rule of specific size
+- `get_subrules()`: return all "lesser" Rules (the ones we try to stitch together), but with no requirement at the
+    moment that they are all unique or valid
+- `__hash__()`: Rule must be hashable
+- `__str__()`: Rule must have a string representation
+
+Bjarni will do a little bit of tidying up the code before pushing these changes to GitHub. Then Christian will try to
+use it with his _Tilings_ objects.
+
+Discussion of Bjarni's last ECTS credits were postponed to next meeting.
+
+
+
 2019-05-02
 ==========
 
