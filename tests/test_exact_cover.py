@@ -1,7 +1,7 @@
 import os
 import unittest
 from pathlib import Path
-from subprocess import Popen, DEVNULL
+from subprocess import DEVNULL, Popen
 from unittest.mock import patch
 
 from combcov import ExactCover

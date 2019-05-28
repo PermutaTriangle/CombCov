@@ -40,11 +40,14 @@ class StringSet(Rule):
     @staticmethod
     def _get_all_substrings_of(s):
         # list of set because we don't want duplicates
-        return sorted(list(set(s[i:j + 1] for i in range(len(s)) for j in range(i, len(s)))))
+        return sorted(list(
+            set(s[i:j + 1] for i in range(len(s)) for j in range(i, len(s)))))
 
     def get_all_avoiding_subsets(self):
-        avoiding_substrings = [self._get_all_substrings_of(avoid) for avoid in self.avoid]
-        return {frozenset(product) for product in itertools.product(*avoiding_substrings)}
+        avoiding_substrings = [self._get_all_substrings_of(avoid) for avoid in
+                               self.avoid]
+        return {frozenset(product) for product in
+                itertools.product(*avoiding_substrings)}
 
     def get_elmnts(self, of_size):
         strings_of_length = []
@@ -67,27 +70,33 @@ class StringSet(Rule):
 
         # Singleton rules, on the form prefix + empty StringSet
         for prefix in [''] + prefixes:
-            empty_string_set = StringSet(alphabet=self.alphabet, avoid=frozenset(self.alphabet), prefix=prefix)
+            empty_string_set = StringSet(alphabet=self.alphabet,
+                                         avoid=frozenset(self.alphabet),
+                                         prefix=prefix)
             rules.append(empty_string_set)
 
         # Regular rules of the from prefix + non-empty StringSet
         for prefix in prefixes:
             for avoiding_subset in self.get_all_avoiding_subsets():
-                substring_set = StringSet(self.alphabet, avoiding_subset, prefix)
+                substring_set = StringSet(self.alphabet, avoiding_subset,
+                                          prefix)
                 rules.append(substring_set)
 
         return rules
 
     def __eq__(self, other):
         if isinstance(other, StringSet):
-            return (self.alphabet == other.alphabet and self.avoid == other.avoid and self.prefix == other.prefix)
+            return (self.alphabet == other.alphabet and
+                    self.avoid == other.avoid and self.prefix == other.prefix)
         return False
 
     def __hash__(self):
         return hash(self.alphabet) ^ hash(self.avoid) ^ hash(self.prefix)
 
     def __str__(self):
-        return "'{}'*Av({}) over ∑={{{}}}".format(self.prefix, ",".join(self.avoid), ",".join(self.alphabet))
+        return "'{}'*Av({}) over ∑={{{}}}".format(self.prefix,
+                                                  ",".join(self.avoid),
+                                                  ",".join(self.alphabet))
 
 
 def main():
@@ -96,7 +105,8 @@ def main():
     string_set = StringSet(alphabet, avoid)
     max_elmnt_size = 7
 
-    print("Trying to find a cover for {} using elements up to size {}.".format(string_set, max_elmnt_size))
+    print("Trying to find a cover for {} using elements up to size {}.".format(
+        string_set, max_elmnt_size))
     comb_cov = CombCov(string_set, max_elmnt_size)
     comb_cov.solve()
 

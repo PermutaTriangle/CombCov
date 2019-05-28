@@ -13,18 +13,16 @@ class StringSetTest(unittest.TestCase):
         self.sub_string_set = StringSet(self.alphabet, self.avoid_subset)
 
     def test_next_string(self):
-        self.assertEqual(self.string_set.next_lexicographical_string(None), '')
-
-        self.assertEqual(self.string_set.next_lexicographical_string(''), 'a')
-        self.assertEqual(self.string_set.next_lexicographical_string('a'), 'b')
-        self.assertEqual(self.string_set.next_lexicographical_string('b'), 'aa')
-
-        self.assertEqual(self.string_set.next_lexicographical_string('aa'), 'ab')
-        self.assertEqual(self.string_set.next_lexicographical_string('ab'), 'ba')
-        self.assertEqual(self.string_set.next_lexicographical_string('ba'), 'bb')
-
-        self.assertEqual(self.string_set.next_lexicographical_string('bb'), 'aaa')
-        self.assertEqual(self.string_set.next_lexicographical_string('aaa'), 'aab')
+        next_string = self.string_set.next_lexicographical_string
+        self.assertEqual(next_string(None), '')
+        self.assertEqual(next_string(''), 'a')
+        self.assertEqual(next_string('a'), 'b')
+        self.assertEqual(next_string('b'), 'aa')
+        self.assertEqual(next_string('aa'), 'ab')
+        self.assertEqual(next_string('ab'), 'ba')
+        self.assertEqual(next_string('ba'), 'bb')
+        self.assertEqual(next_string('bb'), 'aaa')
+        self.assertEqual(next_string('aaa'), 'aab')
 
     def test_contains_string(self):
         self.assertFalse(self.string_set.contains('aa'))
@@ -54,8 +52,8 @@ class StringSetTest(unittest.TestCase):
         self.assertEqual(substrings, expected_substrings)
 
     def test_avoiding_subsets(self):
-        expected_subsets = {frozenset({"aa", "bb"}), frozenset({"aa", "b"}), frozenset({"a", "bb"}),
-                            frozenset({'a', 'b'})}
+        expected_subsets = {frozenset({"aa", "bb"}), frozenset({"aa", "b"}),
+                            frozenset({"a", "bb"}), frozenset({'a', 'b'})}
         subsets = self.string_set.get_all_avoiding_subsets()
         self.assertEqual(subsets, expected_subsets)
 

@@ -47,13 +47,15 @@ class CombCov():
                 self.rules_dict[rule] = binary_string
 
     def solve(self):
-        self.ec = ExactCover(list(self.rules_dict.values()), len(self.elmnts_dict))
+        self.ec = ExactCover(list(self.rules_dict.values()),
+                             len(self.elmnts_dict))
         self.solutions_indices = self.ec.exact_cover()
 
     def get_solutions(self):
         solutions = []
         for solution_indices in self.solutions_indices:
-            solution = [self.rules[binary_string] for binary_string in solution_indices]
+            solution = [self.rules[binary_string] for binary_string in
+                        solution_indices]
             solutions.append(solution)
 
         return solutions
