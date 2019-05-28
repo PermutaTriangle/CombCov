@@ -1,7 +1,8 @@
 # CombCov
 
-[![Build Status](https://travis-ci.org/PermutaTriangle/CombCov.svg?branch=master)](https://travis-ci.org/PermutaTriangle/CombCov)
-[![Coverage Status](https://coveralls.io/repos/github/PermutaTriangle/CombCov/badge.svg)](https://coveralls.io/github/PermutaTriangle/CombCov)
+[![Build Status](https://img.shields.io/travis/PermutaTriangle/CombCov.svg?label=Linux%20CI&logo=travis&logoColor=white)](https://travis-ci.org/PermutaTriangle/CombCov)
+[![Coverage Status](https://img.shields.io/coveralls/github/PermutaTriangle/CombCov.svg)](https://coveralls.io/github/PermutaTriangle/CombCov)
+[![Licence](https://img.shields.io/github/license/PermutaTriangle/CombCov.svg)](https://raw.githubusercontent.com/PermutaTriangle/CombCov/master/LICENSE)
 
 A generalization of the permutation-specific algorithm [Struct](https://github.com/PermutaTriangle/PermStruct) -- 
 extended for other types of combinatorial objects.
