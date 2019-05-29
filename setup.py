@@ -9,7 +9,7 @@ def read(fname):
 
 setup(
     name="CombCov",
-    version="0.0.1",
+    version="0.0.2",
     author="Permuta Triangle",
     author_email="permutatriangle@gmail.com",
     description="Searching for combinatorial covers.",
@@ -24,7 +24,10 @@ setup(
     long_description=read('README.md'),
     long_description_content_type="text/markdown",
     setup_requires=['pytest-runner'],
-    tests_require=read(os.path.join("tests", "requirements.txt")).splitlines(),
+    tests_require=["pytest==4.5.0",
+                   "pytest-cov==2.7.1",
+                   "pytest-pep8==1.0.6",
+                   "pytest-isort==0.3.1"],
     python_requires='>=3.5',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',

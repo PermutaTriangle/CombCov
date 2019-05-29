@@ -39,9 +39,8 @@ Solution nr. 1:
 
 ## Development
 
-Run unittests:
+Run unittests (with coverage for the `demo` module as well):
 
 ```bash
-pip install -r tests/requirements.txt
-pytest --cov=demo
+python setup.py test --addopts --cov=demo
 ```
