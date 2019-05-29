@@ -1,107 +1,63 @@
 import unittest
-from collections import Generator
 
-from string_set import Rule, StringSet
-
-
-class RuleTest(unittest.TestCase):
-    alphabet = ['a', 'b']
-    avoid = ['aa', 'bb']
-    avoid_subset = ['bb']
-
-    def test_rule_creation(self):
-        string_set = StringSet(self.alphabet, self.avoid)
-
-        prefix = "ab"
-        max_string_length = 4
-        avoiding_subset = ['bb']
-        sub_string_set = StringSet(self.alphabet, avoiding_subset)
-
-        rule = Rule(prefix, sub_string_set, max_string_length)
-        self.assertFalse(string_set.accept_rule(rule))
-        self.assertGreaterEqual(max_string_length, max(len(elmnt) for elmnt in rule.get_elmnts()))
-
-        expected_rule_elmnts = frozenset(['ab', 'aba', 'abb', 'abaa', 'abab', 'abba'])
-        self.assertEqual(rule.get_elmnts(), expected_rule_elmnts)
-
-    def test_rule_generation(self):
-        string_set = StringSet(self.alphabet, self.avoid)
-        max_string_length = 9
-        rules = string_set.rule_generator(max_string_length)
-
-        self.assertNotIn(None, rules)
-        self.assertTrue(all(string_set.accept_rule(rule) for rule in rules))
+from demo import StringSet
 
 
 class StringSetTest(unittest.TestCase):
-    alphabet = ['a', 'b']
-    avoid = ['aa', 'bb']
-    avoid_subset = ['bb']
+    alphabet = ('a', 'b')
+    avoid = frozenset(['aa', 'bb'])
+    avoid_subset = frozenset(['bb'])
 
-    def test_is_generator(self):
-        string_set = StringSet(self.alphabet, self.avoid)
-        self.assertIsInstance(string_set, Generator)
-
-    def test_first_8_elements(self):
-        string_set = StringSet(self.alphabet, self.avoid)
-        actual_first_8_elmts = ['', 'a', 'b', 'ab', 'ba', 'aba', 'bab', 'abab']
-        generator_first_8_elmts = [next(string_set) for _ in range(8)]
-        self.assertListEqual(actual_first_8_elmts, generator_first_8_elmts)
+    def setUp(self):
+        self.string_set = StringSet(self.alphabet, self.avoid)
+        self.sub_string_set = StringSet(self.alphabet, self.avoid_subset)
 
     def test_next_string(self):
-        string_set = StringSet(self.alphabet, self.avoid)
+        self.assertEqual(self.string_set.next_lexicographical_string(None), '')
 
-        self.assertEqual(string_set.next_lexicographical_string(''), 'a')
-        self.assertEqual(string_set.next_lexicographical_string('a'), 'b')
-        self.assertEqual(string_set.next_lexicographical_string('b'), 'aa')
+        self.assertEqual(self.string_set.next_lexicographical_string(''), 'a')
+        self.assertEqual(self.string_set.next_lexicographical_string('a'), 'b')
+        self.assertEqual(self.string_set.next_lexicographical_string('b'), 'aa')
 
-        self.assertEqual(string_set.next_lexicographical_string('aa'), 'ab')
-        self.assertEqual(string_set.next_lexicographical_string('ab'), 'ba')
-        self.assertEqual(string_set.next_lexicographical_string('ba'), 'bb')
+        self.assertEqual(self.string_set.next_lexicographical_string('aa'), 'ab')
+        self.assertEqual(self.string_set.next_lexicographical_string('ab'), 'ba')
+        self.assertEqual(self.string_set.next_lexicographical_string('ba'), 'bb')
 
-        self.assertEqual(string_set.next_lexicographical_string('bb'), 'aaa')
-        self.assertEqual(string_set.next_lexicographical_string('aaa'), 'aab')
+        self.assertEqual(self.string_set.next_lexicographical_string('bb'), 'aaa')
+        self.assertEqual(self.string_set.next_lexicographical_string('aaa'), 'aab')
 
     def test_contains_string(self):
-        string_set = StringSet(self.alphabet, self.avoid)
+        self.assertFalse(self.string_set.contains('aa'))
+        self.assertFalse(self.string_set.contains('bb'))
+        self.assertFalse(self.string_set.contains('abba'))
+        self.assertFalse(self.string_set.contains('bababaa'))
 
-        self.assertFalse(string_set.contains('aa'))
-        self.assertFalse(string_set.contains('bb'))
-        self.assertFalse(string_set.contains('abba'))
-        self.assertFalse(string_set.contains('bababaa'))
+        self.assertTrue(self.string_set.contains(''))
+        self.assertTrue(self.string_set.contains('a'))
+        self.assertTrue(self.string_set.contains('b'))
+        self.assertTrue(self.string_set.contains('ab'))
+        self.assertTrue(self.string_set.contains('bababa'))
 
-        self.assertTrue(string_set.contains(''))
-        self.assertTrue(string_set.contains('a'))
-        self.assertTrue(string_set.contains('b'))
-        self.assertTrue(string_set.contains('ab'))
-        self.assertTrue(string_set.contains('bababa'))
+    def test_strings_of_length(self):
+        length_five_strings = self.string_set.get_elmnts(of_size=5)
+        self.assertListEqual(length_five_strings, ['ababa', 'babab'])
 
-    def test_sunny_strings_of_length(self):
-        string_set = StringSet(self.alphabet, self.avoid)
-        length_five_strings = string_set.of_length(5)
-        actual_valid_strings = ['ababa', 'babab']
-        self.assertListEqual(length_five_strings, actual_valid_strings)
-
-    def test_rainy_strings_of_length(self):
-        string_set = StringSet(self.alphabet, self.avoid)
-        length_zero_strings = string_set.of_length(0)
+        length_zero_strings = self.string_set.get_elmnts(of_size=0)
         self.assertListEqual(length_zero_strings, [''])
 
-        negative_length_strings = string_set.of_length(-1)
+        negative_length_strings = self.string_set.get_elmnts(of_size=-1)
         self.assertListEqual(negative_length_strings, [])
 
     def test_all_substrings_of_string(self):
-        string = 'aba'
-        substrings = StringSet._get_all_substrings_of(string)
+        substrings = StringSet._get_all_substrings_of('aba')
         expected_substrings = ['a', 'ab', 'aba', 'b', 'ba']
-        self.assertEqual(expected_substrings, substrings)
+        self.assertEqual(substrings, expected_substrings)
 
     def test_avoiding_subsets(self):
-        string_set = StringSet(self.alphabet, self.avoid)
         expected_subsets = {frozenset({"aa", "bb"}), frozenset({"aa", "b"}), frozenset({"a", "bb"}),
                             frozenset({'a', 'b'})}
-        subsets = string_set.get_all_avoiding_subsets()
-        self.assertEqual(expected_subsets, subsets)
+        subsets = self.string_set.get_all_avoiding_subsets()
+        self.assertEqual(subsets, expected_subsets)
 
     def test_equality(self):
         string_set = StringSet(self.alphabet, self.avoid)
@@ -112,11 +68,6 @@ class StringSetTest(unittest.TestCase):
         string_set = StringSet(self.alphabet, self.avoid)
         string_set_rev = StringSet(list(reversed(self.alphabet)), self.avoid)
         self.assertNotEqual(string_set, string_set_rev)
-
-    def test_equality_reversed_avoidance(self):
-        string_set = StringSet(self.alphabet, self.avoid)
-        string_set_rev = StringSet(self.alphabet, list(reversed(self.avoid)))
-        self.assertEqual(string_set, string_set_rev)
 
     def test_equality_nonsense(self):
         string_set = StringSet(self.alphabet, self.avoid)
