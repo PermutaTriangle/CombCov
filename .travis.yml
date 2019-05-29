@@ -22,3 +22,12 @@ after_success:
 
 notifications:
   email: false
+
+deploy:
+  provider: pypi
+  user: bjarnijens
+  password:
+    secure: SwzLDLuKpFMdZH+PWmGfVpyabS1+c+Gbmjh9RjM9SQruGqHD+Zj9pxy4/8nerA8WicGXSwrN8haeMqkYbArQksJ/f/I5jAWkTfEe6F3cEHyW/b3/W4thG+Q9/Fc5H/Wrnj40mqtAjRj6T8FBlUv4e1jtEqBR8l07fCSKKAsUFQDogF9p+tLzP+wbRutm7l71R1wX58ZhGYO0Et5cSB7YQw7RBkULEOEfx6TEAxRV7ODnxAKCUUy3tL1MFpPMN96W8f90YynFG4MpCojzSm2DONoO79tzWT5FAmN1eOtQDHmMe48UT/ZptYgP20icTc5u7GDZ15Zgy0NchfX9warTCnYppVovJHPbP7TH98WxqYd3ghtc28mgOnU5C8UueJlJPA2noxZovh4AITsscNSXfjFNWEZG7PNmyGD/HZ4rW2AthofBDZnNIEaBOgXWQ5haDo/OJ1F9HHqN9IUZ2MzOROOemCSFxzQqt4NyuBGKEAxlGUM7wpWfgWWpYIdzskIXfHUFyPmYkCnOJQpszEU0xPS5HmidpPaqp49BnuPoLkKTjosrxvyNrb6CdzPcSy5pAgxePBz+B/J35zh+wu8IvQ4FxsKiTcCaJHDwMVsiuevJ/AygnbCJwAeJw76EnS/0uOL2JfCol4OkhfYoIKzfh01AY8FDBFJNHG6++vXOnR8=
+  skip_existing: true
+  on:
+    branch: master
