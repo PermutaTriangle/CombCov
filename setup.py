@@ -22,6 +22,7 @@ setup(
     },
     packages=['combcov'],
     long_description=read('README.md'),
+    long_description_content_type="text/markdown",
     setup_requires=['pytest-runner'],
     tests_require=read(os.path.join("tests", "requirements.txt")).splitlines(),
     python_requires='>=3.5',
