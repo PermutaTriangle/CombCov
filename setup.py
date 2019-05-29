@@ -1,19 +1,10 @@
 import os
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
-
-
-def test_requirements():
-    requirements = []
-    for line in read(os.path.join('tests', 'requirements.txt')).split('\n'):
-        if "coveralls" not in line:
-            requirements.append(line)
-
-    return requirements
 
 
 setup(
@@ -29,10 +20,10 @@ setup(
         'Source': 'https://github.com/PermutaTriangle/CombCov',
         'Tracker': 'https://github.com/PermutaTriangle/CombCov/issues'
     },
-    packages=find_packages(),
+    packages=['combcov'],
     long_description=read('README.md'),
     setup_requires=['pytest-runner'],
-    tests_require=test_requirements(),
+    tests_require=read(os.path.join("tests", "requirements.txt")).splitlines(),
     python_requires='>=3.5',
     classifiers=[
         'Development Status ::  2 - Pre-Alpha',
