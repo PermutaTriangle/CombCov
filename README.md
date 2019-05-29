@@ -10,9 +10,10 @@ extended for other types of combinatorial objects.
 
 ## Demo
 
-Take a look at `demo/string_set.py` as an example on how to use `CombCov` with your own combinatorial object. It finds
-a _String Set_ cover for the set of string over the alphabet `{a,b}` that avoids the substring `aa` (meaning no string
-in the set contains `aa` as a substring).
+Take a look at `demo/string_set.py` as an example on how to use `CombCov` with
+your own combinatorial object. It finds a _String Set_ cover for the set of
+string over the alphabet `{a,b}` that avoids the substring `aa` (meaning no
+string in the set contains `aa` as a substring).
 
 ```bash
 python -m demo.string_set
@@ -37,5 +38,5 @@ Run unittests:
 
 ```bash
 pip install -r tests/requirements.txt
-pytest --cov=combcov --cov=demo --cov-report=term-missing
+pytest --cov=demo
 ```

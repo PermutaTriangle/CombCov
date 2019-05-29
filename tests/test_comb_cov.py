@@ -13,7 +13,8 @@ class CombCovTest(unittest.TestCase):
         max_elmnt_size = 7
 
         solution_indices = [[0, 1, 3], ]
-        with patch.object(ExactCover, 'exact_cover', return_value=solution_indices):
+        with patch.object(ExactCover, 'exact_cover',
+                          return_value=solution_indices):
             comb_cov = CombCov(string_set, max_elmnt_size)
             comb_cov.solve()
 
@@ -32,7 +33,8 @@ class RuleTest(unittest.TestCase):
 
     def setUp(self):
         self.string_set = StringSet(self.alphabet, self.avoid, self.prefix)
-        self.sub_string_set = StringSet(self.alphabet, self.avoid_subset, self.prefix)
+        self.sub_string_set = StringSet(self.alphabet, self.avoid_subset,
+                                        self.prefix)
 
     def test_elements(self):
         max_string_length = 4

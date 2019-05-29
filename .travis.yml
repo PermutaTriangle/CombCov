@@ -13,11 +13,9 @@ python:
 
 install:
   - pip install --upgrade pip
-  - pip install -r requirements.txt
-  - pip install -r tests/requirements.txt
 
 script:
-  - pytest --cov=combcov --cov-report=term-missing
+  - python setup.py test
 
 after_success:
   - coveralls

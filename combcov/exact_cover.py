@@ -1,7 +1,7 @@
 import os
 import shutil
 import tempfile
-from subprocess import Popen, DEVNULL
+from subprocess import DEVNULL, Popen
 
 
 class ExactCover:
@@ -16,10 +16,12 @@ class ExactCover:
                 yield res
         except Exception as exc:
             raise RuntimeError(
-                "Gurobi may not be installed and there are no alternative solution method at the moment.") from exc
+                "Gurobi may not be installed and there are no alternative "
+                "solution method at the moment.") from exc
 
     def _call_Popen(self, inp, outp):
-        return Popen('gurobi_cl ResultFile=%s %s' % (outp, inp), shell=True, stdout=DEVNULL)
+        return Popen('gurobi_cl ResultFile=%s %s' % (outp, inp), shell=True,
+                     stdout=DEVNULL)
 
     def exact_cover_gurobi(self):
         tdir = None
@@ -31,7 +33,8 @@ class ExactCover:
             outp = os.path.join(tdir, 'out.sol')
 
             with open(inp, 'w') as lp:
-                lp.write('Minimize %s\n' % ' + '.join('x%d' % i for i in range(len(self.bitstrings))))
+                lp.write('Minimize %s\n' % ' + '.join(
+                    'x%d' % i for i in range(len(self.bitstrings))))
                 lp.write('Subject To\n')
 
                 for i in range(self.cover_string_length):
@@ -39,10 +42,12 @@ class ExactCover:
                     for j in range(len(self.bitstrings)):
                         if (self.bitstrings[j] & (1 << i)) != 0:
                             here.append(j)
-                    lp.write('    %s = 1\n' % ' + '.join('x%d' % x for x in here))
+                    lp.write(
+                        '    %s = 1\n' % ' + '.join('x%d' % x for x in here))
 
                 lp.write('Binary\n')
-                lp.write('    %s\n' % ' '.join('x%d' % i for i in range(len(self.bitstrings))))
+                lp.write('    %s\n' % ' '.join(
+                    'x%d' % i for i in range(len(self.bitstrings))))
                 lp.write('End\n')
 
             p = self._call_Popen(inp, outp)
