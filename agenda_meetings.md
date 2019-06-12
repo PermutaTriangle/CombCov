@@ -1,3 +1,51 @@
+2019-06-06
+==========
+
+- [x] CombCov put to the test: Christian finding covers for "polynomial permutation classes"
+- [ ] Hack together "Tilings of Mesh patterns" with the goal being able to find a cover for Av(31c2)
+       where 31c2 is the mesh pattern
+```text
+             | |#| 
+            -3-+-+-
+             | |#| 
+            -+-+-2-
+             | |#| 
+            -+-1-+-
+             | |#| 
+```
+
+### Summary
+
+Christian was able to use the `Tiling` package to do the heavy lifting of Tiling specific logic such as element
+generation, obstructions and requirement conditions. There's no way of getting around implementing the `get_subrules()`
+function though, which he did on the projector with neglible help from Bjarni and Henning. The resulting code was
+pushed to GitHub and and can be viewed in the resulting [Pull Request #6](https://github.com/PermutaTriangle/CombCov/pull/6/).
+
+Next we want to use`CombCov` with "Mesh Tilings". As in the agenda above, we use _c_ in a pattern to denote a shaded column. 
+The first goal is to have `CombCov` find the following cover: 
+
+```text
+                                   ------------------------
+    ----------         ---        |          | o |         |
+   | Av(31c2) |   =   | o |   U   |----------+---+---------|
+    ----------         ---        | Av(31c2) |   | Av(1c2) |
+                                   ------------------------
+```
+
+The things discussed included the difficulities of generating permutations from such a "Tiling" and how we could implement 
+it. Similar thing has been done in old Grids repo and one option is to [_port those nested for loops_](
+https://github.com/PermutaTriangle/grids/blob/master/grids/Tiling.py#L429) over to here. This is far from finished and is
+now an ongoing project.
+ 
+Various other small changes to `CombCov` including a request for logging and informative messages were discussed and duly 
+noted for later implementation. 
+
+Regarding Bjarni's missing ECTS units it has been decided that Bjarni does a small reading course on Elliptic Curve cryptography
+by reading selected chapters from the book used in Christians cryptography class, solve some related exercises and even write 
+some Python code.
+
+
+
 2019-05-23
 ==========
 
