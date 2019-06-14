@@ -1,9 +1,30 @@
+2019-06-13
+==========
+- [x] Review PR on adding support to `permuta` for `MeshPatt` bases
+
+### Summary
+
+Before the meeting Bjarni had made a PR in the `permuta` repo aiming to add support for looping over permutations
+avoiding a set of mesh patterns, i.e. a `for perm in Av(mesh_patts)` syntax. It proposed changing the `Basis` class
+to not only accept elements of type `Perm` but the more general `Patt` interface that included `Perm` and `MeshPatt`.
+
+Henning and Christian however raised some concerns over this because in literature a basis generally only refers to
+bases of classical permutations and not mesh patterns. Therefore we decided to do some further refactoring along these
+lines:
+- create a new class called `MeshBasis` accepting `MeshPatt`s and maybe also `Perm`s
+- leave `Basis` class intact (only accepting `Perm`s)
+- try to avoid code duplication between these two classes by using metaclasses or parent class
+- change the `Av` class to behave differently based on whether it's input is `MeshBasis` or `Basis`
+- this ensures that `Basis` behaves the way users expect and keeps backwards compatibily
+
+
+
 2019-06-06
 ==========
 
 - [x] CombCov put to the test: Christian finding covers for "polynomial permutation classes"
 - [ ] Hack together "Tilings of Mesh patterns" with the goal being able to find a cover for Av(31c2)
-       where 31c2 is the mesh pattern
+      where 31c2 is the mesh pattern
 ```text
              | |#| 
             -3-+-+-
@@ -32,16 +53,16 @@ The first goal is to have `CombCov` find the following cover:
                                    ------------------------
 ```
 
-The things discussed included the difficulities of generating permutations from such a "Tiling" and how we could implement 
+The things discussed included the difficulties of generating permutations from such a "Tiling" and how we could implement
 it. Similar thing has been done in old Grids repo and one option is to [_port those nested for loops_](
 https://github.com/PermutaTriangle/grids/blob/master/grids/Tiling.py#L429) over to here. This is far from finished and is
 now an ongoing project.
  
-Various other small changes to `CombCov` including a request for logging and informative messages were discussed and duly 
-noted for later implementation. 
+Various other small changes to `CombCov` including a request for logging and informative messages were discussed and duly
+noted for later implementation.
 
 Regarding Bjarni's missing ECTS units it has been decided that Bjarni does a small reading course on Elliptic Curve cryptography
-by reading selected chapters from the book used in Christians cryptography class, solve some related exercises and even write 
+by reading selected chapters from the book used in Christians cryptography class, solve some related exercises and even write
 some Python code.
 
 
