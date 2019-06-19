@@ -13,7 +13,7 @@ python:
 
 install:
   - pip install --upgrade pip
-  - pip install coveralls==1.7.0
+  - pip install coveralls==1.8.0
 
 script:
   - ./setup.py test
