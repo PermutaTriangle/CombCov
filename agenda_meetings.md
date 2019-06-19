@@ -1,3 +1,13 @@
+2019-06-20
+==========
+- [ ] Prepare Bjarni's reading course in Elliptic Curves so he can study it
+      while Henning and Christian are on summer vacation in July
+- [ ] Review Bjarni's PR in `permuta` library that adds support for bases of
+      mesh patterns and the `for perm in Av(mesh_patts)` syntax
+- [ ] Implement `MeshTilings.get_elmnts()` method (multiple nested for-loops)
+
+
+
 2019-06-13
 ==========
 - [x] Review PR on adding support to `permuta` for `MeshPatt` bases
@@ -15,7 +25,7 @@ lines:
 - leave `Basis` class intact (only accepting `Perm`s)
 - try to avoid code duplication between these two classes by using metaclasses or parent class
 - change the `Av` class to behave differently based on whether it's input is `MeshBasis` or `Basis`
-- this ensures that `Basis` behaves the way users expect and keeps backwards compatibily
+- this ensures that `Basis` behaves the way users expect and keeps backwards compatibility
 
 
 
