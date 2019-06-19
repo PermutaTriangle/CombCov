@@ -64,16 +64,22 @@ class CombCov():
 class Rule(abc.ABC):
     @abc.abstractmethod
     def get_elmnts(self, of_size):
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def get_subrules(self):
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
-    def __hash__(self):
-        pass
+    def _key(self):
+        raise NotImplementedError
 
     @abc.abstractmethod
     def __str__(self):
-        pass
+        raise NotImplementedError
+
+    def __hash__(self):
+        return hash(self._key())
+
+    def __eq__(self, other):
+        return isinstance(self, type(other)) and self._key() == other._key()

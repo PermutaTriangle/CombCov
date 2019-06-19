@@ -84,14 +84,8 @@ class StringSet(Rule):
 
         return rules
 
-    def __eq__(self, other):
-        if isinstance(other, StringSet):
-            return (self.alphabet == other.alphabet and
-                    self.avoid == other.avoid and self.prefix == other.prefix)
-        return False
-
-    def __hash__(self):
-        return hash(self.alphabet) ^ hash(self.avoid) ^ hash(self.prefix)
+    def _key(self):
+        return (self.alphabet, self.avoid, self.prefix)
 
     def __str__(self):
         return "'{}'*Av({}) over ∑={{{}}}".format(self.prefix,
