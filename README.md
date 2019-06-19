@@ -42,5 +42,5 @@ Solution nr. 1:
 Run unittests (with coverage for the `demo` module as well):
 
 ```bash
-python setup.py test --addopts --cov=demo
+./setup.py test --addopts --cov=demo
 ```

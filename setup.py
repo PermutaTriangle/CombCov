@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 
 from setuptools import setup
@@ -17,32 +19,34 @@ setup(
     keywords="combinatorics covers automatic discovery",
     url="https://github.com/PermutaTriangle/CombCov",
     project_urls={
-        'Source': 'https://github.com/PermutaTriangle/CombCov',
-        'Tracker': 'https://github.com/PermutaTriangle/CombCov/issues'
+        "Source": "https://github.com/PermutaTriangle/CombCov",
+        "Tracker": "https://github.com/PermutaTriangle/CombCov/issues",
     },
-    packages=['combcov'],
-    long_description=read('README.md'),
+    packages=["combcov"],
+    long_description=read("README.md"),
     long_description_content_type="text/markdown",
-    setup_requires=['pytest-runner'],
-    tests_require=["pytest==4.5.0",
-                   "pytest-cov==2.7.1",
-                   "pytest-pep8==1.0.6",
-                   "pytest-isort==0.3.1"],
-    python_requires='>=3.5',
+    setup_requires=["pytest-runner==5.1"],
+    tests_require=[
+        "pytest==4.6.2",
+        "pytest-cov==2.7.1",
+        "pytest-pep8==1.0.6",
+        "pytest-isort==0.3.1",
+    ],
+    python_requires=">=3.5",
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
-        'Intended Audience :: Education',
-        'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        "Development Status :: 2 - Pre-Alpha",
+        "Intended Audience :: Education",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
 
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: Implementation :: CPython',
-        'Programming Language :: Python :: Implementation :: PyPy',
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: Python :: Implementation :: PyPy",
 
-        'Topic :: Education',
-        'Topic :: Scientific/Engineering :: Mathematics',
+        "Topic :: Education",
+        "Topic :: Scientific/Engineering :: Mathematics",
     ],
 )
