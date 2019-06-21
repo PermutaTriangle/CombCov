@@ -169,6 +169,10 @@ class MeshTilingTest(unittest.TestCase):
         assert (self.sub_mt in subrules)
         assert (self.empty_mt in subrules)
 
+    def test_is_hashable(self):
+        print("[INFO] self.root_mt._key(): {}".format(self.root_mt._key()))
+        self.root_mt.__hash__()
+
 
 if __name__ == '__main__':
     unittest.main()
