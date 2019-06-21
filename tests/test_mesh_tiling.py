@@ -1,6 +1,7 @@
 import unittest
 
 import pytest
+
 from demo import MeshTiling
 from demo.mesh_tiling import MockAvMeshPatt
 from permuta import Av, MeshPatt, Perm
