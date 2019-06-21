@@ -37,11 +37,17 @@ class MeshTilingTest(unittest.TestCase):
         }
         self.sub_mt = MeshTiling(self.sub_requirements, self.sub_obstructions)
 
-    def test_requirements_and_obstructions(self):
-        assert (self.root_mt.requirements == self.requirements)
-        assert (self.root_mt.obstructions == self.obstructions)
-        assert (self.sub_mt.requirements == self.sub_requirements)
-        assert (self.sub_mt.obstructions == self.sub_obstructions)
+    def test_requirements(self):
+        for coord, requirements in self.sub_requirements.items():
+            assert (coord in self.sub_mt.requirements)
+            for requirement in requirements:
+                assert (requirement in self.sub_mt.requirements[coord])
+
+    def test_obstructions(self):
+        for coord, obstructions in self.sub_obstructions.items():
+            assert (coord in self.sub_mt.obstructions)
+            for obstruction in obstructions:
+                assert (obstruction in self.sub_mt.obstructions[coord])
 
     def test_rows_and_columns(self):
         assert (self.empty_mt.columns == 1)

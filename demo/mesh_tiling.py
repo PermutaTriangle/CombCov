@@ -34,7 +34,7 @@ class MeshTiling(Rule):
         # Constants (ToDo: make into 'cls' variables?)
         self.point = Perm((0,))
         self.point_obstruction = [Perm((0, 1)), Perm((1, 0))]
-        self.unintialized_cell = [[], []]
+        self.uninitialized_cell = [[], []]
         self.empty_cell = [[self.point], []]
         self.point_cell = [[Perm((0, 1)), Perm((1, 0))], [self.point]]
 
@@ -52,8 +52,9 @@ class MeshTiling(Rule):
         self.columns = _calc_dim(requirements, obstructions, self.x_dim) + 1
         self.rows = _calc_dim(requirements, obstructions, self.y_dim) + 1
 
-        self.requirements = requirements
-        self.obstructions = obstructions
+        self.requirements = {k: tuple(v) for (k, v) in requirements.items()}
+        self.obstructions = {k: tuple(v) for (k, v) in obstructions.items()}
+
         self.grid = [[[[] for _ in range(2)] for _ in range(self.rows)] for _
                      in range(self.columns)]
 
@@ -67,7 +68,7 @@ class MeshTiling(Rule):
 
         # ...and then the rest are empty cells
         for (c, r) in itertools.product(range(self.columns), range(self.rows)):
-            if self.grid[c][r] == self.unintialized_cell:
+            if self.grid[c][r] == self.uninitialized_cell:
                 self.grid[c][r] = self.empty_cell
 
     # Linear number = (column, row)
@@ -264,7 +265,8 @@ class MeshTiling(Rule):
         return subrules
 
     def _key(self):
-        return (self.columns, self.rows, self.requirements, self.obstructions)
+        return (frozenset(self.requirements.items()),
+                frozenset(self.obstructions.items()))
 
     def __str__(self):
         return "{}".format(self.grid)
