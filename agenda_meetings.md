@@ -2,9 +2,18 @@
 ==========
 - [ ] Prepare Bjarni's reading course in Elliptic Curves so he can study it
       while Henning and Christian are on summer vacation in July
-- [ ] Review Bjarni's PR in `permuta` library that adds support for bases of
+- [x] Review Bjarni's PR in `permuta` library that adds support for bases of
       mesh patterns and the `for perm in Av(mesh_patts)` syntax
 - [ ] Implement `MeshTilings.get_elmnts()` method (multiple nested for-loops)
+
+### Summary
+
+We reviewd the PR in `Permuta` and fixed a regression where `Av(p)` (`p` a single `Perm` object) syntax broke and
+added a test for it to README. Christian then approved the PR and merged it to develop branch.
+
+Then we took a look at the multiple nested for-loops in `grids/Tiling.py` repo/file, tried to understand it and started
+porting it over to `MeshTiling` class and changing it as needed. Bjarni will keep on with it until the next meeting that
+is scheduled for Friday, June 21 at 10:30.
 
 
 
