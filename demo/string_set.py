@@ -82,6 +82,7 @@ class StringSet(Rule):
                                           prefix)
                 rules.append(substring_set)
 
+        print("[INFO] Total of {} subrules".format(len(rules)))
         return rules
 
     def _key(self):
@@ -97,19 +98,18 @@ def main():
     alphabet = ('a', 'b')
     avoid = frozenset(['aa'])
     string_set = StringSet(alphabet, avoid)
-    max_elmnt_size = 7
 
-    print("Trying to find a cover for {} using elements up to size {}.".format(
-        string_set, max_elmnt_size))
+    max_elmnt_size = 7
     comb_cov = CombCov(string_set, max_elmnt_size)
     comb_cov.solve()
 
-    print("(Enumeration: {})".format(comb_cov.enumeration))
-
+    print("Enumeration: {}".format(comb_cov.enumeration))
     for nr, solution in enumerate(comb_cov.get_solutions(), start=1):
         print("Solution nr. {}:".format(nr))
-        for rule in solution:
-            print(" - {}".format(rule))
+        for i, rule in enumerate(solution, start=1):
+            bitstring = comb_cov.rules_to_bitstring_dict[rule]
+            print(" - Rule #{}: {} with bitstring {}".format(
+                i, rule, bitstring))
 
 
 if __name__ == "__main__":

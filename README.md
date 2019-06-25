@@ -15,25 +15,22 @@ extended for other types of combinatorial objects.
 
 ## Demo
 
-Take a look at `demo/string_set.py` as an example on how to use `CombCov` with
-your own combinatorial object. It finds a _String Set_ cover for the set of
-string over the alphabet `{a,b}` that avoids the substring `aa` (meaning no
-string in the set contains `aa` as a substring).
+Take a look at the `demo/` folder in this repo to see examples on how to use
+`CombCov` with your own combinatorial object. On example finds a _String Set_
+cover for the set of string over the alphabet `{a,b}` that avoids the substring
+`aa` (meaning no string in the set contains `aa` as a substring).
 
 ```bash
-python -m demo.string_set
-```
-
-It prints out the following:
-
-```text
-Trying to find a cover for ''*Av(aa) over ∑={a,b} using elements up to size 7.
-(Enumeration: [1, 2, 3, 5, 8, 13, 21, 34])
+>>> python -m demo.string_set
+[INFO] bitstring to cover: 154742504910672534362390527 
+[INFO] Total of 16 subrules
+[INFO] Trying to find a cover for ''*Av(aa) over ∑={a,b} using elements up to size 7.
+Enumeration: [1, 2, 3, 5, 8, 13, 21, 34]
 Solution nr. 1:
- - ''*Av(a,b) over ∑={a,b}
- - 'a'*Av(a,b) over ∑={a,b}
- - 'b'*Av(aa) over ∑={a,b}
- - 'ab'*Av(aa) over ∑={a,b}
+ - Rule #1: ''*Av(b,a) over ∑={a,b} with bitstring 1
+ - Rule #2: 'a'*Av(b,a) over ∑={a,b} with bitstring 2
+ - Rule #3: 'b'*Av(aa) over ∑={a,b} with bitstring 154742431132702343545997108
+ - Rule #4: 'ab'*Av(aa) over ∑={a,b} with bitstring 73777970190816393416
 ```
 
 
