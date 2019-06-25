@@ -122,13 +122,10 @@ class MeshTiling(Rule):
         elif cell == self.point_cell:
             return PermSet(1)
         elif cell == self.avoiding_nothing_cell:
-            return Av([])
+            return PermSet()
         else:
             obstructions = cell[self.obs_index]
             return MockAvMeshPatt(obstructions)
-
-    def __len__(self):
-        return self.columns * self.rows
 
     def get_elmnts(self, of_size):
         # Return permutations of length 'of_size' on a MeshTiling like this:
@@ -296,9 +293,15 @@ class MeshTiling(Rule):
         print("[INFO] Total of {} subrules".format(len(subrules)))
         return subrules
 
+    def get_dimension(self):
+        return (self.columns, self.rows)
+
     def _key(self):
         return (frozenset(self.requirements.items()),
                 frozenset(self.obstructions.items()))
+
+    def __len__(self):
+        return self.columns * self.rows
 
     def __str__(self):
         return "({}x{}) {}".format(self.columns, self.rows, self.grid)
