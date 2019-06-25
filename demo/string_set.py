@@ -103,7 +103,6 @@ def main():
     comb_cov = CombCov(string_set, max_elmnt_size)
     comb_cov.solve()
 
-    print("Enumeration: {}".format(comb_cov.enumeration))
     for nr, solution in enumerate(comb_cov.get_solutions(), start=1):
         print("Solution nr. {}:".format(nr))
         for i, rule in enumerate(solution, start=1):

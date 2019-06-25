@@ -33,8 +33,7 @@ class MockAvMeshPatt():
 
 class MeshTiling(Rule):
 
-    # ToDo: switch argument order (as it's done in Tilings)
-    def __init__(self, requirements, obstructions):
+    def __init__(self, obstructions, requirements):
         # Constants (ToDo: make into 'cls' variables?)
         self.anything = Av([])
         self.point = Perm((0,))
@@ -62,22 +61,22 @@ class MeshTiling(Rule):
         self.columns = _calc_dim(requirements, obstructions, self.x_dim) + 1
         self.rows = _calc_dim(requirements, obstructions, self.y_dim) + 1
 
-        self.requirements = {k: tuple(v) for (k, v) in requirements.items()}
         self.obstructions = {k: tuple(v) for (k, v) in obstructions.items()}
+        self.requirements = {k: tuple(v) for (k, v) in requirements.items()}
 
         self.grid = [[[None, None] for _ in range(self.rows)] for _
                      in range(self.columns)]
 
-        # Populate requirements...
-        for (c, r), req_list in requirements.items():
-            self.grid[c][r][self.reqs_index] = req_list
-            self.grid[c][r][self.obs_index] = []
-
-        # ...and obstructions...
+        # Populate obstructions...
         for (c, r), obs_list in obstructions.items():
             self.grid[c][r][self.obs_index] = obs_list
-            if self.grid[c][r][self.reqs_index] is None:
-                self.grid[c][r][self.reqs_index] = []
+            self.grid[c][r][self.reqs_index] = []
+
+        # ...and requirements...
+        for (c, r), req_list in requirements.items():
+            self.grid[c][r][self.reqs_index] = req_list
+            if self.grid[c][r][self.obs_index] is None:
+                self.grid[c][r][self.obs_index] = []
 
         # ...and then the rest are empty cells
         for (c, r) in itertools.product(range(self.columns), range(self.rows)):
@@ -104,10 +103,7 @@ class MeshTiling(Rule):
         else:
             return row * self.columns + col
 
-    def is_point(self, cell):
-        return cell[self.reqs_index] == [self.point] and cell[
-            self.obs_index] == self.point_obstruction
-
+    # Instead of row-by-row, go column-by-column when flattening?
     def make_tiling(self):
         # Flattening the 2D self.grid into a 1D list
         tiling = []
@@ -116,6 +112,12 @@ class MeshTiling(Rule):
             tiling.extend(row_content)
         return tiling
 
+    # Function on the Cell object?
+    def is_point(self, cell):
+        return cell[self.reqs_index] == [self.point] and cell[
+            self.obs_index] == self.point_obstruction
+
+    # Function on the Cell object?
     def permclass_from_cell(self, cell):
         if cell == self.empty_cell:
             return Av(Perm((0,)))
@@ -277,17 +279,17 @@ class MeshTiling(Rule):
                             col = cell_index % dim_col
                             row = cell_index // dim_col
                             if choice == self.point:
-                                requirements[(col, row)] = [self.point]
                                 obstructions[
                                     (col, row)] = self.point_obstruction
+                                requirements[(col, row)] = [self.point]
                             elif choice == self.anything:
-                                requirements[(col, row)] = []
                                 obstructions[(col, row)] = []
+                                requirements[(col, row)] = []
                             else:
                                 # List of MeshPatts
                                 obstructions[(col, row)] = [choice]
 
-                        mt = MeshTiling(requirements, obstructions)
+                        mt = MeshTiling(obstructions, requirements)
                         subrules.append(mt)
 
         print("[INFO] Total of {} subrules".format(len(subrules)))
@@ -311,8 +313,8 @@ def main():
     perm = Perm((2, 0, 1))
     mesh_patt = MeshPatt(perm, ((2, 0), (2, 1), (2, 2), (2, 3)))
     mesh_tiling = MeshTiling(
-        requirements={},
-        obstructions={(0, 0): [mesh_patt]}
+        obstructions={(0, 0): [mesh_patt]},
+        requirements={}
     )
     mesh_tiling.MAX_COLUMN_DIMENSION = 3
     mesh_tiling.MAX_ROW_DIMENSION = 2
@@ -322,7 +324,6 @@ def main():
     comb_cov = CombCov(mesh_tiling, max_elmnt_size)
     comb_cov.solve()
 
-    print("Enumeration: {}".format(comb_cov.enumeration))
     for nr, solution in enumerate(comb_cov.get_solutions(), start=1):
         print("Solution nr. {}:".format(nr))
         for i, rule in enumerate(solution, start=1):

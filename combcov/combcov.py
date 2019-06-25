@@ -19,6 +19,10 @@ class CombCov():
             self.enumeration[n] = len(elmnts_of_length_n)
             elmnts.extend(elmnts_of_length_n)
 
+        print("[INFO] Total of {} elements of size up to {}".format(
+            len(elmnts), self.max_elmnt_size))
+        print("[INFO] Enumeration: {}".format(self.enumeration))
+
         self.elmnts_dict = {
             string: nr for nr, string in enumerate(elmnts, start=0)
         }

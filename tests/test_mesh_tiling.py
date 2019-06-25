@@ -35,22 +35,22 @@ class MeshTilingTest(unittest.TestCase):
         self.avoiding_nothing_cell = [[], []]
 
         self.empty_mt = MeshTiling({}, {})
-
-        self.requirements = {}
-        self.obstructions = {
-            (0, 0): [self.mp_31c2],
-        }
-        self.root_mt = MeshTiling(self.requirements, self.obstructions)
-
-        self.sub_requirements = {
-            (1, 1): [self.point],
-        }
-        self.sub_obstructions = {
-            (0, 0): [self.mp_31c2],
-            (1, 1): self.point_obstruction,
-            (2, 0): [self.mp_1c2],
-        }
-        self.sub_mt = MeshTiling(self.sub_requirements, self.sub_obstructions)
+        self.root_mt = MeshTiling(
+            obstructions={
+                (0, 0): [self.mp_31c2]
+            },
+            requirements={}
+        )
+        self.sub_mt = MeshTiling(
+            obstructions={
+                (0, 0): [self.mp_31c2],
+                (1, 1): self.point_obstruction,
+                (2, 0): [self.mp_1c2],
+            },
+            requirements={
+                (1, 1): [self.point],
+            }
+        )
 
     def test_is_instance_of_Rule(self):
         assert isinstance(self.sub_mt, Rule)
@@ -99,7 +99,7 @@ class MeshTilingTest(unittest.TestCase):
             (0, 0): [Perm((1, 0))],
             (1, 1): self.point_obstruction
         }
-        mt = MeshTiling(requirements, obstructions)
+        mt = MeshTiling(obstructions, requirements)
         for size in range(1, 5):
             expected_perms = set(Av([Perm((1, 0))]).of_length(size))
             mt_perms = mt.get_elmnts(of_size=size)
@@ -109,7 +109,7 @@ class MeshTilingTest(unittest.TestCase):
     def test_get_elmnts_of_size_point_cell(self):
         requirements = {(0, 0): [self.point]}
         obstructions = {(0, 0): self.point_obstruction}
-        mt = MeshTiling(requirements, obstructions)
+        mt = MeshTiling(obstructions, requirements)
         for size in range(1, 5):
             expected_perms = {Perm((0,))} if size == 1 else set()
             mt_perms = mt.get_elmnts(of_size=size)
@@ -184,5 +184,5 @@ class MeshTilingTest(unittest.TestCase):
         self.root_mt.__hash__()
         self.empty_mt.__hash__()
 
-    if __name__ == '__main__':
-        unittest.main()
+if __name__ == '__main__':
+    unittest.main()
