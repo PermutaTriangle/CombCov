@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch
 
 from combcov import CombCov, ExactCover
-from demo import StringSet
+from demo.string_set import StringSet
 
 
 class CombCovTest(unittest.TestCase):

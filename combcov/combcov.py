@@ -29,7 +29,7 @@ class CombCov():
 
     def _create_binary_strings_from_rules(self):
         string_to_cover = 2 ** len(self.elmnts_dict) - 1
-        print("[INFO] bitstring to cover: {} ".format(string_to_cover))
+        print("[INFO] Bitstring to cover: {} ".format(string_to_cover))
 
         self.rules = []
         self.bitstrings = []

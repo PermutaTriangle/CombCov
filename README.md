@@ -24,7 +24,7 @@ cover for the set of string over the alphabet `{a,b}` that avoids the substring
 $ python -m demo.string_set
 [INFO] Total of 87 elements of size up to 7
 [INFO] Enumeration: [1, 2, 3, 5, 8, 13, 21, 34]
-[INFO] bitstring to cover: 154742504910672534362390527 
+[INFO] Bitstring to cover: 154742504910672534362390527 
 [INFO] Total of 16 subrules
 [INFO] Trying to find a cover for ''*Av(aa) over ∑={a,b} using elements up to size 7.
 Solution nr. 1:
