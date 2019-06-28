@@ -55,9 +55,20 @@ class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
         else:
             return MockAvMeshPatt(self.obstructions)
 
+    def __repr__(self):
+        if self.is_empty():
+            return " "
+        elif self.is_point():
+            return "o"
+        elif self.is_anything():
+            return "S"
+        else:
+            return "Av({})".format(", ".join(
+                repr(mp) for mp in self.obstructions))
+
     def __str__(self):
-        return "Obstructions: {}, Requirements: {}".format(
-            self.obstructions, self.requirements)
+        # ToDo: Instead return multiline mesh patterns
+        return repr(self)
 
 
 class MeshTiling(Rule):
@@ -70,11 +81,6 @@ class MeshTiling(Rule):
                                frozenset({Perm((0,))}))
         self.anything_cell = Cell(frozenset(), frozenset())
 
-        self.x_dim = 0
-        self.y_dim = 1
-        self.obs_index = 0
-        self.reqs_index = 1
-
         self.MAX_COLUMN_DIMENSION = 3
         self.MAX_ROW_DIMENSION = 3
         self.MAX_ACTIVE_CELLS = 3
@@ -85,8 +91,8 @@ class MeshTiling(Rule):
                 key=itemgetter(dimension)
             )[dimension]
 
-        self.columns = _calc_dim(requirements, obstructions, self.x_dim) + 1
-        self.rows = _calc_dim(requirements, obstructions, self.y_dim) + 1
+        self.columns = _calc_dim(requirements, obstructions, 0) + 1
+        self.rows = _calc_dim(requirements, obstructions, 1) + 1
 
         self.obstructions = {k: tuple(v) for (k, v) in obstructions.items()}
         self.requirements = {k: tuple(v) for (k, v) in requirements.items()}
@@ -320,7 +326,28 @@ class MeshTiling(Rule):
         return self.columns * self.rows
 
     def __str__(self):
-        return "({}x{}) {}".format(self.columns, self.rows, self.grid)
+        # ToDo: Implement proper multiline Cell.__str__() and use instead
+        tiling_representation = [repr(cell) for cell in self.tiling]
+
+        col_widths = [
+            max(len(tiling_representation[
+                self.convert_coordinates_to_linear_number(col, row)
+            ]) for row in range(self.rows)) + 2 for col in range(self.columns)
+        ]
+
+        top_bottom_lines = " " + "-".join("-" * l for l in col_widths) + "\n"
+        middle_lines = "|" + "+".join("-" * l for l in col_widths) + "|\n"
+
+        cell_lines = ["|" + "|".join("{:^{}}".format(
+            tiling_representation[
+                self.convert_coordinates_to_linear_number(col, row)],
+            col_widths[col]) for col in range(self.columns)
+        ) + "|\n" for row in reversed(range(self.rows))]
+
+        return "\n" + \
+            top_bottom_lines + \
+            middle_lines.join(line for line in cell_lines) + \
+            top_bottom_lines
 
 
 def main():
@@ -341,9 +368,10 @@ def main():
     for nr, solution in enumerate(comb_cov.get_solutions(), start=1):
         print("Solution nr. {}:".format(nr))
         for i, rule in enumerate(solution, start=1):
+            (cols, rows) = rule.get_dimension()
             bitstring = comb_cov.rules_to_bitstring_dict[rule]
-            print(" - Rule #{}: {} with bitstring {}".format(
-                i, rule, bitstring))
+            print("Rule #{} of dimension {}x{} with bitstring {}: "
+                  "{}".format(i, cols, rows, bitstring, rule))
 
 
 if __name__ == "__main__":
