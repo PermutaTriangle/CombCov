@@ -25,48 +25,43 @@ class CellTest(unittest.TestCase):
     def setUp(self):
         self.mp_31c2 = MeshPatt(Perm((2, 0, 1)),
                                 ((2, 0), (2, 1), (2, 2), (2, 3)))
-        self.uninitialized_cell = Cell(None, None)
-        self.empty_cell = Cell(frozenset({Perm((0,))}), frozenset())
-        self.point_cell = Cell(frozenset({Perm((0, 1)), Perm((1, 0))}),
-                               frozenset({Perm((0,))}))
-        self.anything_cell = Cell(frozenset(), frozenset())
 
     def uninitialized_cell(self):
-        assert (self.uninitialized_cell.is_uninitialized())
-        assert (not self.empty_cell.is_uninitialized())
-        assert (not self.point_cell.is_uninitialized())
-        assert (not self.anything_cell.is_uninitialized())
+        assert (MeshTiling.uninitialized_cell.is_uninitialized())
+        assert (not MeshTiling.empty_cell.is_uninitialized())
+        assert (not MeshTiling.point_cell.is_uninitialized())
+        assert (not MeshTiling.anything_cell.is_uninitialized())
 
     def test_empty_cell(self):
-        assert (not self.uninitialized_cell.is_empty())
-        assert (self.empty_cell.is_empty())
-        assert (not self.point_cell.is_empty())
-        assert (not self.anything_cell.is_empty())
+        assert (not MeshTiling.uninitialized_cell.is_empty())
+        assert (MeshTiling.empty_cell.is_empty())
+        assert (not MeshTiling.point_cell.is_empty())
+        assert (not MeshTiling.anything_cell.is_empty())
 
     def test_point_cell(self):
-        assert (not self.uninitialized_cell.is_point())
-        assert (not self.empty_cell.is_point())
-        assert (self.point_cell.is_point())
-        assert (not self.anything_cell.is_point())
+        assert (not MeshTiling.uninitialized_cell.is_point())
+        assert (not MeshTiling.empty_cell.is_point())
+        assert (MeshTiling.point_cell.is_point())
+        assert (not MeshTiling.anything_cell.is_point())
 
     def test_anything_cell(self):
-        assert (not self.uninitialized_cell.is_anything())
-        assert (not self.empty_cell.is_anything())
-        assert (not self.point_cell.is_anything())
-        assert (self.anything_cell.is_anything())
+        assert (not MeshTiling.uninitialized_cell.is_anything())
+        assert (not MeshTiling.empty_cell.is_anything())
+        assert (not MeshTiling.point_cell.is_anything())
+        assert (MeshTiling.anything_cell.is_anything())
 
     def test_get_permclass(self):
         for size in range(1, 5):
             expected_from_empty_cell = set()
-            assert set(self.empty_cell.get_permclass().of_length(
+            assert set(MeshTiling.empty_cell.get_permclass().of_length(
                 size)) == expected_from_empty_cell
 
             expected_from_point_cell = {Perm((0,))} if size == 1 else set()
-            assert set(self.point_cell.get_permclass().of_length(
+            assert set(MeshTiling.point_cell.get_permclass().of_length(
                 size)) == expected_from_point_cell
 
             expected_from_anything_cell = set(PermSet(size))
-            assert set(self.anything_cell.get_permclass().of_length(
+            assert set(MeshTiling.anything_cell.get_permclass().of_length(
                 size)) == expected_from_anything_cell
 
             mp_cell = Cell({self.mp_31c2}, {})
@@ -87,14 +82,8 @@ class MeshTilingTest(unittest.TestCase):
         self.mp_31c2 = MeshPatt(self.p_312, ((2, 0), (2, 1), (2, 2), (2, 3)))
         self.mp_1c2 = self.mp_31c2.sub_mesh_pattern([1, 2])
 
-        self.point = Perm((0,))
+        self.point = {Perm((0,))}
         self.point_obstruction = {Perm((0, 1)), Perm((1, 0))}
-
-        self.uninitialized_cell = Cell(None, None)
-        self.empty_cell = Cell(frozenset({Perm((0,))}), frozenset())
-        self.point_cell = Cell(frozenset({Perm((0, 1)), Perm((1, 0))}),
-                               frozenset({Perm((0,))}))
-        self.anything_cell = Cell(frozenset(), frozenset())
 
         self.empty_mt = MeshTiling({}, {})
         self.root_mt = MeshTiling(
@@ -110,7 +99,7 @@ class MeshTilingTest(unittest.TestCase):
                 (2, 0): {self.mp_1c2},
             },
             requirements={
-                (1, 1): {self.point},
+                (1, 1): self.point,
             }
         )
 
@@ -147,16 +136,16 @@ class MeshTilingTest(unittest.TestCase):
         tiling = self.sub_mt.get_tiling()
         correct_tiling = [
             Cell({self.mp_31c2}, {}),
-            self.empty_cell,
+            MeshTiling.empty_cell,
             Cell({self.mp_1c2}, {}),
-            self.empty_cell,
-            self.point_cell,
-            self.empty_cell
+            MeshTiling.empty_cell,
+            MeshTiling.point_cell,
+            MeshTiling.empty_cell
         ]
         assert tiling == correct_tiling
 
     def test_get_elmnts_of_size_Av21_cell(self):
-        requirements = {(1, 1): {self.point}}
+        requirements = {(1, 1): self.point}
         obstructions = {
             (0, 0): {Perm((1, 0))},
             (1, 1): self.point_obstruction
@@ -169,7 +158,7 @@ class MeshTilingTest(unittest.TestCase):
             assert (set(mt_perms) == expected_perms)
 
     def test_get_elmnts_of_size_point_cell(self):
-        requirements = {(0, 0): {self.point}}
+        requirements = {(0, 0): self.point}
         obstructions = {(0, 0): self.point_obstruction}
         mt = MeshTiling(obstructions, requirements)
         for size in range(1, 5):

@@ -73,14 +73,13 @@ class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
 
 class MeshTiling(Rule):
 
-    def __init__(self, obstructions, requirements):
-        # Constants (ToDo: make into 'cls' variables?)
-        self.uninitialized_cell = Cell(None, None)
-        self.empty_cell = Cell(frozenset({Perm((0,))}), frozenset())
-        self.point_cell = Cell(frozenset({Perm((0, 1)), Perm((1, 0))}),
-                               frozenset({Perm((0,))}))
-        self.anything_cell = Cell(frozenset(), frozenset())
+    uninitialized_cell = Cell(None, None)
+    empty_cell = Cell(frozenset({Perm((0,))}), frozenset())
+    point_cell = Cell(frozenset({Perm((0, 1)), Perm((1, 0))}),
+                      frozenset({Perm((0,))}))
+    anything_cell = Cell(frozenset(), frozenset())
 
+    def __init__(self, obstructions, requirements):
         self.MAX_COLUMN_DIMENSION = 3
         self.MAX_ROW_DIMENSION = 3
         self.MAX_ACTIVE_CELLS = 3
