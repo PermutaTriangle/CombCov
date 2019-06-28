@@ -1,6 +1,5 @@
 import itertools
 from collections import namedtuple
-from operator import itemgetter
 
 from combcov import CombCov, Rule
 from permuta import Av, MeshPatt, Perm, PermSet
@@ -72,7 +71,6 @@ class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
 
 
 class MeshTiling(Rule):
-
     uninitialized_cell = Cell(None, None)
     empty_cell = Cell(frozenset({Perm((0,))}), frozenset())
     point_cell = Cell(frozenset({Perm((0, 1)), Perm((1, 0))}),
@@ -84,29 +82,32 @@ class MeshTiling(Rule):
         self.MAX_ROW_DIMENSION = 3
         self.MAX_ACTIVE_CELLS = 3
 
-        def _calc_dim(reqs, obs, dimension):
-            return max(
-                list(reqs) + list(obs) + [(0, 0)],
-                key=itemgetter(dimension)
-            )[dimension]
+        Xs, Ys = [], []
+        for (x, y) in list(obstructions) + list(requirements):
+            Xs.append(x)
+            Ys.append(y)
 
-        self.columns = _calc_dim(requirements, obstructions, 0) + 1
-        self.rows = _calc_dim(requirements, obstructions, 1) + 1
+        max_x, min_x = (max(Xs), min(Xs)) if Xs else (0, 0)
+        max_y, min_y = (max(Ys), min(Ys)) if Ys else (0, 0)
 
-        self.obstructions = {k: tuple(v) for (k, v) in obstructions.items()}
-        self.requirements = {k: tuple(v) for (k, v) in requirements.items()}
+        self.obstructions = {(x - min_x, y - min_y): tuple(v) for
+                             ((x, y), v) in obstructions.items()}
+        self.requirements = {(x - min_x, y - min_y): tuple(v) for
+                             ((x, y), v) in requirements.items()}
 
+        self.columns = max_x - min_x + 1
+        self.rows = max_y - min_y + 1
         self.grid = [[self.uninitialized_cell for _ in range(self.rows)] for _
                      in range(self.columns)]
 
         # Populate obstructions...
-        for (c, r), obs_list in obstructions.items():
+        for (c, r), obs_list in self.obstructions.items():
             self.grid[c][r] = Cell(set(obs_list), {})
 
         # ...and requirements...
-        for (c, r), req_list in requirements.items():
+        for (c, r), req_list in self.requirements.items():
             previous_obstruction_list = self.grid[c][r].obstructions
-            self.grid[c][r] = Cell(previous_obstruction_list, req_list)
+            self.grid[c][r] = Cell(previous_obstruction_list, set(req_list))
 
         # ...and then the rest are empty cells
         for (c, r) in itertools.product(range(self.columns), range(self.rows)):
@@ -279,11 +280,11 @@ class MeshTiling(Rule):
                         "[ERROR] obstruction '{}' is neither a MeshPatt "
                         "or Perm!".format(obstruction))
 
-        subrules = []
+        subrules = set()
         for (dim_col, dim_row) in itertools.product(
-                    range(1, self.columns + self.MAX_COLUMN_DIMENSION),
-                    range(1, self.rows + self.MAX_ROW_DIMENSION)
-                ):
+                range(1, self.columns + self.MAX_COLUMN_DIMENSION),
+                range(1, self.rows + self.MAX_ROW_DIMENSION)
+        ):
 
             nr_of_cells = dim_col * dim_row
 
@@ -306,10 +307,10 @@ class MeshTiling(Rule):
                                 requirements[(c, r)] = choice.requirements
 
                         mt = MeshTiling(obstructions, requirements)
-                        subrules.append(mt)
+                        subrules.add(mt)
 
         print("[INFO] Total of {} subrules".format(len(subrules)))
-        return subrules
+        return list(subrules)
 
     def get_dimension(self):
         return (self.columns, self.rows)
@@ -330,8 +331,9 @@ class MeshTiling(Rule):
 
         col_widths = [
             max(len(tiling_representation[
-                self.convert_coordinates_to_linear_number(col, row)
-            ]) for row in range(self.rows)) + 2 for col in range(self.columns)
+                        self.convert_coordinates_to_linear_number(col, row)
+                    ]) for row in range(self.rows)) + 2 for col in
+            range(self.columns)
         ]
 
         top_bottom_lines = " " + "-".join("-" * l for l in col_widths) + "\n"
@@ -344,9 +346,9 @@ class MeshTiling(Rule):
         ) + "|\n" for row in reversed(range(self.rows))]
 
         return "\n" + \
-            top_bottom_lines + \
-            middle_lines.join(line for line in cell_lines) + \
-            top_bottom_lines
+               top_bottom_lines + \
+               middle_lines.join(line for line in cell_lines) + \
+               top_bottom_lines
 
 
 def main():
