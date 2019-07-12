@@ -25,6 +25,7 @@ class CellTest(unittest.TestCase):
     def setUp(self):
         self.mp_31c2 = MeshPatt(Perm((2, 0, 1)),
                                 ((2, 0), (2, 1), (2, 2), (2, 3)))
+        self.mp_cell = Cell({self.mp_31c2}, {})
 
     def uninitialized_cell(self):
         assert (MeshTiling.uninitialized_cell.is_uninitialized())
@@ -50,6 +51,12 @@ class CellTest(unittest.TestCase):
         assert (not MeshTiling.point_cell.is_anything())
         assert (MeshTiling.anything_cell.is_anything())
 
+    def test_repr(self):
+        assert repr(MeshTiling.empty_cell) == " "
+        assert repr(MeshTiling.point_cell) == "o"
+        assert repr(MeshTiling.anything_cell) == "S"
+        assert repr(self.mp_cell) == "Av({})".format(repr(self.mp_31c2))
+
     def test_get_permclass(self):
         for size in range(1, 5):
             expected_from_empty_cell = set()
@@ -64,12 +71,11 @@ class CellTest(unittest.TestCase):
             assert set(MeshTiling.anything_cell.get_permclass().of_length(
                 size)) == expected_from_anything_cell
 
-            mp_cell = Cell({self.mp_31c2}, {})
             expected_from_mp_cell = set(filter(
                 lambda perm: perm.avoids(self.mp_31c2),
                 PermSet(size))
             )
-            assert set(mp_cell.get_permclass().of_length(
+            assert set(self.mp_cell.get_permclass().of_length(
                 size)) == set(expected_from_mp_cell)
             assert (len(set(expected_from_mp_cell)) ==
                     len(list(expected_from_mp_cell)))
@@ -199,6 +205,12 @@ class MeshTilingTest(unittest.TestCase):
         self.sub_mt.__hash__()
         self.root_mt.__hash__()
         self.empty_mt.__hash__()
+
+    def test_str(self):
+        assert str(self.empty_mt) == "\n --- \n|   |\n --- \n"
+        assert "| Av({}) |".format(repr(self.mp_31c2)) \
+               in str(self.root_mt).split("\n")
+
 
 if __name__ == '__main__':
     unittest.main()
