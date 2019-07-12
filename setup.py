@@ -11,7 +11,7 @@ def read(fname):
 
 setup(
     name="CombCov",
-    version="0.1.0",
+    version="0.2.0",
     author="Permuta Triangle",
     author_email="permutatriangle@gmail.com",
     description="Searching for combinatorial covers.",
