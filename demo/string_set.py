@@ -1,6 +1,9 @@
 import itertools
+import logging
 
 from combcov import CombCov, Rule
+
+logger = logging.getLogger("StringSet")
 
 
 class StringSet(Rule):
@@ -82,7 +85,7 @@ class StringSet(Rule):
                                           prefix)
                 rules.append(substring_set)
 
-        print("[INFO] Total of {} subrules".format(len(rules)))
+        logger.info("Generated {} subrules".format(len(rules)))
         return rules
 
     def _key(self):
@@ -95,19 +98,15 @@ class StringSet(Rule):
 
 
 def main():
+    logging.getLogger().setLevel(logging.INFO)
+
     alphabet = ('a', 'b')
     avoid = frozenset(['aa'])
     string_set = StringSet(alphabet, avoid)
 
     max_elmnt_size = 7
     comb_cov = CombCov(string_set, max_elmnt_size)
-    comb_cov.solve()
-
-    print("Solution:")
-    for i, rule in enumerate(comb_cov.get_solution(), start=1):
-        bitstring = comb_cov.rules_to_bitstring_dict[rule]
-        print(" - Rule #{}: {} with bitstring {}".format(
-            i, rule, bitstring))
+    comb_cov.print_outcome()
 
 
 if __name__ == "__main__":

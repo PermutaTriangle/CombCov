@@ -1,9 +1,12 @@
 import itertools
+import logging
 from collections import namedtuple
 
 from combcov import CombCov, Rule
 from permuta import Av, MeshPatt, Perm, PermSet
 from permuta.misc import flatten, ordered_set_partitions
+
+logger = logging.getLogger("MeshTiling")
 
 
 class MockAvMeshPatt():
@@ -15,8 +18,8 @@ class MockAvMeshPatt():
             self.filter_function = lambda perm: all(
                 perm.avoids(mp) for mp in mesh_patterns)
         elif all(isinstance(p, Perm) for p in mesh_patterns):
-            print("[WARNING] mesh_patterns are all instances of "
-                  "'Perm': {}".format(mesh_patterns))
+            logger.warning("mesh_patterns are all instances "
+                           "of 'Perm': {}".format(mesh_patterns))
             self.filter_function = lambda perm: perm in Av(mesh_patterns)
         else:
             raise ValueError("'mesh_patterns' variable not as expected: "
@@ -66,7 +69,7 @@ class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
                 repr(mp) for mp in self.obstructions))
 
     def __str__(self):
-        # ToDo: Instead return multiline mesh patterns
+        # ToDo: Instead return multi-line mesh patterns
         return repr(self)
 
 
@@ -271,7 +274,7 @@ class MeshTiling(Rule):
                                 )
                 elif isinstance(obstruction, Perm):
                     # Is there a method for sub-perms?
-                    print("[WARNING] Cell choice is an obstruction of Perms")
+                    logger.warning("Cell choice is an obstruction of Perms")
                     cell_choices.add(
                         Cell(frozenset({obstruction}), frozenset({}))
                     )
@@ -309,7 +312,7 @@ class MeshTiling(Rule):
                         mt = MeshTiling(obstructions, requirements)
                         subrules.add(mt)
 
-        print("[INFO] Total of {} subrules".format(len(subrules)))
+        logger.info("Generated {} subrules".format(len(subrules)))
         return list(subrules)
 
     def get_dimension(self):
@@ -326,7 +329,7 @@ class MeshTiling(Rule):
         return self.columns * self.rows
 
     def __str__(self):
-        # ToDo: Implement proper multiline Cell.__str__() and use instead
+        # ToDo: Implement proper multi-line Cell.__str__() and use instead
         tiling_representation = [repr(cell) for cell in self.tiling]
 
         col_widths = [
@@ -336,7 +339,7 @@ class MeshTiling(Rule):
             range(self.columns)
         ]
 
-        top_bottom_lines = " " + "-".join("-" * l for l in col_widths) + "\n"
+        top_bottom_lines = " " + "-".join("-" * l for l in col_widths) + " \n"
         middle_lines = "|" + "+".join("-" * l for l in col_widths) + "|\n"
 
         cell_lines = ["|" + "|".join("{:^{}}".format(
@@ -352,6 +355,8 @@ class MeshTiling(Rule):
 
 
 def main():
+    logging.getLogger().setLevel(logging.INFO)
+
     perm = Perm((2, 0, 1))
     mesh_patt = MeshPatt(perm, ((2, 0), (2, 1), (2, 2), (2, 3)))
     mesh_tiling = MeshTiling(
@@ -364,14 +369,7 @@ def main():
 
     max_elmnt_size = 5
     comb_cov = CombCov(mesh_tiling, max_elmnt_size)
-    comb_cov.solve()
-
-    print("Solution:")
-    for i, rule in enumerate(comb_cov.get_solution(), start=1):
-        (cols, rows) = rule.get_dimension()
-        bitstring = comb_cov.rules_to_bitstring_dict[rule]
-        print("Rule #{} of dimension {}x{} with bitstring {}: "
-              "{}".format(i, cols, rows, bitstring, rule))
+    comb_cov.print_outcome()
 
 
 if __name__ == "__main__":

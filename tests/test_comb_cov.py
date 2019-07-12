@@ -16,10 +16,18 @@ class CombCovTest(unittest.TestCase):
         with patch.object(ExactCover, 'exact_cover',
                           return_value=solution_indices):
             comb_cov = CombCov(string_set, max_elmnt_size)
-            comb_cov.solve()
 
-            solution = comb_cov.get_solution()
+            solution = comb_cov.solution
+            solution_copy = comb_cov.solution.copy()
+            solution_iter = [rule for rule in comb_cov]
+
             self.assertEqual(len(solution_indices), len(solution))
+            self.assertEqual(solution, solution_copy)
+            self.assertEqual(solution, solution_iter)
+
+            # Ensure that the printing function doesn't have any side-effects
+            comb_cov.print_outcome()
+            assert solution_copy == comb_cov.solution
 
 
 class RuleTest(unittest.TestCase):
