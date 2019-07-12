@@ -1,6 +1,14 @@
 import abc
+import logging
+from time import time
 
 from combcov.exact_cover import ExactCover
+
+logger = logging.getLogger("CombCov")
+logging.basicConfig(
+    format='[%(levelname)-4s] (%(name)s) %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
 
 
 class CombCov():
@@ -10,8 +18,13 @@ class CombCov():
         self.max_elmnt_size = max_elmnt_size
         self._enumerate_all_elmnts_up_to_max_size()
         self._create_binary_strings_from_rules()
+        self._solve()
 
     def _enumerate_all_elmnts_up_to_max_size(self):
+        logger.info("Enumerating all elements of size up to {}...".format(
+            self.max_elmnt_size))
+        time_start = time()
+
         elmnts = []
         self.enumeration = [None] * (self.max_elmnt_size + 1)
         for n in range(self.max_elmnt_size + 1):
@@ -19,17 +32,24 @@ class CombCov():
             self.enumeration[n] = len(elmnts_of_length_n)
             elmnts.extend(elmnts_of_length_n)
 
-        print("[INFO] Total of {} elements of size up to {}".format(
-            len(elmnts), self.max_elmnt_size))
-        print("[INFO] Enumeration: {}".format(self.enumeration))
-
         self.elmnts_dict = {
             string: nr for nr, string in enumerate(elmnts, start=0)
         }
 
+        time_end = time()
+        elapsed_time = time_end - time_start
+
+        logger.info("...DONE enumerating elements! "
+                    "(Running time: {:.2f} sec)".format(elapsed_time))
+        logger.info("Total of {} elements.".format(len(elmnts)))
+        logger.info("Enumeration: {}".format(self.enumeration))
+
     def _create_binary_strings_from_rules(self):
+        logger.info("Creating binary strings and rules...")
+        time_start = time()
+
         string_to_cover = 2 ** len(self.elmnts_dict) - 1
-        print("[INFO] Bitstring to cover: {} ".format(string_to_cover))
+        logger.info("Bitstring to cover: {} ".format(string_to_cover))
 
         self.rules = []
         self.bitstrings = []
@@ -71,21 +91,42 @@ class CombCov():
                 else:
                     self.bitstring_to_rules_dict[binary_string].append(rule)
 
-    def solve(self):
-        print("[INFO] Trying to find a cover for {} using elements up to size "
-              "{}.".format(self.root_object, self.max_elmnt_size))
+        time_end = time()
+        elapsed_time = time_end - time_start
+
+        logger.info("...DONE creating binary strings and rules! "
+                    "(Running time: {:.2f} sec)".format(elapsed_time))
+        logger.info("Total of {} rules valid rules.".format(len(self.rules)))
+        logger.info("There of {} rules creating distinct binary "
+                    "strings".format(len(self.bitstring_to_rules_dict)))
+
+    def _solve(self):
+        logger.info("Searching for a cover for {}...".format(self.root_object))
+        time_start = time()
+
+        self.solution = []
         self.ec = ExactCover(self.bitstrings, len(self.elmnts_dict))
-        self.solutions_indices = self.ec.exact_cover()
+        self.solution = [
+            self.bitstring_to_rules_dict[self.bitstrings[bitstring_index]][0]
+            for bitstring_index in self.ec.exact_cover()]
 
-    def get_solutions(self):
-        solutions = []
-        for solution_indices in self.solutions_indices:
-            solution = [
-                self.bitstring_to_rules_dict[self.bitstrings[bitstring_index]][
-                    0] for bitstring_index in solution_indices]
-            solutions.append(solution)
+        time_end = time()
+        elapsed_time = time_end - time_start
 
-        return solutions
+        logger.info("...DONE searching for a cover! "
+                    "(Running time: {:.2f} sec)".format(elapsed_time))
+
+    def print_outcome(self):
+        if self.solution:
+            print("Solution found!")
+            for i, rule in enumerate(self.solution, start=1):
+                print(" - Rule #{}: {} with bitstring {}".format(
+                    i, rule, self.rules_to_bitstring_dict[rule]))
+        else:
+            print("No solution found.")
+
+    def __iter__(self):
+        yield from self.solution
 
 
 class Rule(abc.ABC):

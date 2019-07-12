@@ -31,10 +31,18 @@ class GurobiExactCover(unittest.TestCase):
     def test_perm_av_21_with_gurobi_mocked_out(self):
         with patch.object(ExactCover, '_call_Popen', _mocked_call_Popen):
             ec = ExactCover(self.av_21_bitstrings, self.cover_string_length)
-            solutions = ec.exact_cover_gurobi()
-            first_solution = solutions.__next__()
-            self.assertEqual(first_solution, self.av_21_solution)
-            self.assertRaises(StopIteration, solutions.__next__)
+            solution = ec.exact_cover()
+            self.assertEqual(solution, self.av_21_solution)
+
+
+class FailingExactCover(unittest.TestCase):
+    nonsense_bitstrings = [1, 1, 2]
+    nonsense_length = 112
+
+    def test_with_failing_Popen(self):
+        with patch.object(ExactCover, '_call_Popen', _mocked_call_Popen):
+            ec = ExactCover(self.nonsense_bitstrings, self.nonsense_length)
+            self.assertRaises(RuntimeError, ec.exact_cover)
 
 
 if __name__ == '__main__':

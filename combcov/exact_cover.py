@@ -12,8 +12,7 @@ class ExactCover:
 
     def exact_cover(self):
         try:
-            for res in self.exact_cover_gurobi():
-                yield res
+            return self.exact_cover_gurobi()
         except Exception as exc:
             raise RuntimeError(
                 "Gurobi may not be installed and there are no alternative "
@@ -70,4 +69,4 @@ class ExactCover:
                 shutil.rmtree(tdir)
 
         if anything:
-            yield sorted(used)
+            return sorted(used)

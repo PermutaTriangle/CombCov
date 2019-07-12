@@ -22,14 +22,21 @@ cover for the set of string over the alphabet `{a,b}` that avoids the substring
 
 ```bash
 $ python -m demo.string_set
-[INFO] Total of 87 elements of size up to 7
-[INFO] Enumeration: [1, 2, 3, 5, 8, 13, 21, 34]
-[INFO] Bitstring to cover: 154742504910672534362390527 
-[INFO] Total of 16 subrules
-[INFO] Trying to find a cover for ''*Av(aa) over ∑={a,b} using elements up to size 7.
-Solution nr. 1:
- - Rule #1: ''*Av(b,a) over ∑={a,b} with bitstring 1
- - Rule #2: 'a'*Av(b,a) over ∑={a,b} with bitstring 2
+[INFO] (CombCov) Enumerating all elements of size up to 7...
+[INFO] (CombCov) ...DONE enumerating elements! (Running time: 0.00 sec)
+[INFO] (CombCov) Total of 87 elements.
+[INFO] (CombCov) Enumeration: [1, 2, 3, 5, 8, 13, 21, 34]
+[INFO] (CombCov) Creating binary strings from rules...
+[INFO] (CombCov) Bitstring to cover: 154742504910672534362390527 
+[INFO] (StringSet) Generated 16 subrules
+[INFO] (CombCov) ...DONE creating binary strings! (Running time: 0.00 sec)
+[INFO] (CombCov) Total of 14 rules valid rules.
+[INFO] (CombCov) There of 14 rules creating distinct binary strings
+[INFO] (CombCov) Searching for a cover for ''*Av(aa) over ∑={a,b}...
+[INFO] (CombCov) ...DONE searching for a cover! (Running time: 0.02 sec)
+SOLUTION
+ - Rule #1: ''*Av(a,b) over ∑={a,b} with bitstring 1
+ - Rule #2: 'a'*Av(a,b) over ∑={a,b} with bitstring 2
  - Rule #3: 'b'*Av(aa) over ∑={a,b} with bitstring 154742431132702343545997108
  - Rule #4: 'ab'*Av(aa) over ∑={a,b} with bitstring 73777970190816393416
 ```
