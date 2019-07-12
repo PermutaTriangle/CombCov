@@ -27,7 +27,7 @@ $ python -m demo.string_set
 [INFO] Bitstring to cover: 154742504910672534362390527 
 [INFO] Total of 16 subrules
 [INFO] Trying to find a cover for ''*Av(aa) over ∑={a,b} using elements up to size 7.
-Solution nr. 1:
+Solution:
  - Rule #1: ''*Av(b,a) over ∑={a,b} with bitstring 1
  - Rule #2: 'a'*Av(b,a) over ∑={a,b} with bitstring 2
  - Rule #3: 'b'*Av(aa) over ∑={a,b} with bitstring 154742431132702343545997108

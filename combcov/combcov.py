@@ -75,17 +75,13 @@ class CombCov():
         print("[INFO] Trying to find a cover for {} using elements up to size "
               "{}.".format(self.root_object, self.max_elmnt_size))
         self.ec = ExactCover(self.bitstrings, len(self.elmnts_dict))
-        self.solutions_indices = self.ec.exact_cover()
+        self.solution_indices = self.ec.exact_cover()
 
-    def get_solutions(self):
-        solutions = []
-        for solution_indices in self.solutions_indices:
-            solution = [
-                self.bitstring_to_rules_dict[self.bitstrings[bitstring_index]][
-                    0] for bitstring_index in solution_indices]
-            solutions.append(solution)
-
-        return solutions
+    def get_solution(self):
+        solution = [
+            self.bitstring_to_rules_dict[self.bitstrings[bitstring_index]][
+                0] for bitstring_index in self.solution_indices]
+        return solution
 
 
 class Rule(abc.ABC):

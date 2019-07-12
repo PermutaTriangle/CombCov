@@ -103,12 +103,11 @@ def main():
     comb_cov = CombCov(string_set, max_elmnt_size)
     comb_cov.solve()
 
-    for nr, solution in enumerate(comb_cov.get_solutions(), start=1):
-        print("Solution nr. {}:".format(nr))
-        for i, rule in enumerate(solution, start=1):
-            bitstring = comb_cov.rules_to_bitstring_dict[rule]
-            print(" - Rule #{}: {} with bitstring {}".format(
-                i, rule, bitstring))
+    print("Solution:")
+    for i, rule in enumerate(comb_cov.get_solution(), start=1):
+        bitstring = comb_cov.rules_to_bitstring_dict[rule]
+        print(" - Rule #{}: {} with bitstring {}".format(
+            i, rule, bitstring))
 
 
 if __name__ == "__main__":

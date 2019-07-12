@@ -366,13 +366,12 @@ def main():
     comb_cov = CombCov(mesh_tiling, max_elmnt_size)
     comb_cov.solve()
 
-    for nr, solution in enumerate(comb_cov.get_solutions(), start=1):
-        print("Solution nr. {}:".format(nr))
-        for i, rule in enumerate(solution, start=1):
-            (cols, rows) = rule.get_dimension()
-            bitstring = comb_cov.rules_to_bitstring_dict[rule]
-            print("Rule #{} of dimension {}x{} with bitstring {}: "
-                  "{}".format(i, cols, rows, bitstring, rule))
+    print("Solution:")
+    for i, rule in enumerate(comb_cov.get_solution(), start=1):
+        (cols, rows) = rule.get_dimension()
+        bitstring = comb_cov.rules_to_bitstring_dict[rule]
+        print("Rule #{} of dimension {}x{} with bitstring {}: "
+              "{}".format(i, cols, rows, bitstring, rule))
 
 
 if __name__ == "__main__":

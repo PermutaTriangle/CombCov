@@ -12,17 +12,14 @@ class CombCovTest(unittest.TestCase):
         string_set = StringSet(alphabet, avoid)
         max_elmnt_size = 7
 
-        solution_indices = [[0, 1, 3], ]
+        solution_indices = [0, 1, 3]
         with patch.object(ExactCover, 'exact_cover',
                           return_value=solution_indices):
             comb_cov = CombCov(string_set, max_elmnt_size)
             comb_cov.solve()
 
-            solutions = comb_cov.get_solutions()
-            self.assertEqual(len(solution_indices), len(solutions))
-
-            for i, solution in enumerate(solutions):
-                self.assertEqual(len(solution_indices[i]), len(solution))
+            solution = comb_cov.get_solution()
+            self.assertEqual(len(solution_indices), len(solution))
 
 
 class RuleTest(unittest.TestCase):
