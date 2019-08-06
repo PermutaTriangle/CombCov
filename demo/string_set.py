@@ -1,5 +1,6 @@
 import itertools
 import logging
+from typing import List
 
 from combcov import CombCov, Rule
 
@@ -65,7 +66,7 @@ class StringSet(Rule):
 
         return strings_of_length
 
-    def get_subrules(self):
+    def get_subrules(self) -> List[Rule]:
         rules = []
         prefixes = []
         for n in range(self.max_prefix_size):

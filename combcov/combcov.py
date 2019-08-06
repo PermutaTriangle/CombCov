@@ -2,7 +2,7 @@ import abc
 import logging
 from time import time
 
-from combcov.exact_cover import ExactCover
+from pulp import GUROBI_CMD, PULP_CBC_CMD, LpMinimize, LpProblem, LpVariable
 
 logger = logging.getLogger("CombCov")
 logging.basicConfig(
@@ -104,11 +104,33 @@ class CombCov():
         logger.info("Searching for a cover for {}...".format(self.root_object))
         time_start = time()
 
-        self.solution = []
-        self.ec = ExactCover(self.bitstrings, len(self.elmnts_dict))
+        if GUROBI_CMD(msg=0).available():
+            logger.info("Gurobi installed on system and set as solver")
+            solver = GUROBI_CMD(msg=0)
+        elif PULP_CBC_CMD(msg=0).available():
+            logger.warning("Gurobi not installed on system, instead "
+                           "falling back on PuLP's bundled CBC LP solver")
+            solver = PULP_CBC_CMD(msg=0)
+        else:
+            raise RuntimeError("Unable to load PuLP's bundled CBC LP solver")
+
+        problem = LpProblem("CombCov LP minimization problem", LpMinimize)
+        X = LpVariable.dicts("x", list(range(len(self.elmnts_dict))),
+                             cat="Binary")
+
+        for i in range(len(self.elmnts_dict)):  # nr. of equations
+            indices_in_equation = []
+            for j in range(len(self.bitstrings)):  # nr. of variables x_j
+                if (self.bitstrings[j] & (1 << i)) != 0:
+                    indices_in_equation.append(j)
+            constraint = sum(X[j] for j in indices_in_equation)
+            problem += constraint == 1
+
+        problem.solve(solver=solver)
         self.solution = [
-            self.bitstring_to_rules_dict[self.bitstrings[bitstring_index]][0]
-            for bitstring_index in self.ec.exact_cover()]
+            self.bitstring_to_rules_dict[self.bitstrings[x]][0]
+            for x in X if X[x].varValue and int(X[x].varValue) == 1
+        ]
 
         time_end = time()
         elapsed_time = time_end - time_start
