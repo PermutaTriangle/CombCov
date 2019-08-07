@@ -2,6 +2,7 @@
 
 [![Build Status](https://img.shields.io/travis/PermutaTriangle/CombCov.svg?label=Linux%20CI&logo=travis&logoColor=white)](https://travis-ci.org/PermutaTriangle/CombCov)
 [![Coverage Status](https://img.shields.io/coveralls/github/PermutaTriangle/CombCov.svg)](https://coveralls.io/github/PermutaTriangle/CombCov)
+[![Requirements Status](https://img.shields.io/requires/github/PermutaTriangle/CombCov.svg)](https://requires.io/github/PermutaTriangle/CombCov/requirements)
 [![Licence](https://img.shields.io/github/license/PermutaTriangle/CombCov.svg)](https://raw.githubusercontent.com/PermutaTriangle/CombCov/master/LICENSE)
 
 [![PyPi Version](https://img.shields.io/pypi/v/CombCov.svg)](https://pypi.org/project/CombCov/)
@@ -30,11 +31,11 @@ $ python -m demo.string_set
 [INFO] (CombCov) Bitstring to cover: 154742504910672534362390527 
 [INFO] (StringSet) Generated 16 subrules
 [INFO] (CombCov) ...DONE creating binary strings! (Running time: 0.00 sec)
-[INFO] (CombCov) Total of 14 rules valid rules.
-[INFO] (CombCov) There of 14 rules creating distinct binary strings
+[INFO] (CombCov) Total of 14 valid rules with 14 distinct binary strings.
 [INFO] (CombCov) Searching for a cover for ''*Av(aa) over ∑={a,b}...
+[INFO] (CombCov) Gurobi installed on system and set as solver
 [INFO] (CombCov) ...DONE searching for a cover! (Running time: 0.02 sec)
-SOLUTION
+Solution found!
  - Rule #1: ''*Av(a,b) over ∑={a,b} with bitstring 1
  - Rule #2: 'a'*Av(a,b) over ∑={a,b} with bitstring 2
  - Rule #3: 'b'*Av(aa) over ∑={a,b} with bitstring 154742431132702343545997108

@@ -96,9 +96,9 @@ class CombCov():
 
         logger.info("...DONE creating binary strings and rules! "
                     "(Running time: {:.2f} sec)".format(elapsed_time))
-        logger.info("Total of {} rules valid rules.".format(len(self.rules)))
-        logger.info("There of {} rules creating distinct binary "
-                    "strings".format(len(self.bitstring_to_rules_dict)))
+        logger.info(
+            "Total of {} valid rules with {} distinct binary strings.".format(
+                len(self.rules), len(self.bitstring_to_rules_dict)))
 
     def _solve(self):
         logger.info("Searching for a cover for {}...".format(self.root_object))
@@ -149,7 +149,6 @@ class CombCov():
 
     def __iter__(self):
         yield from self.solution
-
 
 class Rule(abc.ABC):
     @abc.abstractmethod

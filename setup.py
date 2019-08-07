@@ -31,10 +31,11 @@ setup(
     ],
     setup_requires=["pytest-runner==5.1"],
     tests_require=[
-        "pytest==4.6.2",
+        "pytest==5.0.1",
         "pytest-cov==2.7.1",
         "pytest-pep8==1.0.6",
         "pytest-isort==0.3.1",
+        "coveralls==1.8.2",
     ],
     python_requires=">=3.5",
     classifiers=[
