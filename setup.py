@@ -11,7 +11,7 @@ def read(fname):
 
 setup(
     name="CombCov",
-    version="0.2.0",
+    version="0.2.1",
     author="Permuta Triangle",
     author_email="permutatriangle@gmail.com",
     description="Searching for combinatorial covers.",
@@ -32,6 +32,7 @@ setup(
         "pytest-cov==2.7.1",
         "pytest-pep8==1.0.6",
         "pytest-isort==0.3.1",
+        "coveralls==1.8.2",
         # Demos
         "permuta==1.0.0",
     ],
