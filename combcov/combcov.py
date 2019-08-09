@@ -115,7 +115,7 @@ class CombCov():
             raise RuntimeError("Unable to load PuLP's bundled CBC LP solver")
 
         problem = LpProblem("CombCov LP minimization problem", LpMinimize)
-        X = LpVariable.dicts("x", list(range(len(self.elmnts_dict))),
+        X = LpVariable.dicts("x", list(range(len(self.bitstrings))),
                              cat="Binary")
 
         for i in range(len(self.elmnts_dict)):  # nr. of equations
@@ -123,8 +123,13 @@ class CombCov():
             for j in range(len(self.bitstrings)):  # nr. of variables x_j
                 if (self.bitstrings[j] & (1 << i)) != 0:
                     indices_in_equation.append(j)
-            constraint = sum(X[j] for j in indices_in_equation)
-            problem += constraint == 1
+
+            if indices_in_equation:
+                constraint = sum(X[j] for j in indices_in_equation)
+                problem += constraint == 1
+
+        # Objective function
+        problem += sum(X[j] for j in range(len(self.bitstrings)))
 
         problem.solve(solver=solver)
         self.solution = [
@@ -149,6 +154,7 @@ class CombCov():
 
     def __iter__(self):
         yield from self.solution
+
 
 class Rule(abc.ABC):
     @abc.abstractmethod
