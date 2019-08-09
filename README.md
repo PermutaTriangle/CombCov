@@ -31,11 +31,11 @@ $ python -m demo.string_set
 [INFO] (CombCov) Bitstring to cover: 154742504910672534362390527 
 [INFO] (StringSet) Generated 16 subrules
 [INFO] (CombCov) ...DONE creating binary strings! (Running time: 0.00 sec)
-[INFO] (CombCov) Total of 14 rules valid rules.
-[INFO] (CombCov) There of 14 rules creating distinct binary strings
+[INFO] (CombCov) Total of 14 valid rules with 14 distinct binary strings.
 [INFO] (CombCov) Searching for a cover for ''*Av(aa) over ∑={a,b}...
+[INFO] (CombCov) Gurobi installed on system and set as solver
 [INFO] (CombCov) ...DONE searching for a cover! (Running time: 0.02 sec)
-SOLUTION
+Solution found!
  - Rule #1: ''*Av(a,b) over ∑={a,b} with bitstring 1
  - Rule #2: 'a'*Av(a,b) over ∑={a,b} with bitstring 2
  - Rule #3: 'b'*Av(aa) over ∑={a,b} with bitstring 154742431132702343545997108

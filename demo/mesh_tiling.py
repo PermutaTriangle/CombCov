@@ -2,9 +2,11 @@ import itertools
 import logging
 from collections import namedtuple
 
-from combcov import CombCov, Rule
 from permuta import Av, MeshPatt, Perm, PermSet
+from permuta.interfaces import Patt
 from permuta.misc import flatten, ordered_set_partitions
+
+from combcov import CombCov, Rule
 
 logger = logging.getLogger("MeshTiling")
 
@@ -14,13 +16,11 @@ class MockAvMeshPatt():
         self.mesh_patterns = mesh_patterns
         if isinstance(mesh_patterns, MeshPatt):
             self.filter_function = lambda perm: perm.avoids(mesh_patterns)
-        elif all(isinstance(mp, MeshPatt) for mp in mesh_patterns):
-            self.filter_function = lambda perm: all(
-                perm.avoids(mp) for mp in mesh_patterns)
         elif all(isinstance(p, Perm) for p in mesh_patterns):
-            logger.warning("mesh_patterns are all instances "
-                           "of 'Perm': {}".format(mesh_patterns))
             self.filter_function = lambda perm: perm in Av(mesh_patterns)
+        elif all(isinstance(p, Patt) for p in mesh_patterns):
+            self.filter_function = lambda perm: all(
+                perm.avoids(patt) for patt in mesh_patterns)
         else:
             raise ValueError("'mesh_patterns' variable not as expected: "
                              "'{}'".format(mesh_patterns))
@@ -274,7 +274,6 @@ class MeshTiling(Rule):
                                 )
                 elif isinstance(obstruction, Perm):
                     # Is there a method for sub-perms?
-                    logger.warning("Cell choice is an obstruction of Perms")
                     cell_choices.add(
                         Cell(frozenset({obstruction}), frozenset({}))
                     )
@@ -312,7 +311,11 @@ class MeshTiling(Rule):
                         mt = MeshTiling(obstructions, requirements)
                         subrules.add(mt)
 
-        logger.info("Generated {} subrules".format(len(subrules)))
+        logger.info(
+            "Generated {} subrules with up to {} active cells with dimensions "
+            "up to {}x{}".format(
+                len(subrules), self.MAX_ACTIVE_CELLS,
+                self.MAX_COLUMN_DIMENSION, self.MAX_ROW_DIMENSION))
         return list(subrules)
 
     def get_dimension(self):

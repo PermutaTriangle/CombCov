@@ -2,7 +2,7 @@
 
 import os
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 def read(fname):
@@ -11,7 +11,7 @@ def read(fname):
 
 setup(
     name="CombCov",
-    version="0.2.1",
+    version="0.3.0",
     author="Permuta Triangle",
     author_email="permutatriangle@gmail.com",
     description="Searching for combinatorial covers.",
@@ -22,23 +22,23 @@ setup(
         "Source": "https://github.com/PermutaTriangle/CombCov",
         "Tracker": "https://github.com/PermutaTriangle/CombCov/issues",
     },
-    packages=["combcov"],
+    packages=find_packages(),
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
+    install_requires=[
+        "permuta==1.0.0",
+        "PuLP==1.6.10",
+    ],
     setup_requires=["pytest-runner==5.1"],
     tests_require=[
-        # Unittests
         "pytest==5.0.1",
         "pytest-cov==2.7.1",
         "pytest-pep8==1.0.6",
         "pytest-isort==0.3.1",
-        "coveralls==1.8.2",
-        # Demos
-        "permuta==1.0.0",
     ],
     python_requires=">=3.5",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Education",
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
