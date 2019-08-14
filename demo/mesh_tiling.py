@@ -282,25 +282,33 @@ class MeshTiling(Rule):
                         "[ERROR] obstruction '{}' is neither a MeshPatt "
                         "or Perm!".format(obstruction))
 
-        subrules = set()
+        subrules = 1
+        yield MeshTiling({}, {})  # always include the empty rule
+
         for (dim_col, dim_row) in itertools.product(
                 range(1, self.columns + self.MAX_COLUMN_DIMENSION),
                 range(1, self.rows + self.MAX_ROW_DIMENSION)
         ):
 
             nr_of_cells = dim_col * dim_row
-
-            for how_many_active_cells in range(self.MAX_ACTIVE_CELLS + 1):
+            for how_many_active_cells in range(min(dim_col, dim_row),
+                                               self.MAX_ACTIVE_CELLS + 1):
                 for active_cells in itertools.product(
                         cell_choices, repeat=how_many_active_cells):
                     for combination in itertools.combinations(
                             range(nr_of_cells), how_many_active_cells):
                         requirements = {}
                         obstructions = {}
+                        active_cols = set()
+                        active_rows = set()
                         for i, cell_index in enumerate(combination):
                             choice = active_cells[i]
+
                             c = cell_index % dim_col
+                            active_cols.add(c)
+
                             r = cell_index // dim_col
+                            active_rows.add(r)
 
                             if choice.obstructions is not frozenset():
                                 obstructions[(c, r)] = choice.obstructions
@@ -308,15 +316,16 @@ class MeshTiling(Rule):
                             if choice.requirements is not frozenset():
                                 requirements[(c, r)] = choice.requirements
 
-                        mt = MeshTiling(obstructions, requirements)
-                        subrules.add(mt)
+                        if active_cols == set(range(dim_col)) and \
+                                active_rows == set(range(dim_row)):
+                            subrules += 1
+                            yield MeshTiling(obstructions, requirements)
 
         logger.info(
             "Generated {} subrules with up to {} active cells with dimensions "
             "up to {}x{}".format(
-                len(subrules), self.MAX_ACTIVE_CELLS,
+                subrules, self.MAX_ACTIVE_CELLS,
                 self.MAX_COLUMN_DIMENSION, self.MAX_ROW_DIMENSION))
-        return list(subrules)
 
     def get_dimension(self):
         return (self.columns, self.rows)

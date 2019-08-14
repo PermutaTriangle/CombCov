@@ -1,6 +1,5 @@
 import itertools
 import logging
-from typing import List
 
 from combcov import CombCov, Rule
 
@@ -66,8 +65,8 @@ class StringSet(Rule):
 
         return strings_of_length
 
-    def get_subrules(self) -> List[Rule]:
-        rules = []
+    def get_subrules(self):
+        rules = 0
         prefixes = []
         for n in range(self.max_prefix_size):
             prefixes.extend(self.get_elmnts(n + 1))
@@ -77,17 +76,18 @@ class StringSet(Rule):
             empty_string_set = StringSet(alphabet=self.alphabet,
                                          avoid=frozenset(self.alphabet),
                                          prefix=prefix)
-            rules.append(empty_string_set)
+            rules += 1
+            yield empty_string_set
 
         # Regular rules of the from prefix + non-empty StringSet
         for prefix in prefixes:
             for avoiding_subset in self.get_all_avoiding_subsets():
                 substring_set = StringSet(self.alphabet, avoiding_subset,
                                           prefix)
-                rules.append(substring_set)
+                rules += 1
+                yield substring_set
 
-        logger.info("Generated {} subrules".format(len(rules)))
-        return rules
+        logger.info("Generated {} subrules".format(rules))
 
     def _key(self):
         return (self.alphabet, self.avoid, self.prefix)

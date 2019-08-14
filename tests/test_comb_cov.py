@@ -54,7 +54,7 @@ class CombCovTest(unittest.TestCase):
             assert len(mocked_print.mock_calls) == 1
 
     def test_too_many_subrules(self) -> None:
-        subrules = self.string_set.get_subrules()
+        subrules = list(self.string_set.get_subrules())
         too_many = subrules + [self.string_set] + subrules
 
         correct_rules = self.comb_cov.rules
