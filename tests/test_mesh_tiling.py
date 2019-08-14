@@ -1,9 +1,10 @@
 import unittest
 
+from permuta import Av, MeshPatt, Perm, PermSet
+
 import pytest
 from combcov import Rule
 from demo.mesh_tiling import Cell, MeshTiling, MockAvMeshPatt
-from permuta import Av, MeshPatt, Perm, PermSet
 
 
 class MockAvMeshPattTests(unittest.TestCase):
@@ -177,7 +178,7 @@ class MeshTilingTest(unittest.TestCase):
         self.root_mt.MAX_COLUMN_DIMENSION = 3
         self.root_mt.MAX_ROW_DIMENSION = 2
         self.root_mt.MAX_ACTIVE_CELLS = 3
-        subrules = self.root_mt.get_subrules()
+        subrules = list(self.root_mt.get_subrules())
         assert all(isinstance(rule, Rule) for rule in subrules)
         assert (self.empty_mt in subrules)
         assert (self.sub_mt in subrules)
@@ -186,7 +187,7 @@ class MeshTilingTest(unittest.TestCase):
         self.root_mt.MAX_COLUMN_DIMENSION = 2
         self.root_mt.MAX_ROW_DIMENSION = 2
         self.root_mt.MAX_ACTIVE_CELLS = 3
-        subrules = self.root_mt.get_subrules()
+        subrules = list(self.root_mt.get_subrules())
         assert all(isinstance(rule, Rule) for rule in subrules)
         assert (self.empty_mt in subrules)
         assert (self.sub_mt not in subrules)
