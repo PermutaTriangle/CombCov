@@ -1,3 +1,15 @@
+2019-08-15
+==========
+- [ ] Review EC Python library and Bjarni's homework assignments
+- [ ] Which results to replicate?
+      + Wilf-classification of mesh patterns of short length
+      + On pattern-avoiding Fishburn permutations
+      + Anything else?
+- [ ] Discuss skeleton for presentation
+- [ ] Discuss skeleton for thesis writing
+
+
+
 2019-06-21
 ==========
 - [x] Prepare Bjarni's reading course in Elliptic Curves so he can study it
