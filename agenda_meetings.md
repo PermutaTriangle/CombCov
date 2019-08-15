@@ -1,3 +1,21 @@
+2019-06-21
+==========
+- [x] Prepare Bjarni's reading course in Elliptic Curves so he can study it
+      while Henning and Christian are on summer vacation in July
+- [x] Implement `MeshTilings.get_elmnts()` method (multiple nested for-loops)
+
+### Summary
+
+Henning prepared reading chapters and exercises for Bjarni solve. Henning wants Bjarni to find a suitable Python
+library and solve most of the exercises with it. The idea being that Christian can use it for homework assignments
+in his crypto class this fall.
+
+Together Bjarni and Henning hacked together the `MeshTilings.get_elmnts()` method by porting the multiple nested
+for-loops. It was ugly but it worked and we could run it on some short mesh patterns from the Wilf-classification
+paper "of mesh patterns of short length". This can be used in Bjarni's thesis as a replication of older work.
+
+
+
 2019-06-20
 ==========
 - [ ] Prepare Bjarni's reading course in Elliptic Curves so he can study it
