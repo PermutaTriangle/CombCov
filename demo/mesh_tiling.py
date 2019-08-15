@@ -105,12 +105,13 @@ class MeshTiling(Rule):
 
         # Populate obstructions...
         for (c, r), obs_list in self.obstructions.items():
-            self.grid[c][r] = Cell(set(obs_list), {})
+            self.grid[c][r] = Cell(frozenset(obs_list), frozenset())
 
         # ...and requirements...
         for (c, r), req_list in self.requirements.items():
             previous_obstruction_list = self.grid[c][r].obstructions
-            self.grid[c][r] = Cell(previous_obstruction_list, set(req_list))
+            self.grid[c][r] = Cell(previous_obstruction_list,
+                                   frozenset(req_list))
 
         # ...and then the rest are empty cells
         for (c, r) in itertools.product(range(self.columns), range(self.rows)):
@@ -244,7 +245,7 @@ class MeshTiling(Rule):
         # obstructions (MeshPatts) where the obstructions are sub mesh patterns
         # of any of the obstructions in the root object.
 
-        cell_choices = {self.point_cell, self.anything_cell}
+        cell_choices = {self.point_cell, self.anything_cell, self.grid[0][0]}
         for obstruction_list in self.obstructions.values():
             for obstruction in obstruction_list:
                 if isinstance(obstruction, MeshPatt):
@@ -281,6 +282,9 @@ class MeshTiling(Rule):
                     raise ValueError(
                         "[ERROR] obstruction '{}' is neither a MeshPatt "
                         "or Perm!".format(obstruction))
+
+        logger.info("{} cell_choices: {}".format(
+            len(cell_choices), cell_choices))
 
         subrules = 1
         yield MeshTiling({}, {})  # always include the empty rule

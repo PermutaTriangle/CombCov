@@ -26,7 +26,7 @@ class CellTest(unittest.TestCase):
     def setUp(self):
         self.mp_31c2 = MeshPatt(Perm((2, 0, 1)),
                                 ((2, 0), (2, 1), (2, 2), (2, 3)))
-        self.mp_cell = Cell({self.mp_31c2}, {})
+        self.mp_cell = Cell(frozenset({self.mp_31c2}), frozenset())
 
     def uninitialized_cell(self):
         assert (MeshTiling.uninitialized_cell.is_uninitialized())
@@ -142,9 +142,9 @@ class MeshTilingTest(unittest.TestCase):
     def test_make_tiling(self):
         tiling = self.sub_mt.get_tiling()
         correct_tiling = [
-            Cell({self.mp_31c2}, {}),
+            Cell(frozenset({self.mp_31c2}), frozenset()),
             MeshTiling.empty_cell,
-            Cell({self.mp_1c2}, {}),
+            Cell(frozenset({self.mp_1c2}), frozenset()),
             MeshTiling.empty_cell,
             MeshTiling.point_cell,
             MeshTiling.empty_cell
