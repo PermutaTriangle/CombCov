@@ -1,12 +1,45 @@
 2019-08-15
 ==========
-- [ ] Review EC Python library and Bjarni's homework assignments
-- [ ] Which results to replicate?
+- [x] Review EC Python library and Bjarni's homework assignments
+- [x] Which results to replicate?
       + Wilf-classification of mesh patterns of short length
       + On pattern-avoiding Fishburn permutations
       + Anything else?
 - [ ] Discuss skeleton for presentation
 - [ ] Discuss skeleton for thesis writing
+
+### Summary
+
+Henning and Christian were happy with the PyECCArithmetic library and will probably use it for homework assignments
+in the Crypto course this fall semester. The owner of the repo hasn't responded to Bjarni's PR that adds support for
+the infinity point. We discussed the possibility of releasing another package to PyPi with slightly different name if
+the owner won't respond, or instructing students to clone the repo and install via `setup.py`. Bjarni will post his
+homework solutions as a private GitHub gist and give Henning and Christian access.
+
+Some results from the Fishburn paper were replicated with CombCov (namely sigma equals to 231, 123, 132 and 213) but
+others were unsuccessful (sigma equals 312 and 321 and all of the length 4 patterns). We will try that again on Garpur
+with larger search space. We will also try all combinations with two length four patterns. The results from the Wilf
+paper that were discussed in last meeting also need to be run on Garpur with larger search space than were tried on
+Bjarni's laptop.
+
+Christian came up with yet another paper with results that is interesting to try to replicate, a paper on avoiding
+vincular and covincular patterns of length 3. We tried a result from the paper that gives the Motzkin numbers:
+```text
+         | | |       | | |   
+        -+-3-+-     -+-+-3-  
+         | | |      #|#|#|#  
+   Av(  -+-+-2-  ,  -+-2-+-  )
+         | | |       | | |   
+        -1-+-+-     -1-+-+-  
+         | | |       | | |   
+```
+At first we were unsuccessful to find a cover for it, but by editing the rule generation function to create more
+complicated rules we managed to find a cover for, albeit slightly different that in the paper. We will try to run
+CombCov again with theses changes on previously unsuccessful results from Fishburn and Wilf papers.
+
+We started discussing the layout of Bjarni's thesis but need to follow up on that in the next meeting. Henning
+mentioned that it would be smart though to rename `StringSet` to `WordSet` so the elements are called *words* and are
+not confused with the underlying *bitstrings*.
 
 
 
@@ -20,7 +53,7 @@
 
 Henning prepared reading chapters and exercises for Bjarni solve. Henning wants Bjarni to find a suitable Python
 library and solve most of the exercises with it. The idea being that Christian can use it for homework assignments
-in his crypto class this fall.
+in his Crypto class this fall.
 
 Together Bjarni and Henning hacked together the `MeshTilings.get_elmnts()` method by porting the multiple nested
 for-loops. It was ugly but it worked and we could run it on some short mesh patterns from the Wilf-classification
