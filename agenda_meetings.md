@@ -1,3 +1,31 @@
+2019-08-22
+==========
+- [x] Go over requires.io integration with PermutaTriangle repos
+- [x] Discuss results on replicating stuff from Vincular+Covincular paper
+- [x] Discuss results on replicating stuff from Fishburn paper
+- [ ] Discuss skeleton for presentation
+       + Stærðfræði á Íslandi (Oct. 12-13) about 30 minutes
+       + Thesis defense about 60 minutes
+- [ ] Discuss skeleton for thesis writing
+
+### Summary
+
+We configured default branch in Permuta repo to be 'develop' requires.io makes PRs towards the default branch.
+
+CombCov found covers for 10 combinations of Fishburn + two length 4 patterns using 3x3x3 config (column x row
+dimension of MeshTiling x active cells). It did not find covers for the other 266 combinations with 4x4x4 config.
+We submitted these jobs again with 4x4x5 config and we'll try 5x5x5 also for those that are unsuccessful. After this
+we'll look for covers of Fishburn + three length 4 patterns (2024 combinations).
+
+We went over the results of the Vincular+Covincular patterns as well and rejoiced in the comparative success there.
+Many covers needed only 3x3x3 config and some more was found with 4x4x4 config. We'll try config 5x5x5 for the yet
+unsuccessful ones.
+
+Henning has asked for 2-3 talking slots at the Icelandic Math Conference in October for Bjarni, Émile and maybe.
+Christian/Henning to present their work. All of them have registered to participate in the conference.
+
+
+
 2019-08-15
 ==========
 - [x] Review EC Python library and Bjarni's homework assignments
@@ -34,7 +62,7 @@ vincular and covincular patterns of length 3. We tried a result from the paper t
          | | |       | | |   
 ```
 At first we were unsuccessful to find a cover for it, but by editing the rule generation function to create more
-complicated rules we managed to find a cover for, albeit slightly different that in the paper. We will try to run
+complicated rules we managed to find a cover for it, albeit slightly different that in the paper. We will try to run
 CombCov again with theses changes on previously unsuccessful results from Fishburn and Wilf papers.
 
 We started discussing the layout of Bjarni's thesis but need to follow up on that in the next meeting. Henning
