@@ -26,7 +26,7 @@ setup(
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     install_requires=[
-        "permuta==1.0.0",
+        "permuta==1.1.0",
         "PuLP==1.6.10",
     ],
     setup_requires=["pytest-runner==5.1"],
