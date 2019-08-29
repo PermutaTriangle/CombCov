@@ -1,3 +1,70 @@
+2019-08-29
+==========
+- [x] Review results from Garpur on length 2 mesh patterns (from Wilf paper)
+- [x] Discuss skeleton for presentation
+       + Stærðfræði á Íslandi (Oct. 12-13) about 30 minutes
+       + Thesis defense about 60 minutes
+- [x] Discuss skeleton for thesis writing
+- [x] Decide on next meeting time as Bjarni will be traveling
+
+### Summary
+
+Much of the time went into debugging why CombCov didn't find the following cover:
+```text
+    -------------                     ------- 
+   |      #|     |        ---        | o | S |
+   | Av(  -1-  ) |   =   |   |   U    ---+---+
+   |      #|#    |        ---        |   | o |
+    -------------                     ------- 
+```
+
+where S is the "anything" cell. We found the culprit and fixed the bug. Bjarni will clean up the code a bit and then
+push it to GitHub along with unittests to prevent this from happening again. Sufficient regression testing should be
+testing that MeshTiling always generates the 1x1 S cell as one of it's subrules.
+
+Following this we wanted CombCov to be able to find the cover for the complementary subset
+```text
+    -------------         ------- 
+   |      #|     |       |   | S |
+   | Co(  -1-  ) |   =    ---+---+
+   |      #|#    |       | o |   |
+    -------------         ------- 
+```
+
+This was done in a live session of collaborate coding but proved tricky as the MeshTiling class was written under the
+assumption that we'd only be searching for avoidance classes. However, we manage to (drastically) change the class so
+that it was able to find the above containment cover _at the cost of_ not being able to find avoidance covers anymore.
+
+Bjarni will now have to refactor the code so that it can do both and preferably find covers for MeshTilings with a mix
+of requirements (containment) and obstructions (avoidance) specifications. Plan B is to make the assumption that the
+root 1x1 MeshTiling is only allowed to contain requirements _or_ obstructions -- not a mix of both.
+
+We discussed the skeletons for both of the presentations and decided they should look along these lines:
+
+Stærðfræði á Íslandi conference (~30 min):
+  * Title will be "Þakningar fléttufræðilegra fyrirbrigða með aðstoð línulegrar bestunnar"
+  * Henning/Christian will try to go first with their presentation
+    - will define perms and patterns which saves time for Bjarni and Émile
+    - definitions should still be included in the slides for future references
+  * Explain CombCov with Word Classes
+    - Av(aa) with words up to length 3
+    - pick selected subrules and calculate their containment strings
+    - explain that we use Gurobi (Linear Programming) to solve the set of eqs.
+  * Talk about success for MeshTilings without defining it
+    - show visual covers (see permuta library for LaTeX code)
+    - Wilf length 2 mesh patterns
+    - Fishburn length 3 patterns (Catalan numbers)
+    - Vincular and Covincular patterns
+    - Bi-Vincular patterns
+
+Thesis defence (~60 min):
+  * Start same as the other one
+  * Define MeshTilings here and go into more detail
+
+Bjarni will be away for travels the next two weeks. Next two meetings will be conducted via Skype.
+
+
+
 2019-08-22
 ==========
 - [x] Go over requires.io integration with PermutaTriangle repos
@@ -21,7 +88,7 @@ We went over the results of the Vincular+Covincular patterns as well and rejoice
 Many covers needed only 3x3x3 config and some more was found with 4x4x4 config. We'll try config 5x5x5 for the yet
 unsuccessful ones.
 
-Henning has asked for 2-3 talking slots at the Icelandic Math Conference in October for Bjarni, Émile and maybe.
+Henning has asked for 2-3 talking slots at the Icelandic Math Conference in October for Bjarni, Émile and maybe
 Christian/Henning to present their work. All of them have registered to participate in the conference.
 
 
