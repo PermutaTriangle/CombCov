@@ -119,14 +119,11 @@ class CombCov():
                              cat="Binary")
 
         for i in range(len(self.elmnts_dict)):  # nr. of equations
-            indices_in_equation = []
-            for j in range(len(self.bitstrings)):  # nr. of variables x_j
-                if (self.bitstrings[j] & (1 << i)) != 0:
-                    indices_in_equation.append(j)
-
-            if indices_in_equation:
-                constraint = sum(X[j] for j in indices_in_equation)
-                problem += constraint == 1
+            constraint = sum(
+                int((self.bitstrings[j] & (1 << i)) != 0) * X[j]
+                for j in range(len(self.bitstrings))
+            )  # nr. of variables x_j
+            problem += constraint == 1
 
         # Objective function
         problem += sum(X[j] for j in range(len(self.bitstrings)))
