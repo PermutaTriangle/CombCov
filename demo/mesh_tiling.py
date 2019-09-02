@@ -24,6 +24,9 @@ class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
         return self.obstructions == frozenset() \
                and self.requirements == frozenset()
 
+    def flip(self):
+        return Cell(self.requirements, self.obstructions)
+
     def get_permclass(self):
         if self.is_empty():
             return Av(Perm((0,)))

@@ -14,11 +14,6 @@ class CellTest(unittest.TestCase):
                                 ((2, 0), (2, 1), (2, 2), (2, 3)))
         self.mp_cell = Cell(frozenset({self.mp_31c2}), frozenset())
 
-    def uninitialized_cell(self):
-        assert (not MeshTiling.empty_cell.is_uninitialized())
-        assert (not MeshTiling.point_cell.is_uninitialized())
-        assert (not MeshTiling.anything_cell.is_uninitialized())
-
     def test_empty_cell(self):
         assert (MeshTiling.empty_cell.is_empty())
         assert (not MeshTiling.point_cell.is_empty())
@@ -39,6 +34,11 @@ class CellTest(unittest.TestCase):
         assert repr(MeshTiling.point_cell) == "o"
         assert repr(MeshTiling.anything_cell) == "S"
         assert repr(self.mp_cell) == "Av({})".format(repr(self.mp_31c2))
+
+    def test_flip(self):
+        flipped_cell = Cell(frozenset(), frozenset({self.mp_31c2}))
+        assert flipped_cell == self.mp_cell.flip()
+        assert self.mp_cell == self.mp_cell.flip().flip()
 
     def test_get_permclass(self):
         for size in range(1, 5):
