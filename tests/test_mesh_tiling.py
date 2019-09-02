@@ -34,6 +34,10 @@ class CellTest(unittest.TestCase):
         assert repr(MeshTiling.point_cell) == "o"
         assert repr(MeshTiling.anything_cell) == "S"
         assert repr(self.mp_cell) == "Av({})".format(repr(self.mp_31c2))
+        assert repr(self.mp_cell.flip()) == "Co({})".format(repr(self.mp_31c2))
+        av_co_cell = Cell(frozenset({self.mp_31c2}), frozenset({self.mp_31c2}))
+        assert repr(av_co_cell) == "Av({}) and Co({})".format(
+            repr(self.mp_31c2), repr(self.mp_31c2))
 
     def test_flip(self):
         flipped_cell = Cell(frozenset(), frozenset({self.mp_31c2}))
@@ -68,14 +72,10 @@ class PermTest(unittest.TestCase):
 
     def setUp(self) -> None:
         self.p = Perm((1, 0))
-        self.mt = MeshTiling({(0, 0): Cell(
-            obstructions=frozenset({self.p}),
-            requirements=frozenset()
-        )})
+        self.mt = MeshTiling({(0, 0): Cell(frozenset({self.p}), frozenset())})
 
     def test_that_obstructions_are_perms(self) -> None:
         for subrule in self.mt.get_subrules():
-            assert isinstance(subrule, Rule)
             for obstructions in subrule.get_obstruction_lists():
                 for obstruction in obstructions:
                     assert isinstance(obstruction, Perm)
@@ -156,16 +156,16 @@ class MeshTilingTest(unittest.TestCase):
         ]
         assert tiling == correct_tiling
 
+    def test_invalid_obstruction(self):
+        invalid_cell = Cell(frozenset({"not a mesh patt"}), frozenset())
+        invalid_mt = MeshTiling({(0, 0): invalid_cell})
+        with pytest.raises(ValueError):
+            list(invalid_mt.get_subrules())
+
     def test_get_elmnts_of_size_Av21_cell(self):
         mt = MeshTiling({
-            (0, 0): Cell(
-                obstructions=frozenset({Perm((1, 0))}),
-                requirements=frozenset()
-            ),
-            (1, 1): Cell(
-                obstructions=frozenset({Perm((0, 1)), Perm((1, 0))}),
-                requirements=frozenset({Perm((0,))})
-            )
+            (0, 0): Cell(frozenset({Perm((1, 0))}), frozenset()),
+            (1, 1): MeshTiling.point_cell
         })
 
         for size in range(1, 5):
@@ -176,10 +176,7 @@ class MeshTilingTest(unittest.TestCase):
 
     def test_get_elmnts_of_size_point_cell(self):
         mt = MeshTiling({
-            (0, 0): Cell(
-                obstructions=frozenset({Perm((0, 1)), Perm((1, 0))}),
-                requirements=frozenset({Perm((0,))})
-            )
+            (0, 0): MeshTiling.point_cell
         })
 
         for size in range(1, 5):

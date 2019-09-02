@@ -24,6 +24,14 @@ class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
         return self.obstructions == frozenset() \
                and self.requirements == frozenset()
 
+    def is_only_avoiding(self):
+        return len(self.obstructions) > 0 \
+               and self.requirements == frozenset()
+
+    def is_only_containing(self):
+        return self.obstructions == frozenset() \
+               and len(self.requirements) > 0
+
     def flip(self):
         return Cell(self.requirements, self.obstructions)
 
@@ -44,9 +52,16 @@ class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
             return "o"
         elif self.is_anything():
             return "S"
+        elif self.is_only_avoiding():
+            return "Av({})".format(
+                ", ".join(repr(patt) for patt in self.obstructions))
+        elif self.is_only_containing():
+            return "Co({})".format(
+                ", ".join(repr(patt) for patt in self.requirements))
         else:
-            return "Av({})".format(", ".join(
-                repr(mp) for mp in self.obstructions))
+            return "Av({}) and Co({})".format(
+                ", ".join(repr(patt) for patt in self.obstructions),
+                ", ".join(repr(patt) for patt in self.requirements))
 
     def __str__(self):
         # ToDo: Instead return multi-line mesh patterns
