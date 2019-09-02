@@ -4,21 +4,7 @@ from permuta import Av, MeshPatt, Perm, PermSet
 
 import pytest
 from combcov import Rule
-from demo.mesh_tiling import Cell, MeshTiling, MockAvMeshPatt
-
-
-class MockAvMeshPattTests(unittest.TestCase):
-
-    def test_mock_av_patt_nonsense(self):
-        with pytest.raises(ValueError):
-            MockAvMeshPatt([None])
-
-    def test_all_avoiding_perms(self):
-        mp_1c2 = MeshPatt(Perm((0, 1)), ((1, 0), (1, 1), (1, 2)))
-        mamp = MockAvMeshPatt(mp_1c2)
-        for length, perms in [(1, [Perm((0,))]), (2, [Perm((1, 0))]),
-                              (3, [Perm((2, 1, 0))])]:
-            assert (set(mamp.of_length(length)) == set(perms))
+from demo.mesh_tiling import Cell, MeshTiling
 
 
 class CellTest(unittest.TestCase):
@@ -76,6 +62,23 @@ class CellTest(unittest.TestCase):
                 size)) == set(expected_from_mp_cell)
             assert (len(set(expected_from_mp_cell)) ==
                     len(list(expected_from_mp_cell)))
+
+
+class PermTest(unittest.TestCase):
+
+    def setUp(self) -> None:
+        self.p = Perm((1, 0))
+        self.mt = MeshTiling({(0, 0): Cell(
+            obstructions=frozenset({self.p}),
+            requirements=frozenset()
+        )})
+
+    def test_that_obstructions_are_perms(self) -> None:
+        for subrule in self.mt.get_subrules():
+            assert isinstance(subrule, Rule)
+            for obstructions in subrule.get_obstruction_lists():
+                for obstruction in obstructions:
+                    assert isinstance(obstruction, Perm)
 
 
 class MeshTilingTest(unittest.TestCase):

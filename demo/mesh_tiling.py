@@ -3,31 +3,11 @@ import logging
 from collections import namedtuple
 
 from permuta import Av, MeshPatt, Perm, PermSet
-from permuta.interfaces import Patt
 from permuta.misc import flatten, ordered_set_partitions
 
 from combcov import CombCov, Rule
 
 logger = logging.getLogger("MeshTiling")
-
-
-class MockAvMeshPatt():
-    def __init__(self, mesh_patterns):
-        self.mesh_patterns = mesh_patterns
-        if isinstance(mesh_patterns, MeshPatt):
-            self.filter_function = lambda perm: perm.avoids(mesh_patterns)
-        elif all(isinstance(p, Perm) for p in mesh_patterns):
-            self.filter_function = lambda perm: perm in Av(mesh_patterns)
-        elif all(isinstance(p, Patt) for p in mesh_patterns):
-            self.filter_function = lambda perm: all(
-                perm.avoids(patt) for patt in mesh_patterns)
-        else:
-            raise ValueError("'mesh_patterns' variable not as expected: "
-                             "'{}'".format(mesh_patterns))
-
-    def of_length(self, size):
-        perm_set = PermSet(size)
-        return filter(self.filter_function, perm_set)
 
 
 class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
@@ -52,7 +32,7 @@ class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
         elif self.is_anything():
             return PermSet()
         else:
-            return MockAvMeshPatt(self.obstructions)
+            return Av(self.obstructions)
 
     def __repr__(self):
         if self.is_empty():
@@ -114,7 +94,7 @@ class MeshTiling(Rule):
             row = number // self.columns
             return (col, row)
 
-    def get_obstructions(self):
+    def get_obstruction_lists(self):
         for cell in self.cells.values():
             if not cell.is_empty() and not cell.is_point():
                 yield cell.obstructions
@@ -234,7 +214,7 @@ class MeshTiling(Rule):
         )
 
         cell_choices = {self.point_cell, self.anything_cell, self.tiling[0]}
-        for obstruction_list in self.get_obstructions():
+        for obstruction_list in self.get_obstruction_lists():
             for obstruction in obstruction_list:
                 if isinstance(obstruction, MeshPatt):
                     n = len(obstruction)
