@@ -57,7 +57,7 @@ class CombCov():
         self.rules_to_bitstring_dict = {}
 
         for rule in self.root_object.get_subrules():
-            if rule in self.rules:
+            if rule == self.root_object or rule in self.rules:
                 rule_is_good = False
             else:
                 rule_is_good = True
@@ -75,10 +75,6 @@ class CombCov():
                     else:
                         seen_elmnts.add(elmnt)
                         binary_string += 2 ** (self.elmnts_dict[elmnt])
-
-                # Throwing out single-rule covers
-                if binary_string == string_to_cover:
-                    rule_is_good = False
 
             if rule_is_good:
                 self.rules.append(rule)

@@ -33,9 +33,6 @@ class MockAvMeshPatt():
 class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
     __slots__ = ()
 
-    def is_uninitialized(self):
-        return self.obstructions is None and self.requirements is None
-
     def is_empty(self):
         return self.obstructions == frozenset({Perm((0,))})
 
@@ -74,56 +71,34 @@ class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
 
 
 class MeshTiling(Rule):
-    uninitialized_cell = Cell(None, None)
     empty_cell = Cell(frozenset({Perm((0,))}), frozenset())
     point_cell = Cell(frozenset({Perm((0, 1)), Perm((1, 0))}),
                       frozenset({Perm((0,))}))
     anything_cell = Cell(frozenset(), frozenset())
 
-    def __init__(self, obstructions, requirements):
-        self.MAX_COLUMN_DIMENSION = 3
-        self.MAX_ROW_DIMENSION = 3
+    def __init__(self, cells={}):
+        # Sane and fast-running default values, overwrite as needed
+        self.MAX_COLUMN_DIMENSION = 2
+        self.MAX_ROW_DIMENSION = 2
         self.MAX_ACTIVE_CELLS = 3
 
-        Xs, Ys = [], []
-        for (x, y) in list(obstructions) + list(requirements):
-            Xs.append(x)
-            Ys.append(y)
+        # Clean empty rows and columns and save cells with shifted coordinates
+        Xs, Ys = set(x for (x, y) in cells), set(y for (x, y) in cells)
+        self.columns, self.rows = max(1, len(Xs)), max(1, len(Ys))
 
-        max_x, min_x = (max(Xs), min(Xs)) if Xs else (0, 0)
-        max_y, min_y = (max(Ys), min(Ys)) if Ys else (0, 0)
+        compression_dict = {
+            'col': {old: new for (new, old) in enumerate(sorted(Xs))},
+            'row': {old: new for (new, old) in enumerate(sorted(Ys))}
+        }
 
-        self.obstructions = {(x - min_x, y - min_y): tuple(v) for
-                             ((x, y), v) in obstructions.items()}
-        self.requirements = {(x - min_x, y - min_y): tuple(v) for
-                             ((x, y), v) in requirements.items()}
-
-        self.columns = max_x - min_x + 1
-        self.rows = max_y - min_y + 1
-        self.grid = [[self.uninitialized_cell for _ in range(self.rows)] for _
-                     in range(self.columns)]
-
-        # Populate obstructions...
-        for (c, r), obs_list in self.obstructions.items():
-            self.grid[c][r] = Cell(frozenset(obs_list), frozenset())
-
-        # ...and requirements...
-        for (c, r), req_list in self.requirements.items():
-            previous_obstruction_list = self.grid[c][r].obstructions
-            self.grid[c][r] = Cell(previous_obstruction_list,
-                                   frozenset(req_list))
-
-        # ...and then the rest are empty cells
-        for (c, r) in itertools.product(range(self.columns), range(self.rows)):
-            if self.grid[c][r].is_uninitialized():
-                self.grid[c][r] = self.empty_cell
-
-        # Flattening the 2D self.grid into a 1D list
-        # (Instead of row-by-row, go column-by-column when flattening?)
-        self.tiling = []
-        for row in range(self.rows):
-            row_content = [self.grid[i][row] for i in range(self.columns)]
-            self.tiling.extend(row_content)
+        self.cells = {}
+        self.tiling = [self.empty_cell] * (self.columns * self.rows)
+        for (old_col, old_row), cell in cells.items():
+            col = compression_dict['col'][old_col]
+            row = compression_dict['row'][old_row]
+            self.cells[(col, row)] = cell
+            self.tiling[
+                self.convert_coordinates_to_linear_number(col, row)] = cell
 
     # Linear number = (column, row)
     #   -----------------------------------
@@ -138,6 +113,11 @@ class MeshTiling(Rule):
             col = number % self.columns
             row = number // self.columns
             return (col, row)
+
+    def get_obstructions(self):
+        for cell in self.cells.values():
+            if not cell.is_empty() and not cell.is_point():
+                yield cell.obstructions
 
     def convert_coordinates_to_linear_number(self, col, row):
         if col < 0 or col >= self.columns or row < 0 or row >= self.rows:
@@ -241,12 +221,20 @@ class MeshTiling(Rule):
     def get_subrules(self):
         # Subrules are MeshTilings of sizes ranging from 1 x 1 to 3 x 3
         # (adjustable with self.MAX_COLUMN_DIMENSION and self.MAX_ROW_DIMENSION
-        # vairables). Each cell contains a mix of requirements (Perms) and
+        # variables). Each cell contains a mix of requirements (Perms) and
         # obstructions (MeshPatts) where the obstructions are sub mesh patterns
         # of any of the obstructions in the root object.
 
-        cell_choices = {self.point_cell, self.anything_cell, self.grid[0][0]}
-        for obstruction_list in self.obstructions.values():
+        logger.info(
+            "About to generate subrules with up to {} active cells "
+            "and dimensions up to {}x{}".format(
+                self.MAX_ACTIVE_CELLS, self.MAX_COLUMN_DIMENSION,
+                self.MAX_ROW_DIMENSION
+            )
+        )
+
+        cell_choices = {self.point_cell, self.anything_cell, self.tiling[0]}
+        for obstruction_list in self.get_obstructions():
             for obstruction in obstruction_list:
                 if isinstance(obstruction, MeshPatt):
                     n = len(obstruction)
@@ -287,7 +275,7 @@ class MeshTiling(Rule):
             len(cell_choices), cell_choices))
 
         subrules = 1
-        yield MeshTiling({}, {})  # always include the empty rule
+        yield MeshTiling()  # always include the empty rule
 
         for (dim_col, dim_row) in itertools.product(
                 range(1, self.columns + self.MAX_COLUMN_DIMENSION),
@@ -301,35 +289,16 @@ class MeshTiling(Rule):
                         cell_choices, repeat=how_many_active_cells):
                     for combination in itertools.combinations(
                             range(nr_of_cells), how_many_active_cells):
-                        requirements = {}
-                        obstructions = {}
-                        active_cols = set()
-                        active_rows = set()
+                        cells = {}
                         for i, cell_index in enumerate(combination):
-                            choice = active_cells[i]
-
                             c = cell_index % dim_col
-                            active_cols.add(c)
-
                             r = cell_index // dim_col
-                            active_rows.add(r)
+                            cells[(c, r)] = active_cells[i]
 
-                            if choice.obstructions is not frozenset():
-                                obstructions[(c, r)] = choice.obstructions
+                        subrules += 1
+                        yield MeshTiling(cells)
 
-                            if choice.requirements is not frozenset():
-                                requirements[(c, r)] = choice.requirements
-
-                        if active_cols == set(range(dim_col)) and \
-                                active_rows == set(range(dim_row)):
-                            subrules += 1
-                            yield MeshTiling(obstructions, requirements)
-
-        logger.info(
-            "Generated {} subrules with up to {} active cells with dimensions "
-            "up to {}x{}".format(
-                subrules, self.MAX_ACTIVE_CELLS,
-                self.MAX_COLUMN_DIMENSION, self.MAX_ROW_DIMENSION))
+        logger.info("Generated in total {} subrules ".format(subrules))
 
     def get_dimension(self):
         return (self.columns, self.rows)
@@ -338,11 +307,14 @@ class MeshTiling(Rule):
         return self.tiling
 
     def _key(self):
-        return (frozenset(self.requirements.items()),
-                frozenset(self.obstructions.items()))
+        return frozenset(self.cells.items()),
 
     def __len__(self):
         return self.columns * self.rows
+
+    def __repr__(self):
+        return "({}x{}) [{}]".format(self.columns, self.rows, ", ".join(
+            repr(cell) for cell in self.cells.values()))
 
     def __str__(self):
         # ToDo: Implement proper multi-line Cell.__str__() and use instead
@@ -375,10 +347,12 @@ def main():
 
     perm = Perm((2, 0, 1))
     mesh_patt = MeshPatt(perm, ((2, 0), (2, 1), (2, 2), (2, 3)))
-    mesh_tiling = MeshTiling(
-        obstructions={(0, 0): {mesh_patt}},
-        requirements={}
-    )
+    mesh_tiling = MeshTiling({
+        (0, 0): Cell(
+            obstructions=frozenset({mesh_patt}),
+            requirements=frozenset()
+        ),
+    })
     mesh_tiling.MAX_COLUMN_DIMENSION = 3
     mesh_tiling.MAX_ROW_DIMENSION = 2
     mesh_tiling.MAX_ACTIVE_CELLS = 3

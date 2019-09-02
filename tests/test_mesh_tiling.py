@@ -29,25 +29,21 @@ class CellTest(unittest.TestCase):
         self.mp_cell = Cell(frozenset({self.mp_31c2}), frozenset())
 
     def uninitialized_cell(self):
-        assert (MeshTiling.uninitialized_cell.is_uninitialized())
         assert (not MeshTiling.empty_cell.is_uninitialized())
         assert (not MeshTiling.point_cell.is_uninitialized())
         assert (not MeshTiling.anything_cell.is_uninitialized())
 
     def test_empty_cell(self):
-        assert (not MeshTiling.uninitialized_cell.is_empty())
         assert (MeshTiling.empty_cell.is_empty())
         assert (not MeshTiling.point_cell.is_empty())
         assert (not MeshTiling.anything_cell.is_empty())
 
     def test_point_cell(self):
-        assert (not MeshTiling.uninitialized_cell.is_point())
         assert (not MeshTiling.empty_cell.is_point())
         assert (MeshTiling.point_cell.is_point())
         assert (not MeshTiling.anything_cell.is_point())
 
     def test_anything_cell(self):
-        assert (not MeshTiling.uninitialized_cell.is_anything())
         assert (not MeshTiling.empty_cell.is_anything())
         assert (not MeshTiling.point_cell.is_anything())
         assert (MeshTiling.anything_cell.is_anything())
@@ -89,31 +85,37 @@ class MeshTilingTest(unittest.TestCase):
         self.mp_31c2 = MeshPatt(self.p_312, ((2, 0), (2, 1), (2, 2), (2, 3)))
         self.mp_1c2 = self.mp_31c2.sub_mesh_pattern([1, 2])
 
-        self.point = {Perm((0,))}
-        self.point_obstruction = {Perm((0, 1)), Perm((1, 0))}
+        self.root_mp_cell = Cell(frozenset({self.mp_31c2}), frozenset())
+        self.sub_mp_cell = Cell(frozenset({self.mp_1c2}), frozenset())
 
-        self.empty_mt = MeshTiling({}, {})
-        self.root_mt = MeshTiling(
-            obstructions={
-                (0, 0): {self.mp_31c2}
-            },
-            requirements={}
-        )
-        self.sub_mt = MeshTiling(
-            obstructions={
-                (0, 0): {self.mp_31c2},
-                (1, 1): self.point_obstruction,
-                (2, 0): {self.mp_1c2},
-            },
-            requirements={
-                (1, 1): self.point,
-            }
-        )
+        self.empty_mt = MeshTiling()
+        self.any_mt = MeshTiling({(0, 0): MeshTiling.anything_cell})
+        self.root_mt = MeshTiling({
+            (0, 0): self.root_mp_cell,
+        })
+        self.sub_mt = MeshTiling({
+            (0, 0): self.root_mp_cell,
+            (1, 1): MeshTiling.point_cell,
+            (2, 0): self.sub_mp_cell,
+        })
 
     def test_is_instance_of_Rule(self):
         assert isinstance(self.sub_mt, Rule)
         assert isinstance(self.root_mt, Rule)
         assert isinstance(self.empty_mt, Rule)
+
+    def test_padding_removal(self):
+        padded_sub_mt = MeshTiling({
+            (1, 1): self.root_mp_cell,
+            (2, 2): MeshTiling.point_cell,
+            (3, 1): self.sub_mp_cell,
+        })
+        assert padded_sub_mt == self.sub_mt
+
+    def test_any_mt(self):
+        any_tiling = self.any_mt.get_tiling()
+        assert len(any_tiling) == 1
+        assert any_tiling[0] == MeshTiling.anything_cell
 
     def test_number_to_coordinates_conversions(self):
         assert self.sub_mt.convert_linear_number_to_coordinates(0) == (0, 0)
@@ -152,12 +154,17 @@ class MeshTilingTest(unittest.TestCase):
         assert tiling == correct_tiling
 
     def test_get_elmnts_of_size_Av21_cell(self):
-        requirements = {(1, 1): self.point}
-        obstructions = {
-            (0, 0): {Perm((1, 0))},
-            (1, 1): self.point_obstruction
-        }
-        mt = MeshTiling(obstructions, requirements)
+        mt = MeshTiling({
+            (0, 0): Cell(
+                obstructions=frozenset({Perm((1, 0))}),
+                requirements=frozenset()
+            ),
+            (1, 1): Cell(
+                obstructions=frozenset({Perm((0, 1)), Perm((1, 0))}),
+                requirements=frozenset({Perm((0,))})
+            )
+        })
+
         for size in range(1, 5):
             expected_perms = set(Av([Perm((1, 0))]).of_length(size))
             mt_perms = mt.get_elmnts(of_size=size)
@@ -165,9 +172,13 @@ class MeshTilingTest(unittest.TestCase):
             assert (set(mt_perms) == expected_perms)
 
     def test_get_elmnts_of_size_point_cell(self):
-        requirements = {(0, 0): self.point}
-        obstructions = {(0, 0): self.point_obstruction}
-        mt = MeshTiling(obstructions, requirements)
+        mt = MeshTiling({
+            (0, 0): Cell(
+                obstructions=frozenset({Perm((0, 1)), Perm((1, 0))}),
+                requirements=frozenset({Perm((0,))})
+            )
+        })
+
         for size in range(1, 5):
             expected_perms = {Perm((0,))} if size == 1 else set()
             mt_perms = mt.get_elmnts(of_size=size)
@@ -181,6 +192,8 @@ class MeshTilingTest(unittest.TestCase):
         subrules = list(self.root_mt.get_subrules())
         assert all(isinstance(rule, Rule) for rule in subrules)
         assert (self.empty_mt in subrules)
+        assert (self.any_mt in subrules)
+        assert (self.root_mt in subrules)
         assert (self.sub_mt in subrules)
 
     def test_subrules_too_small_dimensions(self):
@@ -190,22 +203,27 @@ class MeshTilingTest(unittest.TestCase):
         subrules = list(self.root_mt.get_subrules())
         assert all(isinstance(rule, Rule) for rule in subrules)
         assert (self.empty_mt in subrules)
+        assert (self.any_mt in subrules)
+        assert (self.root_mt in subrules)
         assert (self.sub_mt not in subrules)
 
     def test_dimensions(self):
-        assert (self.sub_mt.get_dimension() == (3, 2))
-        assert (self.root_mt.get_dimension() == (1, 1))
         assert (self.empty_mt.get_dimension() == (1, 1))
+        assert (self.any_mt.get_dimension() == (1, 1))
+        assert (self.root_mt.get_dimension() == (1, 1))
+        assert (self.sub_mt.get_dimension() == (3, 2))
 
     def test_length(self):
-        assert (len(self.sub_mt) == 6)
-        assert (len(self.root_mt) == 1)
         assert (len(self.empty_mt) == 1)
+        assert (len(self.any_mt) == 1)
+        assert (len(self.root_mt) == 1)
+        assert (len(self.sub_mt) == 6)
 
     def test_is_hashable(self):
-        self.sub_mt.__hash__()
-        self.root_mt.__hash__()
         self.empty_mt.__hash__()
+        self.any_mt.__hash__()
+        self.root_mt.__hash__()
+        self.sub_mt.__hash__()
 
     def test_str(self):
         assert str(self.empty_mt) == "\n --- \n|   |\n --- \n"
