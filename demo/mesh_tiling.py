@@ -10,6 +10,23 @@ from combcov import CombCov, Rule
 logger = logging.getLogger("MeshTiling")
 
 
+class MockAvCoPatts():
+    def __init__(self, av_patts, co_patts):
+        self.base_perm_set = Av(av_patts)
+
+        if isinstance(co_patts, (Perm, MeshPatt)):
+            self.filter = lambda perm: perm.contains(co_patts)
+        elif all(isinstance(patt, (Perm, MeshPatt)) for patt in co_patts):
+            self.filter = lambda perm: any(perm.contains(patt)
+                                           for patt in co_patts)
+        else:
+            raise ValueError("Variable 'co_patts' not as expected: "
+                             "'{}'".format(co_patts))
+
+    def of_length(self, size):
+        return filter(self.filter, self.base_perm_set.of_length(size))
+
+
 class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
     __slots__ = ()
 
@@ -24,13 +41,11 @@ class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
         return self.obstructions == frozenset() \
                and self.requirements == frozenset()
 
-    def is_only_avoiding(self):
-        return len(self.obstructions) > 0 \
-               and self.requirements == frozenset()
+    def is_avoiding(self):
+        return len(self.obstructions) > 0
 
-    def is_only_containing(self):
-        return self.obstructions == frozenset() \
-               and len(self.requirements) > 0
+    def is_containing(self):
+        return len(self.requirements) > 0
 
     def flip(self):
         return Cell(self.requirements, self.obstructions)
@@ -42,8 +57,10 @@ class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
             return PermSet(1)
         elif self.is_anything():
             return PermSet()
-        else:
+        elif self.is_avoiding() and not self.is_containing():
             return Av(self.obstructions)
+        else:
+            return MockAvCoPatts(self.obstructions, self.requirements)
 
     def __repr__(self):
         if self.is_empty():
@@ -52,10 +69,10 @@ class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
             return "o"
         elif self.is_anything():
             return "S"
-        elif self.is_only_avoiding():
+        elif self.is_avoiding() and not self.is_containing():
             return "Av({})".format(
                 ", ".join(repr(patt) for patt in self.obstructions))
-        elif self.is_only_containing():
+        elif self.is_containing() and not self.is_avoiding():
             return "Co({})".format(
                 ", ".join(repr(patt) for patt in self.requirements))
         else:
@@ -112,10 +129,15 @@ class MeshTiling(Rule):
             row = number // self.columns
             return (col, row)
 
-    def get_obstruction_lists(self):
+    def get_obstructions_lists(self):
         for cell in self.cells.values():
             if not cell.is_empty() and not cell.is_point():
                 yield cell.obstructions
+
+    def get_requirements_lists(self):
+        for cell in self.cells.values():
+            if not (cell.is_empty() or cell.is_point() or cell.is_anything()):
+                yield cell.requirements
 
     def convert_coordinates_to_linear_number(self, col, row):
         if col < 0 or col >= self.columns or row < 0 or row >= self.rows:
@@ -231,9 +253,11 @@ class MeshTiling(Rule):
             )
         )
 
-        cell_choices = {self.point_cell, self.anything_cell, self.tiling[0]}
-        for obstruction_list in self.get_obstruction_lists():
-            for obstruction in obstruction_list:
+        cell_choices = {self.point_cell, self.anything_cell, self.tiling[0],
+                        self.tiling[0].flip()}
+        for obstructions_list in itertools.chain(
+                self.get_obstructions_lists(), self.get_requirements_lists()):
+            for obstruction in obstructions_list:
                 if isinstance(obstruction, MeshPatt):
                     n = len(obstruction)
                     for i in range(n):
@@ -309,10 +333,6 @@ class MeshTiling(Rule):
 
     def __len__(self):
         return self.columns * self.rows
-
-    def __repr__(self):
-        return "({}x{}) [{}]".format(self.columns, self.rows, ", ".join(
-            repr(cell) for cell in self.cells.values()))
 
     def __str__(self):
         # ToDo: Implement proper multi-line Cell.__str__() and use instead

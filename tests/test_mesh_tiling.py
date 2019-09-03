@@ -1,10 +1,31 @@
 import unittest
+from math import factorial
 
 from permuta import Av, MeshPatt, Perm, PermSet
 
 import pytest
 from combcov import Rule
-from demo.mesh_tiling import Cell, MeshTiling
+from demo.mesh_tiling import Cell, MeshTiling, MockAvCoPatts
+
+
+class MockContainingPattsTest(unittest.TestCase):
+
+    def test_mock_co_patt_nonsense(self):
+        with pytest.raises(ValueError):
+            MockAvCoPatts({}, [None])
+
+    def test_containing_12(self):
+        containing = Perm((0, 1))
+        mcc = MockAvCoPatts({}, containing)
+        for l in range(5):
+            assert len(list(mcc.of_length(l))) == factorial(l) - 1
+
+    def test_avoiding_and_containing_patterns(self):
+        avoiding = {Perm((0, 2, 1)), Perm((2, 0, 1))}
+        containing = {Perm((0, 1))}
+        macp = MockAvCoPatts(avoiding, containing)
+        for l in range(5):
+            assert len(list(macp.of_length(l))) == (2 ** max(0, l - 1)) - 1
 
 
 class CellTest(unittest.TestCase):
@@ -13,6 +34,10 @@ class CellTest(unittest.TestCase):
         self.mp_31c2 = MeshPatt(Perm((2, 0, 1)),
                                 ((2, 0), (2, 1), (2, 2), (2, 3)))
         self.mp_cell = Cell(frozenset({self.mp_31c2}), frozenset())
+        self.mixed_av_co_cell = Cell(
+            frozenset({Perm((0, 2, 1)), Perm((2, 0, 1))}),
+            frozenset({Perm((0, 1))})
+        )
 
     def test_empty_cell(self):
         assert (MeshTiling.empty_cell.is_empty())
@@ -47,25 +72,25 @@ class CellTest(unittest.TestCase):
     def test_get_permclass(self):
         for size in range(1, 5):
             expected_from_empty_cell = set()
-            assert set(MeshTiling.empty_cell.get_permclass().of_length(
+            permclass_empty_cell = MeshTiling.empty_cell.get_permclass()
+            assert isinstance(permclass_empty_cell, Av)
+            assert set(permclass_empty_cell.of_length(
                 size)) == expected_from_empty_cell
 
             expected_from_point_cell = {Perm((0,))} if size == 1 else set()
-            assert set(MeshTiling.point_cell.get_permclass().of_length(
+            permclass_point_cell = MeshTiling.point_cell.get_permclass()
+            assert isinstance(permclass_point_cell, PermSet)
+            assert set(permclass_point_cell.of_length(
                 size)) == expected_from_point_cell
 
             expected_from_anything_cell = set(PermSet(size))
-            assert set(MeshTiling.anything_cell.get_permclass().of_length(
+            permclass_anything_cell = MeshTiling.anything_cell.get_permclass()
+            assert isinstance(permclass_anything_cell, PermSet)
+            assert set(permclass_anything_cell.of_length(
                 size)) == expected_from_anything_cell
 
-            expected_from_mp_cell = set(filter(
-                lambda perm: perm.avoids(self.mp_31c2),
-                PermSet(size))
-            )
-            assert set(self.mp_cell.get_permclass().of_length(
-                size)) == set(expected_from_mp_cell)
-            assert (len(set(expected_from_mp_cell)) ==
-                    len(list(expected_from_mp_cell)))
+        assert isinstance(self.mp_cell.get_permclass(), Av)
+        assert isinstance(self.mixed_av_co_cell.get_permclass(), MockAvCoPatts)
 
 
 class PermTest(unittest.TestCase):
@@ -76,7 +101,7 @@ class PermTest(unittest.TestCase):
 
     def test_that_obstructions_are_perms(self) -> None:
         for subrule in self.mt.get_subrules():
-            for obstructions in subrule.get_obstruction_lists():
+            for obstructions in subrule.get_obstructions_lists():
                 for obstruction in obstructions:
                     assert isinstance(obstruction, Perm)
 
