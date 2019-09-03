@@ -57,7 +57,7 @@ class CombCov():
         self.rules_to_bitstring_dict = {}
 
         for rule in self.root_object.get_subrules():
-            if rule in self.rules:
+            if rule == self.root_object or rule in self.rules:
                 rule_is_good = False
             else:
                 rule_is_good = True
@@ -75,10 +75,6 @@ class CombCov():
                     else:
                         seen_elmnts.add(elmnt)
                         binary_string += 2 ** (self.elmnts_dict[elmnt])
-
-                # Throwing out single-rule covers
-                if binary_string == string_to_cover:
-                    rule_is_good = False
 
             if rule_is_good:
                 self.rules.append(rule)
@@ -119,14 +115,11 @@ class CombCov():
                              cat="Binary")
 
         for i in range(len(self.elmnts_dict)):  # nr. of equations
-            indices_in_equation = []
-            for j in range(len(self.bitstrings)):  # nr. of variables x_j
-                if (self.bitstrings[j] & (1 << i)) != 0:
-                    indices_in_equation.append(j)
-
-            if indices_in_equation:
-                constraint = sum(X[j] for j in indices_in_equation)
-                problem += constraint == 1
+            constraint = sum(
+                int((self.bitstrings[j] & (1 << i)) != 0) * X[j]
+                for j in range(len(self.bitstrings))
+            )  # nr. of variables x_j
+            problem += constraint == 1
 
         # Objective function
         problem += sum(X[j] for j in range(len(self.bitstrings)))
