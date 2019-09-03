@@ -48,8 +48,8 @@ class CombCov():
         logger.info("Creating binary strings and rules...")
         time_start = time()
 
-        string_to_cover = 2 ** len(self.elmnts_dict) - 1
-        logger.info("Bitstring to cover: {} ".format(string_to_cover))
+        bitstring_to_cover = bin(2 ** len(self.elmnts_dict) - 1)[2:]
+        logger.info("Bitstring to cover: {} ".format(bitstring_to_cover))
 
         self.rules = []
         self.bitstrings = []
@@ -61,7 +61,7 @@ class CombCov():
                 rule_is_good = False
             else:
                 rule_is_good = True
-                binary_string = 0
+                binary_number = 0
 
             for elmnt_size in range(self.max_elmnt_size + 1):
                 if not rule_is_good:
@@ -74,9 +74,12 @@ class CombCov():
                         break
                     else:
                         seen_elmnts.add(elmnt)
-                        binary_string += 2 ** (self.elmnts_dict[elmnt])
+                        binary_number += 2 ** (self.elmnts_dict[elmnt])
 
             if rule_is_good:
+                binary_string = "{:0>{}}".format(
+                    bin(binary_number)[2:], len(self.elmnts_dict))
+
                 self.rules.append(rule)
                 self.rules_to_bitstring_dict[rule] = binary_string
 
@@ -116,7 +119,7 @@ class CombCov():
 
         for i in range(len(self.elmnts_dict)):  # nr. of equations
             constraint = sum(
-                int((self.bitstrings[j] & (1 << i)) != 0) * X[j]
+                int(self.bitstrings[j][-i]) * X[j]
                 for j in range(len(self.bitstrings))
             )  # nr. of variables x_j
             problem += constraint == 1

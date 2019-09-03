@@ -27,19 +27,19 @@ $ python -m demo.string_set
 [INFO] (CombCov) ...DONE enumerating elements! (Running time: 0.00 sec)
 [INFO] (CombCov) Total of 87 elements.
 [INFO] (CombCov) Enumeration: [1, 2, 3, 5, 8, 13, 21, 34]
-[INFO] (CombCov) Creating binary strings from rules...
-[INFO] (CombCov) Bitstring to cover: 154742504910672534362390527 
+[INFO] (CombCov) Creating binary strings and rules...
+[INFO] (CombCov) Bitstring to cover: 111111111111111111111111111111111111111111111111111111111111111111111111111111111111111 
 [INFO] (StringSet) Generated 16 subrules
-[INFO] (CombCov) ...DONE creating binary strings! (Running time: 0.00 sec)
+[INFO] (CombCov) ...DONE creating binary strings and rules! (Running time: 0.00 sec)
 [INFO] (CombCov) Total of 14 valid rules with 14 distinct binary strings.
 [INFO] (CombCov) Searching for a cover for ''*Av(aa) over ∑={a,b}...
 [INFO] (CombCov) Gurobi installed on system and set as solver
 [INFO] (CombCov) ...DONE searching for a cover! (Running time: 0.02 sec)
 Solution found!
- - Rule #1: ''*Av(a,b) over ∑={a,b} with bitstring 1
- - Rule #2: 'a'*Av(a,b) over ∑={a,b} with bitstring 2
- - Rule #3: 'b'*Av(aa) over ∑={a,b} with bitstring 154742431132702343545997108
- - Rule #4: 'ab'*Av(aa) over ∑={a,b} with bitstring 73777970190816393416
+ - Rule #1: ''*Av(b,a) over ∑={a,b} with bitstring 000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+ - Rule #2: 'a'*Av(b,a) over ∑={a,b} with bitstring 000000000000000000000000000000000000000000000000000000000000000000000000000000000000010
+ - Rule #3: 'b'*Av(aa) over ∑={a,b} with bitstring 111111111111111111111000000000000011111111111110000000011111111000001111100011100110100
+ - Rule #4: 'ab'*Av(aa) over ∑={a,b} with bitstring 000000000000000000000111111111111100000000000001111111100000000111110000011100011001000
 ```
 
 
