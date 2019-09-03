@@ -1,5 +1,6 @@
 import abc
 import logging
+from collections import defaultdict
 from time import time
 
 from pulp import GUROBI_CMD, PULP_CBC_CMD, LpMinimize, LpProblem, LpVariable
@@ -48,12 +49,12 @@ class CombCov():
         logger.info("Creating binary strings and rules...")
         time_start = time()
 
-        string_to_cover = 2 ** len(self.elmnts_dict) - 1
-        logger.info("Bitstring to cover: {} ".format(string_to_cover))
+        bitstring_to_cover = bin(2 ** len(self.elmnts_dict) - 1)[2:]
+        logger.info("Bitstring to cover: {} ".format(bitstring_to_cover))
 
         self.rules = []
         self.bitstrings = []
-        self.bitstring_to_rules_dict = {}
+        self.bitstring_to_rules_dict = defaultdict(list)
         self.rules_to_bitstring_dict = {}
 
         for rule in self.root_object.get_subrules():
@@ -61,7 +62,7 @@ class CombCov():
                 rule_is_good = False
             else:
                 rule_is_good = True
-                binary_string = 0
+                binary_number = 0
 
             for elmnt_size in range(self.max_elmnt_size + 1):
                 if not rule_is_good:
@@ -74,18 +75,17 @@ class CombCov():
                         break
                     else:
                         seen_elmnts.add(elmnt)
-                        binary_string += 2 ** (self.elmnts_dict[elmnt])
+                        binary_number += 2 ** (self.elmnts_dict[elmnt])
 
             if rule_is_good:
-                self.rules.append(rule)
-                self.rules_to_bitstring_dict[rule] = binary_string
+                binary_string = "{:0>{}}".format(
+                    bin(binary_number)[2:], len(self.elmnts_dict))
 
-                # ToDo: Use defaultdict for more readable syntax
-                if binary_string not in self.bitstring_to_rules_dict:
-                    self.bitstrings.append(binary_string)
-                    self.bitstring_to_rules_dict[binary_string] = [rule]
-                else:
-                    self.bitstring_to_rules_dict[binary_string].append(rule)
+                self.rules.append(rule)
+                self.bitstrings.append(binary_string) if \
+                    binary_string not in self.bitstrings else self.bitstrings
+                self.bitstring_to_rules_dict[binary_string].append(rule)
+                self.rules_to_bitstring_dict[rule] = binary_string
 
         time_end = time()
         elapsed_time = time_end - time_start
@@ -116,7 +116,7 @@ class CombCov():
 
         for i in range(len(self.elmnts_dict)):  # nr. of equations
             constraint = sum(
-                int((self.bitstrings[j] & (1 << i)) != 0) * X[j]
+                int(self.bitstrings[j][-i]) * X[j]
                 for j in range(len(self.bitstrings))
             )  # nr. of variables x_j
             problem += constraint == 1
