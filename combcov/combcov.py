@@ -1,5 +1,6 @@
 import abc
 import logging
+from collections import defaultdict
 from time import time
 
 from pulp import GUROBI_CMD, PULP_CBC_CMD, LpMinimize, LpProblem, LpVariable
@@ -53,7 +54,7 @@ class CombCov():
 
         self.rules = []
         self.bitstrings = []
-        self.bitstring_to_rules_dict = {}
+        self.bitstring_to_rules_dict = defaultdict(list)
         self.rules_to_bitstring_dict = {}
 
         for rule in self.root_object.get_subrules():
@@ -81,14 +82,10 @@ class CombCov():
                     bin(binary_number)[2:], len(self.elmnts_dict))
 
                 self.rules.append(rule)
+                self.bitstrings.append(binary_string) if \
+                    binary_string not in self.bitstrings else self.bitstrings
+                self.bitstring_to_rules_dict[binary_string].append(rule)
                 self.rules_to_bitstring_dict[rule] = binary_string
-
-                # ToDo: Use defaultdict for more readable syntax
-                if binary_string not in self.bitstring_to_rules_dict:
-                    self.bitstrings.append(binary_string)
-                    self.bitstring_to_rules_dict[binary_string] = [rule]
-                else:
-                    self.bitstring_to_rules_dict[binary_string].append(rule)
 
         time_end = time()
         elapsed_time = time_end - time_start
