@@ -370,6 +370,21 @@ class MeshTiling(Rule):
                middle_lines.join(line for line in cell_lines) + \
                top_bottom_lines
 
+    @staticmethod
+    def clean_patts(perms, mesh_patts):
+        unique_patts = dict()
+        for patt in chain(sorted(perms), sorted(mesh_patts)):
+            perms_from_cell = set()
+            cell = Cell(frozenset({patt}), frozenset())
+            for length in range(min(7, 2 * len(patt) + 1)):
+                perms_from_cell.update(cell.get_permclass().of_length(length))
+
+            perms_from_cell = frozenset(perms_from_cell)
+            if perms_from_cell not in unique_patts:
+                unique_patts[perms_from_cell] = patt
+
+        return set(unique_patts.values())
+
 
 def main():
     logging.getLogger().setLevel(logging.INFO)
