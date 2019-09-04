@@ -271,7 +271,7 @@ class MeshTiling(Rule):
                             if len(mesh_patt.shading) > 0:
                                 mesh_patts.add(mesh_patt)
                             else:
-                                # A mash patt without shading is just sa perm
+                                # A mesh patt without shading is just a perm
                                 perms.add(mesh_patt.pattern)
                 else:
                     raise ValueError(
