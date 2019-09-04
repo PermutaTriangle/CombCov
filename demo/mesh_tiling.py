@@ -253,8 +253,11 @@ class MeshTiling(Rule):
             )
         )
 
-        cell_choices = {self.point_cell, self.anything_cell, self.tiling[0],
-                        self.tiling[0].flip()}
+        origin_cell = self.tiling[0]
+        cell_choices = {self.point_cell, self.anything_cell}
+        cell_choices.add(
+            origin_cell if origin_cell.is_avoiding() else origin_cell.flip()
+        )
         for obstructions_list in chain(
                 self.get_obstructions_lists(), self.get_requirements_lists()):
             for obstruction in obstructions_list:
