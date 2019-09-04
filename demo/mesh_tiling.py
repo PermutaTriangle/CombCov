@@ -1,6 +1,6 @@
-import itertools
 import logging
 from collections import namedtuple
+from itertools import chain, combinations, product
 
 from permuta import Av, MeshPatt, Perm, PermSet
 from permuta.misc import flatten, ordered_set_partitions
@@ -199,7 +199,7 @@ class MeshTiling(Rule):
             rowcnt = [sum(cntz[ro][co] for co in range(w)) for ro in range(h)]
             colcnt = [sum(cntz[ro][co] for ro in range(h)) for co in range(w)]
 
-            for colpart in itertools.product(*[
+            for colpart in product(*[
                     ordered_set_partitions(
                         range(colcnt[col]), [
                             cntz[row][col] for row in range(h)
@@ -207,13 +207,13 @@ class MeshTiling(Rule):
                     ) for col in range(w)]):
                 scolpart = [[sorted(colpart[i][j]) for j in range(h)] for i in
                             range(w)]
-                for rowpart in itertools.product(*[
+                for rowpart in product(*[
                     ordered_set_partitions(range(rowcnt[row]),
                                            [cntz[row][col] for col in
                                             range(w)]) for row in range(h)]):
                     srowpart = [[sorted(rowpart[i][j]) for j in range(w)] for i
                                 in range(h)]
-                    for perm_ass in itertools.product(
+                    for perm_ass in product(
                             *[s.get_permclass().of_length(cnt) for
                               cnt, s in zip(count_ass, tiling)]):
                         arr = [[[] for j in range(w)] for i in range(h)]
@@ -255,13 +255,13 @@ class MeshTiling(Rule):
 
         cell_choices = {self.point_cell, self.anything_cell, self.tiling[0],
                         self.tiling[0].flip()}
-        for obstructions_list in itertools.chain(
+        for obstructions_list in chain(
                 self.get_obstructions_lists(), self.get_requirements_lists()):
             for obstruction in obstructions_list:
                 if isinstance(obstruction, MeshPatt):
                     n = len(obstruction)
                     for i in range(n):
-                        for indices in itertools.combinations(range(n), i + 1):
+                        for indices in combinations(range(n), i + 1):
                             sub_mesh_pattern = obstruction.sub_mesh_pattern(
                                 indices)
                             shading = sub_mesh_pattern.shading
@@ -299,7 +299,7 @@ class MeshTiling(Rule):
         subrules = 1
         yield MeshTiling()  # always include the empty rule
 
-        for (dim_col, dim_row) in itertools.product(
+        for (dim_col, dim_row) in product(
                 range(1, self.columns + self.MAX_COLUMN_DIMENSION),
                 range(1, self.rows + self.MAX_ROW_DIMENSION)
         ):
@@ -307,9 +307,9 @@ class MeshTiling(Rule):
             nr_of_cells = dim_col * dim_row
             for how_many_active_cells in range(min(dim_col, dim_row),
                                                self.MAX_ACTIVE_CELLS + 1):
-                for active_cells in itertools.product(
+                for active_cells in product(
                         cell_choices, repeat=how_many_active_cells):
-                    for combination in itertools.combinations(
+                    for combination in combinations(
                             range(nr_of_cells), how_many_active_cells):
                         cells = {}
                         for i, cell_index in enumerate(combination):
