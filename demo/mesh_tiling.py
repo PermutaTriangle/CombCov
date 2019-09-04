@@ -284,28 +284,10 @@ class MeshTiling(Rule):
             origin_cell if origin_cell.is_avoiding() else origin_cell.flip()
         )
 
-        for mesh_patt in mesh_patts:
-            shading = mesh_patt.shading
-            if len(mesh_patt) == 1:
-                xs = {c[0] for c in shading}
-                ys = {c[1] for c in shading}
-                if len(shading) <= 1:
-                    pass
-                elif len(shading) == 2 and (len(xs) == 1 or len(ys) == 1):
-                    pass
-                else:
-                    cell_choices.add(
-                        Cell(frozenset({mesh_patt}), frozenset({}))
-                    )
-            else:
-                cell_choices.add(
-                    Cell(frozenset({mesh_patt}), frozenset({}))
-                )
-
-        for perm in perms:
-            av_perm_cell = Cell(frozenset({perm}), frozenset({}))
-            if not av_perm_cell.is_empty():
-                cell_choices.add(av_perm_cell)
+        for patt in MeshTiling.clean_patts(perms, mesh_patts):
+            av_cell = Cell(frozenset({patt}), frozenset())
+            if not av_cell.is_empty():
+                cell_choices.add(av_cell)
 
         logger.info("{} cell choices: {}".format(
             len(cell_choices), cell_choices))
