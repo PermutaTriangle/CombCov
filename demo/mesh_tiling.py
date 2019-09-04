@@ -339,9 +339,6 @@ class MeshTiling(Rule):
     def get_dimension(self):
         return (self.columns, self.rows)
 
-    def get_tiling(self):
-        return self.tiling
-
     def _key(self):
         return frozenset(self.cells.items()),
 

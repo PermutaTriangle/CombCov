@@ -141,7 +141,7 @@ class MeshTilingTest(unittest.TestCase):
         assert padded_sub_mt == self.sub_mt
 
     def test_any_mt(self):
-        any_tiling = self.any_mt.get_tiling()
+        any_tiling = self.any_mt.tiling
         assert len(any_tiling) == 1
         assert any_tiling[0] == MeshTiling.anything_cell
 
@@ -170,7 +170,7 @@ class MeshTilingTest(unittest.TestCase):
                 self.sub_mt.convert_coordinates_to_linear_number(col, row)
 
     def test_make_tiling(self):
-        tiling = self.sub_mt.get_tiling()
+        tiling = self.sub_mt.tiling
         correct_tiling = [
             Cell(frozenset({self.mp_31c2}), frozenset()),
             MeshTiling.empty_cell,
