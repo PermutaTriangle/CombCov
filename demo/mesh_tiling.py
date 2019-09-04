@@ -253,50 +253,61 @@ class MeshTiling(Rule):
             )
         )
 
-        origin_cell = self.tiling[0]
-        cell_choices = {self.point_cell, self.anything_cell}
-        cell_choices.add(
-            origin_cell if origin_cell.is_avoiding() else origin_cell.flip()
-        )
+        perms, mesh_patts = set(), set()
         for obstructions_list in chain(
                 self.get_obstructions_lists(), self.get_requirements_lists()):
             for obstruction in obstructions_list:
-                if isinstance(obstruction, MeshPatt):
-                    n = len(obstruction)
-                    for i in range(n):
-                        for indices in combinations(range(n), i + 1):
-                            sub_mesh_pattern = obstruction.sub_mesh_pattern(
-                                indices)
-                            shading = sub_mesh_pattern.shading
-                            if len(sub_mesh_pattern) == 1:
-                                xs = {c[0] for c in shading}
-                                ys = {c[1] for c in shading}
-                                if len(shading) <= 1:
-                                    pass
-                                elif len(shading) == 2 and (
-                                        len(xs) == 1 or len(ys) == 1):
-                                    pass
-                                else:
-                                    cell_choices.add(
-                                        Cell(frozenset({sub_mesh_pattern}),
-                                             frozenset({}))
-                                    )
+                n = len(obstruction)
+                if isinstance(obstruction, Perm):
+                    for l in range(n):
+                        perms.update(
+                            Perm.to_standard((obstruction[i] for i in indices))
+                            for indices in combinations(range(n), l + 1)
+                        )
+                elif isinstance(obstruction, MeshPatt):
+                    for l in range(n):
+                        for indices in combinations(range(n), l + 1):
+                            mesh_patt = obstruction.sub_mesh_pattern(indices)
+                            if len(mesh_patt.shading) > 0:
+                                mesh_patts.add(mesh_patt)
                             else:
-                                cell_choices.add(
-                                    Cell(frozenset({sub_mesh_pattern}),
-                                         frozenset({}))
-                                )
-                elif isinstance(obstruction, Perm):
-                    # Is there a method for sub-perms?
-                    cell_choices.add(
-                        Cell(frozenset({obstruction}), frozenset({}))
-                    )
+                                # A mash patt without shading is just sa perm
+                                perms.add(mesh_patt.pattern)
                 else:
                     raise ValueError(
                         "[ERROR] obstruction '{}' is neither a MeshPatt "
                         "or Perm!".format(obstruction))
 
-        logger.info("{} cell_choices: {}".format(
+        origin_cell = self.tiling[0]
+        cell_choices = {self.point_cell, self.anything_cell}
+        cell_choices.add(
+            origin_cell if origin_cell.is_avoiding() else origin_cell.flip()
+        )
+
+        for mesh_patt in mesh_patts:
+            shading = mesh_patt.shading
+            if len(mesh_patt) == 1:
+                xs = {c[0] for c in shading}
+                ys = {c[1] for c in shading}
+                if len(shading) <= 1:
+                    pass
+                elif len(shading) == 2 and (len(xs) == 1 or len(ys) == 1):
+                    pass
+                else:
+                    cell_choices.add(
+                        Cell(frozenset({mesh_patt}), frozenset({}))
+                    )
+            else:
+                cell_choices.add(
+                    Cell(frozenset({mesh_patt}), frozenset({}))
+                )
+
+        for perm in perms:
+            av_perm_cell = Cell(frozenset({perm}), frozenset({}))
+            if not av_perm_cell.is_empty():
+                cell_choices.add(av_perm_cell)
+
+        logger.info("{} cell choices: {}".format(
             len(cell_choices), cell_choices))
 
         subrules = 1
