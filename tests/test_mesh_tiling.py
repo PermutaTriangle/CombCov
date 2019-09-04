@@ -1,4 +1,5 @@
 import unittest
+from itertools import product
 from math import factorial
 
 from permuta import Av, MeshPatt, Perm, PermSet
@@ -141,7 +142,7 @@ class MeshTilingTest(unittest.TestCase):
         assert padded_sub_mt == self.sub_mt
 
     def test_any_mt(self):
-        any_tiling = self.any_mt.get_tiling()
+        any_tiling = self.any_mt.tiling
         assert len(any_tiling) == 1
         assert any_tiling[0] == MeshTiling.anything_cell
 
@@ -170,7 +171,7 @@ class MeshTilingTest(unittest.TestCase):
                 self.sub_mt.convert_coordinates_to_linear_number(col, row)
 
     def test_make_tiling(self):
-        tiling = self.sub_mt.get_tiling()
+        tiling = self.sub_mt.tiling
         correct_tiling = [
             Cell(frozenset({self.mp_31c2}), frozenset()),
             MeshTiling.empty_cell,
@@ -254,6 +255,28 @@ class MeshTilingTest(unittest.TestCase):
         assert str(self.empty_mt) == "\n --- \n|   |\n --- \n"
         assert "| Av({}) |".format(repr(self.mp_31c2)) \
                in str(self.root_mt).split("\n")
+
+    def test_av_12_perm_and_mesh_patts(self):
+        p = Perm((0, 1))
+        mesh_patts = {MeshPatt(p, ()), MeshPatt(p, [(1, 0), (1, 1), (1, 2)])}
+        perms = {p}
+        expected_output = {p}
+        assert MeshTiling.clean_patts(perms, mesh_patts) == expected_output
+
+    def test_all_length_one_mesh_patt(self):
+        p = Perm((0,))
+        perms = {p}
+        mesh_patts = {
+            MeshPatt(p, shading) for shading in [
+                list((n % 2, n // 2) for n, b in enumerate(c) if b)
+                for c in product([True, False], repeat=4)
+            ]
+        }
+        output = MeshTiling.clean_patts(perms, mesh_patts)
+
+        assert len(output) == 4
+        for patt in output:
+            assert patt in perms or patt in mesh_patts
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
-import itertools
 import logging
 from collections import namedtuple
+from itertools import chain, combinations, product
 
 from permuta import Av, MeshPatt, Perm, PermSet
 from permuta.misc import flatten, ordered_set_partitions
@@ -199,7 +199,7 @@ class MeshTiling(Rule):
             rowcnt = [sum(cntz[ro][co] for co in range(w)) for ro in range(h)]
             colcnt = [sum(cntz[ro][co] for ro in range(h)) for co in range(w)]
 
-            for colpart in itertools.product(*[
+            for colpart in product(*[
                     ordered_set_partitions(
                         range(colcnt[col]), [
                             cntz[row][col] for row in range(h)
@@ -207,13 +207,13 @@ class MeshTiling(Rule):
                     ) for col in range(w)]):
                 scolpart = [[sorted(colpart[i][j]) for j in range(h)] for i in
                             range(w)]
-                for rowpart in itertools.product(*[
+                for rowpart in product(*[
                     ordered_set_partitions(range(rowcnt[row]),
                                            [cntz[row][col] for col in
                                             range(w)]) for row in range(h)]):
                     srowpart = [[sorted(rowpart[i][j]) for j in range(w)] for i
                                 in range(h)]
-                    for perm_ass in itertools.product(
+                    for perm_ass in product(
                             *[s.get_permclass().of_length(cnt) for
                               cnt, s in zip(count_ass, tiling)]):
                         arr = [[[] for j in range(w)] for i in range(h)]
@@ -253,53 +253,49 @@ class MeshTiling(Rule):
             )
         )
 
-        cell_choices = {self.point_cell, self.anything_cell, self.tiling[0],
-                        self.tiling[0].flip()}
-        for obstructions_list in itertools.chain(
+        perms, mesh_patts = set(), set()
+        for obstructions_list in chain(
                 self.get_obstructions_lists(), self.get_requirements_lists()):
             for obstruction in obstructions_list:
-                if isinstance(obstruction, MeshPatt):
-                    n = len(obstruction)
-                    for i in range(n):
-                        for indices in itertools.combinations(range(n), i + 1):
-                            sub_mesh_pattern = obstruction.sub_mesh_pattern(
-                                indices)
-                            shading = sub_mesh_pattern.shading
-                            if len(sub_mesh_pattern) == 1:
-                                xs = {c[0] for c in shading}
-                                ys = {c[1] for c in shading}
-                                if len(shading) <= 1:
-                                    pass
-                                elif len(shading) == 2 and (
-                                        len(xs) == 1 or len(ys) == 1):
-                                    pass
-                                else:
-                                    cell_choices.add(
-                                        Cell(frozenset({sub_mesh_pattern}),
-                                             frozenset({}))
-                                    )
+                n = len(obstruction)
+                if isinstance(obstruction, Perm):
+                    for l in range(n):
+                        perms.update(
+                            Perm.to_standard((obstruction[i] for i in indices))
+                            for indices in combinations(range(n), l + 1)
+                        )
+                elif isinstance(obstruction, MeshPatt):
+                    for l in range(n):
+                        for indices in combinations(range(n), l + 1):
+                            mesh_patt = obstruction.sub_mesh_pattern(indices)
+                            if len(mesh_patt.shading) > 0:
+                                mesh_patts.add(mesh_patt)
                             else:
-                                cell_choices.add(
-                                    Cell(frozenset({sub_mesh_pattern}),
-                                         frozenset({}))
-                                )
-                elif isinstance(obstruction, Perm):
-                    # Is there a method for sub-perms?
-                    cell_choices.add(
-                        Cell(frozenset({obstruction}), frozenset({}))
-                    )
+                                # A mesh patt without shading is just a perm
+                                perms.add(mesh_patt.pattern)
                 else:
                     raise ValueError(
                         "[ERROR] obstruction '{}' is neither a MeshPatt "
                         "or Perm!".format(obstruction))
 
-        logger.info("{} cell_choices: {}".format(
+        origin_cell = self.tiling[0]
+        cell_choices = {self.point_cell, self.anything_cell}
+        cell_choices.add(
+            origin_cell if origin_cell.is_avoiding() else origin_cell.flip()
+        )
+
+        for patt in MeshTiling.clean_patts(perms, mesh_patts):
+            av_cell = Cell(frozenset({patt}), frozenset())
+            if not av_cell.is_empty():
+                cell_choices.add(av_cell)
+
+        logger.info("{} cell choices: {}".format(
             len(cell_choices), cell_choices))
 
         subrules = 1
         yield MeshTiling()  # always include the empty rule
 
-        for (dim_col, dim_row) in itertools.product(
+        for (dim_col, dim_row) in product(
                 range(1, self.columns + self.MAX_COLUMN_DIMENSION),
                 range(1, self.rows + self.MAX_ROW_DIMENSION)
         ):
@@ -307,9 +303,9 @@ class MeshTiling(Rule):
             nr_of_cells = dim_col * dim_row
             for how_many_active_cells in range(min(dim_col, dim_row),
                                                self.MAX_ACTIVE_CELLS + 1):
-                for active_cells in itertools.product(
+                for active_cells in product(
                         cell_choices, repeat=how_many_active_cells):
-                    for combination in itertools.combinations(
+                    for combination in combinations(
                             range(nr_of_cells), how_many_active_cells):
                         cells = {}
                         for i, cell_index in enumerate(combination):
@@ -324,9 +320,6 @@ class MeshTiling(Rule):
 
     def get_dimension(self):
         return (self.columns, self.rows)
-
-    def get_tiling(self):
-        return self.tiling
 
     def _key(self):
         return frozenset(self.cells.items()),
@@ -358,6 +351,21 @@ class MeshTiling(Rule):
                top_bottom_lines + \
                middle_lines.join(line for line in cell_lines) + \
                top_bottom_lines
+
+    @staticmethod
+    def clean_patts(perms, mesh_patts):
+        unique_patts = dict()
+        for patt in chain(sorted(perms), sorted(mesh_patts)):
+            perms_from_cell = set()
+            cell = Cell(frozenset({patt}), frozenset())
+            for length in range(min(7, 2 * len(patt) + 1)):
+                perms_from_cell.update(cell.get_permclass().of_length(length))
+
+            perms_from_cell = frozenset(perms_from_cell)
+            if perms_from_cell not in unique_patts:
+                unique_patts[perms_from_cell] = patt
+
+        return set(unique_patts.values())
 
 
 def main():
