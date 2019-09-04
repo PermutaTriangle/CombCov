@@ -140,8 +140,8 @@ class CombCov():
         if self.solution:
             print("Solution found!")
             for i, rule in enumerate(self.solution, start=1):
-                print(" - Rule #{}: {} with bitstring {}".format(
-                    i, rule, self.rules_to_bitstring_dict[rule]))
+                print(" - Rule #{} with bitstring {}: {}".format(
+                    i, self.rules_to_bitstring_dict[rule], rule))
         else:
             print("No solution found.")
 
