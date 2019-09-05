@@ -1,12 +1,11 @@
 import unittest
-from itertools import product
+from itertools import combinations, product
 from math import factorial
-
-from permuta import Av, MeshPatt, Perm, PermSet
 
 import pytest
 from combcov import Rule
 from demo.mesh_tiling import Cell, MeshTiling, MockAvCoPatts
+from permuta import Av, MeshPatt, Perm, PermSet
 
 
 class MockContainingPattsTest(unittest.TestCase):
@@ -262,6 +261,19 @@ class MeshTilingTest(unittest.TestCase):
         perms = {p}
         expected_output = {p}
         assert MeshTiling.clean_patts(perms, mesh_patts) == expected_output
+
+    def test_av_123_with_shaded_column(self):
+        p = Perm((0, 1, 2))
+        shading = [(1, 0), (1, 1), (1, 2), (1, 3)]
+        mp = MeshPatt(p, shading)
+        sub_mesh_patts = {
+            mp.sub_mesh_pattern(indices) for indices in
+            combinations(range(len(mp)), 2)
+        }
+        assert MeshTiling.clean_patts(
+            {}, sub_mesh_patts) == {MeshPatt(Perm((0, 1)), [])}
+        assert MeshTiling.clean_patts(
+            {Perm((0, 1))}, sub_mesh_patts) == {Perm((0, 1))}
 
     def test_all_length_one_mesh_patt(self):
         p = Perm((0,))
