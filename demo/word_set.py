@@ -10,7 +10,7 @@ class WordSet(Rule):
 
     def __init__(self, alphabet=tuple(), avoid=frozenset(), prefix=""):
         self.alphabet = tuple(alphabet)
-        self.avoid = frozenset(avoid)
+        self.avoid = self._basis_of(avoid)
         self.prefix = prefix
         self.max_prefix_size = max(0, max(len(av) for av in self.avoid))
 
@@ -39,6 +39,16 @@ class WordSet(Rule):
 
             # If we get this far we need to increase the length of the word
             return self.alphabet[0] + "".join(word)
+
+    @staticmethod
+    def _basis_of(words):
+        basis = set()
+        words = list(reversed(sorted(words, key=len)))
+        for i in range(len(words)):
+            candidat = words[i]
+            if all(word not in candidat for word in words[i + 1:]):
+                basis.add(candidat)
+        return frozenset(basis)
 
     @staticmethod
     def _get_all_subwords_of(s):
@@ -91,10 +101,12 @@ class WordSet(Rule):
     def _key(self):
         return (self.alphabet, self.avoid, self.prefix)
 
+    def __repr__(self):
+        return "'{}'*Av({})".format(self.prefix, ",".join(sorted(self.avoid)))
+
     def __str__(self):
-        return "'{}'*Av({}) over ∑={{{}}}".format(self.prefix,
-                                                  ",".join(self.avoid),
-                                                  ",".join(self.alphabet))
+        return "{} over ∑={{{}}}".format(repr(self),
+                                         ",".join(sorted(self.alphabet)))
 
 
 def main():

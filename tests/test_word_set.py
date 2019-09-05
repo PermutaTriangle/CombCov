@@ -12,6 +12,10 @@ class WordSetTest(unittest.TestCase):
         self.word_set = WordSet(self.alphabet, self.avoid)
         self.sub_word_set = WordSet(self.alphabet, self.avoid_subset)
 
+    def test_basis(self):
+        self.assertEqual(WordSet._basis_of(self.avoid), self.avoid)
+        self.assertEqual(WordSet._basis_of({'a', 'aa'}), frozenset({'a'}))
+
     def test_next_word(self):
         next_word = self.word_set.next_lexicographical_word
         self.assertEqual(next_word(None), '')
