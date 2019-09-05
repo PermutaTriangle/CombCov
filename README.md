@@ -17,19 +17,19 @@ extended for other types of combinatorial objects.
 ## Demos
 
 Take a look at the `demo/` folder in this repo to see examples on how to use
-`CombCov` with your own combinatorial object. On example finds a _String Set_
-cover for the set of string over the alphabet `{a,b}` that avoids the substring
-`aa` (meaning no string in the set contains `aa` as a substring).
+`CombCov` with your own combinatorial object. On example finds a _Word Set_
+cover for the set of words over the alphabet `{a,b}` that avoids the subword
+`aa` (meaning no words in the set contains `aa` as a subword).
 
 ```bash
-$ python -m demo.string_set
+$ python -m demo.word_set
 [INFO] (CombCov) Enumerating all elements of size up to 7...
 [INFO] (CombCov) ...DONE enumerating elements! (Running time: 0.00 sec)
 [INFO] (CombCov) Total of 87 elements.
 [INFO] (CombCov) Enumeration: [1, 2, 3, 5, 8, 13, 21, 34]
 [INFO] (CombCov) Creating binary strings and rules...
 [INFO] (CombCov) Bitstring to cover: 111111111111111111111111111111111111111111111111111111111111111111111111111111111111111 
-[INFO] (StringSet) Generated 16 subrules
+[INFO] (WordSet) Generated 16 subrules
 [INFO] (CombCov) ...DONE creating binary strings and rules! (Running time: 0.00 sec)
 [INFO] (CombCov) Total of 14 valid rules with 14 distinct binary strings.
 [INFO] (CombCov) Searching for a cover for ''*Av(aa) over ∑={a,b}...
