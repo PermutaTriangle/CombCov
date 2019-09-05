@@ -5,7 +5,7 @@ from pulp import GUROBI_CMD, PULP_CBC_CMD, LpProblem
 
 import pytest
 from combcov import CombCov
-from demo.string_set import StringSet
+from demo.word_set import WordSet
 
 
 class CombCovTest(unittest.TestCase):
@@ -13,16 +13,16 @@ class CombCovTest(unittest.TestCase):
     def setUp(self) -> None:
         alphabet = ('a', 'b')
         avoid = frozenset(['aa'])
-        self.string_set = StringSet(alphabet, avoid)
+        self.word_set = WordSet(alphabet, avoid)
         self.max_elmnt_size = 7
 
         with patch.object(LpProblem, 'solve', return_value=None):
-            self.comb_cov = CombCov(self.string_set, self.max_elmnt_size)
+            self.comb_cov = CombCov(self.word_set, self.max_elmnt_size)
             self.comb_cov.solution = [
-                StringSet(('a', 'b'), frozenset(['a', 'b']), ""),
-                StringSet(('a', 'b'), frozenset(['a', 'b']), "a"),
-                StringSet(('a', 'b'), frozenset(['aa']), "b"),
-                StringSet(('a', 'b'), frozenset(['aa']), "ab"),
+                WordSet(('a', 'b'), frozenset(['a', 'b']), ""),
+                WordSet(('a', 'b'), frozenset(['a', 'b']), "a"),
+                WordSet(('a', 'b'), frozenset(['aa']), "b"),
+                WordSet(('a', 'b'), frozenset(['aa']), "ab"),
             ]
 
     def test_actually_solving_with_CBC(self) -> None:
@@ -54,12 +54,12 @@ class CombCovTest(unittest.TestCase):
             assert len(mocked_print.mock_calls) == 1
 
     def test_too_many_subrules(self) -> None:
-        subrules = list(self.string_set.get_subrules())
-        too_many = subrules + [self.string_set] + subrules
+        subrules = list(self.word_set.get_subrules())
+        too_many = subrules + [self.word_set] + subrules
 
         correct_rules = self.comb_cov.rules
-        with patch.object(StringSet, 'get_subrules', return_value=too_many):
-            comb_cov = CombCov(self.string_set, self.max_elmnt_size)
+        with patch.object(WordSet, 'get_subrules', return_value=too_many):
+            comb_cov = CombCov(self.word_set, self.max_elmnt_size)
             assert frozenset(correct_rules) == frozenset(comb_cov.rules)
 
     def test_no_solver(self) -> None:
@@ -76,23 +76,23 @@ class RuleTest(unittest.TestCase):
         avoid = frozenset(['aa', 'bb'])
         avoid_subset = frozenset(['bb'])
         prefix = "ab"
-        self.string_set = StringSet(alphabet, avoid, prefix)
-        self.sub_string_set = StringSet(alphabet, avoid_subset, prefix)
+        self.word_set = WordSet(alphabet, avoid, prefix)
+        self.sub_word_set = WordSet(alphabet, avoid_subset, prefix)
 
     def test_elements(self) -> None:
-        string_length = 4
-        for elmnt in self.string_set.get_elmnts(of_size=string_length):
-            self.assertEqual(string_length, len(elmnt))
+        word_length = 4
+        for elmnt in self.word_set.get_elmnts(of_size=word_length):
+            self.assertEqual(word_length, len(elmnt))
 
         elmnts = []
-        for length in range(string_length + 1):
-            elmnts.extend(self.string_set.get_elmnts(of_size=length))
+        for length in range(word_length + 1):
+            elmnts.extend(self.word_set.get_elmnts(of_size=length))
 
         expected_rule_elmnts = frozenset(['ab', 'aba', 'abb', 'abab', 'abba'])
         self.assertEqual(expected_rule_elmnts, frozenset(elmnts))
 
     def test_rule_generation(self) -> None:
-        rules = self.string_set.get_subrules()
+        rules = self.word_set.get_subrules()
         self.assertNotIn(None, rules)
 
 
