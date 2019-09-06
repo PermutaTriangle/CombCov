@@ -60,9 +60,49 @@ class CellTest(unittest.TestCase):
         assert repr(MeshTiling.anything_cell) == "S"
         assert repr(self.mp_cell) == "Av({})".format(repr(self.mp_31c2))
         assert repr(self.mp_cell.flip()) == "Co({})".format(repr(self.mp_31c2))
-        av_co_cell = Cell(frozenset({self.mp_31c2}), frozenset({self.mp_31c2}))
-        assert repr(av_co_cell) == "Av({}) and Co({})".format(
-            repr(self.mp_31c2), repr(self.mp_31c2))
+        assert repr(self.mixed_av_co_cell) == "Av({}) and Co({})".format(
+            ", ".join(repr(p) for p in self.mixed_av_co_cell.obstructions),
+            ", ".join(repr(p) for p in self.mixed_av_co_cell.requirements)
+        )
+
+    def test_string_to_dim_padding(self):
+        mp_31c2_str = str(self.mp_31c2)
+        assert Cell.pad_meshpatt_string_to_dim(mp_31c2_str, 5) == mp_31c2_str
+        assert Cell.pad_meshpatt_string_to_dim(mp_31c2_str, 7) == mp_31c2_str
+        padded_to_length_9 = Cell.pad_meshpatt_string_to_dim(mp_31c2_str, 9)
+        padded_to_length_9_lines = padded_to_length_9.split("\n")
+        for i, unpadded_line in enumerate(mp_31c2_str.split("\n"), start=1):
+            assert len(padded_to_length_9_lines[i]) == 9
+            assert " " + unpadded_line + " " == padded_to_length_9_lines[i]
+
+    def test_str(self):
+        assert str(MeshTiling.empty_cell) == " "
+        assert str(MeshTiling.point_cell) == "o"
+        assert str(MeshTiling.anything_cell) == "S"
+        assert str(self.mp_cell) == (
+            "     | |#|   \n"
+            "    -2-+-+-  \n"
+            "     | |#|   \n"
+            "Av( -+-+-1- )\n"
+            "     | |#|   \n"
+            "    -+-0-+-  \n"
+            "     | |#|   ")
+        assert str(self.mp_cell.flip()) == (
+            "     | |#|   \n"
+            "    -2-+-+-  \n"
+            "     | |#|   \n"
+            "Co( -+-+-1- )\n"
+            "     | |#|   \n"
+            "    -+-0-+-  \n"
+            "     | |#|   ")
+        assert str(self.mixed_av_co_cell) == (
+            "     | | |     | | |                     \n"
+            "    -+-2-+-   -2-+-+-             | |    \n"
+            "     | | |     | | |             -+-1-   \n"
+            "Av( -+-+-1- , -+-+-1- ) and Co(   | |   )\n"
+            "     | | |     | | |             -0-+-   \n"
+            "    -0-+-+-   -+-0-+-             | |    \n"
+            "     | | |     | | |                     ")
 
     def test_flip(self):
         flipped_cell = Cell(frozenset(), frozenset({self.mp_31c2}))

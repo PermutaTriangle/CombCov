@@ -1,5 +1,5 @@
 import logging
-from collections import namedtuple
+from collections import deque, namedtuple
 from itertools import chain, combinations, product
 
 from combcov import CombCov, Rule
@@ -68,20 +68,74 @@ class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
             return "o"
         elif self.is_anything():
             return "S"
-        elif self.is_avoiding() and not self.is_containing():
-            return "Av({})".format(
-                ", ".join(repr(patt) for patt in self.obstructions))
-        elif self.is_containing() and not self.is_avoiding():
-            return "Co({})".format(
-                ", ".join(repr(patt) for patt in self.requirements))
         else:
-            return "Av({}) and Co({})".format(
-                ", ".join(repr(patt) for patt in self.obstructions),
-                ", ".join(repr(patt) for patt in self.requirements))
+            Avs = ", ".join(repr(patt) for patt in sorted(self.obstructions))
+            Cos = ", ".join(repr(patt) for patt in sorted(self.requirements))
+            if self.is_avoiding() and not self.is_containing():
+                return "Av({})".format(Avs)
+            elif self.is_containing() and not self.is_avoiding():
+                return "Co({})".format(Cos)
+            else:
+                return "Av({}) and Co({})".format(Avs, Cos)
+
+    @staticmethod
+    def pad_meshpatt_string_to_dim(string, dim):
+        if len(string) >= dim**2 + dim - 1:
+            return string
+
+        old_lines = string.split("\n")
+        new_lines = deque()
+        for line in old_lines:
+            new_lines.append(line.center(dim))
+
+        empty_line = " " * dim
+        for _ in range((dim - len(old_lines)) // 2):
+            new_lines.append(empty_line)
+            new_lines.appendleft(empty_line)
+
+        return "\n".join(line for line in new_lines)
 
     def __str__(self):
-        # ToDo: Instead return multi-line mesh patterns
-        return repr(self)
+        if self.is_empty() or self.is_point() or self.is_anything():
+            return repr(self)
+        else:
+            # String representation of mesh patts are a (2N + 1) x (2N + 1)
+            # matrix where N is the length of the underlying permutation
+            dim = 1 + 2 * max(len(patt) for patt in chain(self.obstructions,
+                                                          self.requirements))
+
+            Av_strings = [
+                self.pad_meshpatt_string_to_dim(
+                    str(patt if isinstance(patt, MeshPatt) else
+                        MeshPatt(patt, [])), dim
+                ).split("\n") for patt in sorted(self.obstructions)
+            ]
+
+            Co_strings = [
+                self.pad_meshpatt_string_to_dim(
+                    str(patt if isinstance(patt, MeshPatt) else
+                        MeshPatt(patt, [])), dim
+                ).split("\n") for patt in sorted(self.requirements)
+            ]
+
+            lines = ["" for _ in range(dim)]
+            for row in range(dim):
+                middle_row = (row == (dim - 1) / 2)
+                if middle_row:
+                    prefix, delim, postfix = "{}( ", " , ", " )"
+                else:
+                    prefix, delim, postfix = "    ", "   ", "  "
+                if self.is_avoiding():
+                    lines[row] += prefix.format("Av") + delim.join(
+                        av_str[row] for av_str in Av_strings) + postfix
+                if self.is_containing():
+                    if self.is_avoiding():
+                        lines[row] += " and " if middle_row else "     "
+
+                    lines[row] += prefix.format("Co") + delim.join(
+                        co_str[row] for co_str in Co_strings) + postfix
+
+            return "\n".join(line for line in lines)
 
 
 class MeshTiling(Rule):
