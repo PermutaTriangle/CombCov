@@ -364,28 +364,49 @@ class MeshTiling(Rule):
         return self.columns * self.rows
 
     def __str__(self):
-        # ToDo: Implement proper multi-line Cell.__str__() and use instead
-        tiling_representation = [repr(cell) for cell in self.tiling]
+        unpadded_tiling_strings = [str(cell) for cell in self.tiling]
 
         col_widths = [
-            max(len(tiling_representation[
+            max(max(len(line) for line in unpadded_tiling_strings[
                         self.convert_coordinates_to_linear_number(col, row)
-                    ]) for row in range(self.rows)) + 2 for col in
-            range(self.columns)
+                    ].split("\n")) for row in range(self.rows)) + 2
+            for col in range(self.columns)
         ]
+
+        row_heights = [
+            max(len(unpadded_tiling_strings[
+                        self.convert_coordinates_to_linear_number(col, row)
+                    ].split("\n")) for col in range(self.columns))
+            for row in range(self.rows)
+        ]
+
+        padded_tiling_strings = []
+        for i in range(len(unpadded_tiling_strings)):
+            tiling_string = unpadded_tiling_strings[i]
+            col, row = self.convert_linear_number_to_coordinates(i)
+            width, height = col_widths[col], row_heights[row]
+            padded_tiling_strings.append(
+                Utils.pad_string_to_rectangle(tiling_string, width, height))
 
         top_bottom_lines = " " + "-".join("-" * l for l in col_widths) + " \n"
         middle_lines = "|" + "+".join("-" * l for l in col_widths) + "|\n"
 
-        cell_lines = ["|" + "|".join("{:^{}}".format(
-            tiling_representation[
-                self.convert_coordinates_to_linear_number(col, row)],
-            col_widths[col]) for col in range(self.columns)
-        ) + "|\n" for row in reversed(range(self.rows))]
+        cell_multilines = []
+        for row in reversed(range(self.rows)):
+            cell_lines = ""
+            for cell_row in range(row_heights[row]):
+                line = ""
+                for col in range(self.columns):
+                    col_width = col_widths[col]
+                    i = self.convert_coordinates_to_linear_number(col, row)
+                    cell_strings = padded_tiling_strings[i].split("\n")
+                    line += "|" + cell_strings[cell_row].center(col_width)
+                cell_lines += line + "|\n"
+            cell_multilines.append(cell_lines)
 
         return "\n" + \
                top_bottom_lines + \
-               middle_lines.join(line for line in cell_lines) + \
+               middle_lines.join(line for line in cell_multilines) + \
                top_bottom_lines
 
 

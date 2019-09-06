@@ -281,9 +281,26 @@ class MeshTilingTest(unittest.TestCase):
         self.sub_mt.__hash__()
 
     def test_str(self):
-        assert str(self.empty_mt) == "\n --- \n|   |\n --- \n"
-        assert "| Av({}) |".format(repr(self.mp_31c2)) \
-               in str(self.root_mt).split("\n")
+        assert str(self.empty_mt) == "\n" + (
+            " --- \n"
+            "|   |\n"
+            " --- \n")
+        assert str(self.any_mt) == "\n" + (
+            " --- \n"
+            "| S |\n"
+            " --- \n")
+        assert str(self.sub_mt) == "\n" + (
+            " --------------------------------- \n"
+            "|               | o |             |\n"
+            "|---------------+---+-------------|\n"
+            "|      | |#|    |   |             |\n"
+            "|     -2-+-+-   |   |      |#|    |\n"
+            "|      | |#|    |   |     -+-1-   |\n"
+            "| Av( -+-+-1- ) |   | Av(  |#|  ) |\n"
+            "|      | |#|    |   |     -0-+-   |\n"
+            "|     -+-0-+-   |   |      |#|    |\n"
+            "|      | |#|    |   |             |\n"
+            " --------------------------------- \n")
 
 
 class UtilsTest(unittest.TestCase):
