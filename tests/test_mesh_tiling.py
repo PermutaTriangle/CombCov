@@ -280,6 +280,14 @@ class MeshTilingTest(unittest.TestCase):
         self.root_mt.__hash__()
         self.sub_mt.__hash__()
 
+    def test_repr(self):
+        assert repr(self.empty_mt) == "(1x1) MeshTiling [ ]"
+        assert repr(self.any_mt) == "(1x1) MeshTiling [S]"
+        sub_mt_rep = repr(self.sub_mt)
+        assert sub_mt_rep.startswith("(3x2) MeshTiling")
+        assert repr(self.mp_1c2) in sub_mt_rep
+        assert repr(self.mp_31c2) in sub_mt_rep
+
     def test_str(self):
         assert str(self.empty_mt) == "\n" + (
             " --- \n"

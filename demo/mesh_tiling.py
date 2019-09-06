@@ -363,6 +363,11 @@ class MeshTiling(Rule):
     def __len__(self):
         return self.columns * self.rows
 
+    def __repr__(self):
+        return "({}x{}) MeshTiling [{}]".format(
+            self.columns, self.rows,
+            ", ".join(repr(cell) for cell in self.tiling))
+
     def __str__(self):
         unpadded_tiling_strings = [str(cell) for cell in self.tiling]
 
