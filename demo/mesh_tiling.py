@@ -1,5 +1,5 @@
 import logging
-from collections import namedtuple
+from collections import deque, namedtuple
 from itertools import chain, combinations, product
 
 from combcov import CombCov, Rule
@@ -68,20 +68,57 @@ class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
             return "o"
         elif self.is_anything():
             return "S"
-        elif self.is_avoiding() and not self.is_containing():
-            return "Av({})".format(
-                ", ".join(repr(patt) for patt in self.obstructions))
-        elif self.is_containing() and not self.is_avoiding():
-            return "Co({})".format(
-                ", ".join(repr(patt) for patt in self.requirements))
         else:
-            return "Av({}) and Co({})".format(
-                ", ".join(repr(patt) for patt in self.obstructions),
-                ", ".join(repr(patt) for patt in self.requirements))
+            Avs = ", ".join(repr(patt) for patt in sorted(self.obstructions))
+            Cos = ", ".join(repr(patt) for patt in sorted(self.requirements))
+            if self.is_avoiding() and not self.is_containing():
+                return "Av({})".format(Avs)
+            elif self.is_containing() and not self.is_avoiding():
+                return "Co({})".format(Cos)
+            else:
+                return "Av({}) and Co({})".format(Avs, Cos)
 
     def __str__(self):
-        # ToDo: Instead return multi-line mesh patterns
-        return repr(self)
+        if self.is_empty() or self.is_point() or self.is_anything():
+            return repr(self)
+        else:
+            # String representation of mesh patts are a (2N + 1) x (2N + 1)
+            # matrix where N is the length of the underlying permutation
+            dim = 1 + 2 * max(len(patt) for patt in chain(self.obstructions,
+                                                          self.requirements))
+
+            Av_strings = [
+                Utils.pad_string_to_rectangle(
+                    str(patt if isinstance(patt, MeshPatt) else
+                        MeshPatt(patt, [])), dim, dim
+                ).split("\n") for patt in sorted(self.obstructions)
+            ]
+
+            Co_strings = [
+                Utils.pad_string_to_rectangle(
+                    str(patt if isinstance(patt, MeshPatt) else
+                        MeshPatt(patt, [])), dim, dim
+                ).split("\n") for patt in sorted(self.requirements)
+            ]
+
+            lines = ["" for _ in range(dim)]
+            for row in range(dim):
+                middle_row = (row == (dim - 1) / 2)
+                if middle_row:
+                    prefix, delim, postfix = "{}( ", " , ", " )"
+                else:
+                    prefix, delim, postfix = "    ", "   ", "  "
+                if self.is_avoiding():
+                    lines[row] += prefix.format("Av") + delim.join(
+                        av_str[row] for av_str in Av_strings) + postfix
+                if self.is_containing():
+                    if self.is_avoiding():
+                        lines[row] += " and " if middle_row else "     "
+
+                    lines[row] += prefix.format("Co") + delim.join(
+                        co_str[row] for co_str in Co_strings) + postfix
+
+            return "\n".join(line for line in lines)
 
 
 class MeshTiling(Rule):
@@ -283,7 +320,7 @@ class MeshTiling(Rule):
             origin_cell if origin_cell.is_avoiding() else origin_cell.flip()
         )
 
-        for patt in MeshTiling.clean_patts(perms, mesh_patts):
+        for patt in Utils.clean_patts(perms, mesh_patts):
             av_cell = Cell(frozenset({patt}), frozenset())
             if not av_cell.is_empty():
                 cell_choices.add(av_cell)
@@ -326,30 +363,59 @@ class MeshTiling(Rule):
     def __len__(self):
         return self.columns * self.rows
 
+    def __repr__(self):
+        return "({}x{}) MeshTiling [{}]".format(
+            self.columns, self.rows,
+            ", ".join(repr(cell) for cell in self.tiling))
+
     def __str__(self):
-        # ToDo: Implement proper multi-line Cell.__str__() and use instead
-        tiling_representation = [repr(cell) for cell in self.tiling]
+        unpadded_tiling_strings = [str(cell) for cell in self.tiling]
 
         col_widths = [
-            max(len(tiling_representation[
+            max(max(len(line) for line in unpadded_tiling_strings[
                         self.convert_coordinates_to_linear_number(col, row)
-                    ]) for row in range(self.rows)) + 2 for col in
-            range(self.columns)
+                    ].split("\n")) for row in range(self.rows)) + 2
+            for col in range(self.columns)
         ]
+
+        row_heights = [
+            max(len(unpadded_tiling_strings[
+                        self.convert_coordinates_to_linear_number(col, row)
+                    ].split("\n")) for col in range(self.columns))
+            for row in range(self.rows)
+        ]
+
+        padded_tiling_strings = []
+        for i in range(len(unpadded_tiling_strings)):
+            tiling_string = unpadded_tiling_strings[i]
+            col, row = self.convert_linear_number_to_coordinates(i)
+            width, height = col_widths[col], row_heights[row]
+            padded_tiling_strings.append(
+                Utils.pad_string_to_rectangle(tiling_string, width, height))
 
         top_bottom_lines = " " + "-".join("-" * l for l in col_widths) + " \n"
         middle_lines = "|" + "+".join("-" * l for l in col_widths) + "|\n"
 
-        cell_lines = ["|" + "|".join("{:^{}}".format(
-            tiling_representation[
-                self.convert_coordinates_to_linear_number(col, row)],
-            col_widths[col]) for col in range(self.columns)
-        ) + "|\n" for row in reversed(range(self.rows))]
+        cell_multilines = []
+        for row in reversed(range(self.rows)):
+            cell_lines = ""
+            for cell_row in range(row_heights[row]):
+                line = ""
+                for col in range(self.columns):
+                    col_width = col_widths[col]
+                    i = self.convert_coordinates_to_linear_number(col, row)
+                    cell_strings = padded_tiling_strings[i].split("\n")
+                    line += "|" + cell_strings[cell_row].center(col_width)
+                cell_lines += line + "|\n"
+            cell_multilines.append(cell_lines)
 
         return "\n" + \
                top_bottom_lines + \
-               middle_lines.join(line for line in cell_lines) + \
+               middle_lines.join(line for line in cell_multilines) + \
                top_bottom_lines
+
+
+class Utils():
 
     @staticmethod
     def clean_patts(perms, mesh_patts):
@@ -365,6 +431,32 @@ class MeshTiling(Rule):
                 unique_patts[perms_from_cell] = patt
 
         return set(unique_patts.values())
+
+    @staticmethod
+    def pad_string_to_rectangle(string, width, height):
+        lines = string.split("\n")
+        if len(lines) > height or any(len(line) > width for line in lines):
+            height_needed = len(lines)
+            width_needed = max(len(line) for line in lines)
+            raise ValueError(
+                "Input string cannot be padded inside a WxH = {}x{} rectangle "
+                "and needs at least a {}x{} rectangle".format(
+                    width, height, width_needed, height_needed
+                )
+            )
+
+        new_lines = deque()
+        for line in lines:
+            new_lines.append(line.center(width))
+
+        empty_line = " " * width
+        for padding in range(height - len(lines)):
+            if (padding % 2) == 1:
+                new_lines.append(empty_line)
+            else:
+                new_lines.appendleft(empty_line)
+
+        return "\n".join(line for line in new_lines)
 
 
 def main():

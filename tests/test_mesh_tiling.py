@@ -4,7 +4,7 @@ from math import factorial
 
 import pytest
 from combcov import Rule
-from demo.mesh_tiling import Cell, MeshTiling, MockAvCoPatts
+from demo.mesh_tiling import Cell, MeshTiling, MockAvCoPatts, Utils
 from permuta import Av, MeshPatt, Perm, PermSet
 
 
@@ -60,9 +60,39 @@ class CellTest(unittest.TestCase):
         assert repr(MeshTiling.anything_cell) == "S"
         assert repr(self.mp_cell) == "Av({})".format(repr(self.mp_31c2))
         assert repr(self.mp_cell.flip()) == "Co({})".format(repr(self.mp_31c2))
-        av_co_cell = Cell(frozenset({self.mp_31c2}), frozenset({self.mp_31c2}))
-        assert repr(av_co_cell) == "Av({}) and Co({})".format(
-            repr(self.mp_31c2), repr(self.mp_31c2))
+        assert repr(self.mixed_av_co_cell) == "Av({}) and Co({})".format(
+            ", ".join(repr(p) for p in self.mixed_av_co_cell.obstructions),
+            ", ".join(repr(p) for p in self.mixed_av_co_cell.requirements)
+        )
+
+    def test_str(self):
+        assert str(MeshTiling.empty_cell) == " "
+        assert str(MeshTiling.point_cell) == "o"
+        assert str(MeshTiling.anything_cell) == "S"
+        assert str(self.mp_cell) == (
+            "     | |#|   \n"
+            "    -2-+-+-  \n"
+            "     | |#|   \n"
+            "Av( -+-+-1- )\n"
+            "     | |#|   \n"
+            "    -+-0-+-  \n"
+            "     | |#|   ")
+        assert str(self.mp_cell.flip()) == (
+            "     | |#|   \n"
+            "    -2-+-+-  \n"
+            "     | |#|   \n"
+            "Co( -+-+-1- )\n"
+            "     | |#|   \n"
+            "    -+-0-+-  \n"
+            "     | |#|   ")
+        assert str(self.mixed_av_co_cell) == (
+            "     | | |     | | |                     \n"
+            "    -+-2-+-   -2-+-+-             | |    \n"
+            "     | | |     | | |             -+-1-   \n"
+            "Av( -+-+-1- , -+-+-1- ) and Co(   | |   )\n"
+            "     | | |     | | |             -0-+-   \n"
+            "    -0-+-+-   -+-0-+-             | |    \n"
+            "     | | |     | | |                     ")
 
     def test_flip(self):
         flipped_cell = Cell(frozenset(), frozenset({self.mp_31c2}))
@@ -250,19 +280,47 @@ class MeshTilingTest(unittest.TestCase):
         self.root_mt.__hash__()
         self.sub_mt.__hash__()
 
-    def test_str(self):
-        assert str(self.empty_mt) == "\n --- \n|   |\n --- \n"
-        assert "| Av({}) |".format(repr(self.mp_31c2)) \
-               in str(self.root_mt).split("\n")
+    def test_repr(self):
+        assert repr(self.empty_mt) == "(1x1) MeshTiling [ ]"
+        assert repr(self.any_mt) == "(1x1) MeshTiling [S]"
+        sub_mt_rep = repr(self.sub_mt)
+        assert sub_mt_rep.startswith("(3x2) MeshTiling")
+        assert repr(self.mp_1c2) in sub_mt_rep
+        assert repr(self.mp_31c2) in sub_mt_rep
 
-    def test_av_12_perm_and_mesh_patts(self):
+    def test_str(self):
+        assert str(self.empty_mt) == "\n" + (
+            " --- \n"
+            "|   |\n"
+            " --- \n")
+        assert str(self.any_mt) == "\n" + (
+            " --- \n"
+            "| S |\n"
+            " --- \n")
+        assert str(self.sub_mt) == "\n" + (
+            " --------------------------------- \n"
+            "|               | o |             |\n"
+            "|---------------+---+-------------|\n"
+            "|      | |#|    |   |             |\n"
+            "|     -2-+-+-   |   |      |#|    |\n"
+            "|      | |#|    |   |     -+-1-   |\n"
+            "| Av( -+-+-1- ) |   | Av(  |#|  ) |\n"
+            "|      | |#|    |   |     -0-+-   |\n"
+            "|     -+-0-+-   |   |      |#|    |\n"
+            "|      | |#|    |   |             |\n"
+            " --------------------------------- \n")
+
+
+class UtilsTest(unittest.TestCase):
+
+    def test_cleaning_av_12_perm_and_mesh_patts(self):
         p = Perm((0, 1))
         mesh_patts = {MeshPatt(p, ()), MeshPatt(p, [(1, 0), (1, 1), (1, 2)])}
         perms = {p}
         expected_output = {p}
-        assert MeshTiling.clean_patts(perms, mesh_patts) == expected_output
+        assert Utils.clean_patts(perms, mesh_patts) == expected_output
 
-    def test_av_123_with_shaded_column(self):
+    def test_cleaning_av_123_with_shaded_column(self):
         p = Perm((0, 1, 2))
         shading = [(1, 0), (1, 1), (1, 2), (1, 3)]
         mp = MeshPatt(p, shading)
@@ -270,12 +328,12 @@ class MeshTilingTest(unittest.TestCase):
             mp.sub_mesh_pattern(indices) for indices in
             combinations(range(len(mp)), 2)
         }
-        assert MeshTiling.clean_patts(
+        assert Utils.clean_patts(
             {}, sub_mesh_patts) == {MeshPatt(Perm((0, 1)), [])}
-        assert MeshTiling.clean_patts(
+        assert Utils.clean_patts(
             {Perm((0, 1))}, sub_mesh_patts) == {Perm((0, 1))}
 
-    def test_all_length_one_mesh_patt(self):
+    def test_cleaning_all_length_one_mesh_patt(self):
         p = Perm((0,))
         perms = {p}
         mesh_patts = {
@@ -284,11 +342,25 @@ class MeshTilingTest(unittest.TestCase):
                 for c in product([True, False], repeat=4)
             ]
         }
-        output = MeshTiling.clean_patts(perms, mesh_patts)
+        output = Utils.clean_patts(perms, mesh_patts)
 
         assert len(output) == 4
         for patt in output:
             assert patt in perms or patt in mesh_patts
+
+    def test_string_padding_to_rectangle(self):
+        mp = MeshPatt(Perm((2, 0, 1)), ((2, 0), (2, 1), (2, 2), (2, 3)))
+        mp_str = str(mp)
+
+        for w, h in product(range(7), range(7)):
+            with pytest.raises(ValueError):
+                Utils.pad_string_to_rectangle(mp_str, w, h)
+
+        assert Utils.pad_string_to_rectangle(mp_str, 7, 7) == mp_str
+
+        padded_lines = Utils.pad_string_to_rectangle(mp_str, 9, 11).split("\n")
+        for i, unpadded_line in enumerate(mp_str.split("\n"), start=2):
+            assert unpadded_line.center(9) == padded_lines[i]
 
 
 if __name__ == '__main__':
