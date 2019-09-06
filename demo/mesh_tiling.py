@@ -78,23 +78,6 @@ class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
             else:
                 return "Av({}) and Co({})".format(Avs, Cos)
 
-    @staticmethod
-    def pad_meshpatt_string_to_dim(string, dim):
-        if len(string) >= dim**2 + dim - 1:
-            return string
-
-        old_lines = string.split("\n")
-        new_lines = deque()
-        for line in old_lines:
-            new_lines.append(line.center(dim))
-
-        empty_line = " " * dim
-        for _ in range((dim - len(old_lines)) // 2):
-            new_lines.append(empty_line)
-            new_lines.appendleft(empty_line)
-
-        return "\n".join(line for line in new_lines)
-
     def __str__(self):
         if self.is_empty() or self.is_point() or self.is_anything():
             return repr(self)
@@ -105,16 +88,16 @@ class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
                                                           self.requirements))
 
             Av_strings = [
-                self.pad_meshpatt_string_to_dim(
+                Utils.pad_string_to_rectangle(
                     str(patt if isinstance(patt, MeshPatt) else
-                        MeshPatt(patt, [])), dim
+                        MeshPatt(patt, [])), dim, dim
                 ).split("\n") for patt in sorted(self.obstructions)
             ]
 
             Co_strings = [
-                self.pad_meshpatt_string_to_dim(
+                Utils.pad_string_to_rectangle(
                     str(patt if isinstance(patt, MeshPatt) else
-                        MeshPatt(patt, [])), dim
+                        MeshPatt(patt, [])), dim, dim
                 ).split("\n") for patt in sorted(self.requirements)
             ]
 
@@ -337,7 +320,7 @@ class MeshTiling(Rule):
             origin_cell if origin_cell.is_avoiding() else origin_cell.flip()
         )
 
-        for patt in MeshTiling.clean_patts(perms, mesh_patts):
+        for patt in Utils.clean_patts(perms, mesh_patts):
             av_cell = Cell(frozenset({patt}), frozenset())
             if not av_cell.is_empty():
                 cell_choices.add(av_cell)
@@ -405,6 +388,9 @@ class MeshTiling(Rule):
                middle_lines.join(line for line in cell_lines) + \
                top_bottom_lines
 
+
+class Utils():
+
     @staticmethod
     def clean_patts(perms, mesh_patts):
         unique_patts = dict()
@@ -419,6 +405,32 @@ class MeshTiling(Rule):
                 unique_patts[perms_from_cell] = patt
 
         return set(unique_patts.values())
+
+    @staticmethod
+    def pad_string_to_rectangle(string, width, height):
+        lines = string.split("\n")
+        if len(lines) > height or any(len(line) > width for line in lines):
+            height_needed = len(lines)
+            width_needed = max(len(line) for line in lines)
+            raise ValueError(
+                "Input string cannot be padded inside a WxH = {}x{} rectangle "
+                "and needs at least a {}x{} rectangle".format(
+                    width, height, width_needed, height_needed
+                )
+            )
+
+        new_lines = deque()
+        for line in lines:
+            new_lines.append(line.center(width))
+
+        empty_line = " " * width
+        for padding in range(height - len(lines)):
+            if (padding % 2) == 1:
+                new_lines.append(empty_line)
+            else:
+                new_lines.appendleft(empty_line)
+
+        return "\n".join(line for line in new_lines)
 
 
 def main():
