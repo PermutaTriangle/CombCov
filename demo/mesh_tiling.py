@@ -134,7 +134,8 @@ class MeshTiling(Rule):
         self.MAX_ACTIVE_CELLS = 3
 
         # Clean empty rows and columns and save cells with shifted coordinates
-        Xs, Ys = set(x for (x, y) in cells), set(y for (x, y) in cells)
+        Xs = set(x for (x, y) in cells if not cells[(x, y)].is_empty())
+        Ys = set(y for (x, y) in cells if not cells[(x, y)].is_empty())
         self.columns, self.rows = max(1, len(Xs)), max(1, len(Ys))
 
         compression_dict = {
@@ -145,11 +146,12 @@ class MeshTiling(Rule):
         self.cells = {}
         self.tiling = [self.empty_cell] * (self.columns * self.rows)
         for (old_col, old_row), cell in cells.items():
-            col = compression_dict['col'][old_col]
-            row = compression_dict['row'][old_row]
-            self.cells[(col, row)] = cell
-            self.tiling[
-                self.convert_coordinates_to_linear_number(col, row)] = cell
+            if not cell.is_empty():
+                col = compression_dict['col'][old_col]
+                row = compression_dict['row'][old_row]
+                self.cells[(col, row)] = cell
+                self.tiling[
+                    self.convert_coordinates_to_linear_number(col, row)] = cell
 
     # Linear number = (column, row)
     #   -----------------------------------

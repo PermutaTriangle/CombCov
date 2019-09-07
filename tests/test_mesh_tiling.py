@@ -217,6 +217,13 @@ class MeshTilingTest(unittest.TestCase):
         with pytest.raises(ValueError):
             list(invalid_mt.get_subrules())
 
+    def test_extra_empty_cell(self):
+        root_mt_with_extra_empty_cell = MeshTiling({
+            (0, 0): self.root_mp_cell,
+            (1, 1): MeshTiling.empty_cell
+        })
+        assert self.root_mt == root_mt_with_extra_empty_cell
+
     def test_get_elmnts_of_size_Av21_cell(self):
         mt = MeshTiling({
             (0, 0): Cell(frozenset({Perm((1, 0))}), frozenset()),
