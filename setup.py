@@ -26,12 +26,12 @@ setup(
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     install_requires=[
-        "permuta==1.2.0",
+        "permuta==1.1.0",
         "PuLP==1.6.10",
     ],
     setup_requires=["pytest-runner==5.1"],
     tests_require=[
-        "pytest==5.1.1",
+        "pytest==5.1.2",
         "pytest-cov==2.7.1",
         "pytest-pep8==1.0.6",
         "pytest-isort==0.3.1",
