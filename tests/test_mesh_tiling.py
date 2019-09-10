@@ -2,10 +2,11 @@ import unittest
 from itertools import combinations, product
 from math import factorial
 
+from permuta import Av, MeshPatt, Perm, PermSet
+
 import pytest
 from combcov import Rule
 from demo.mesh_tiling import Cell, MeshTiling, MockAvCoPatts, Utils
-from permuta import Av, MeshPatt, Perm, PermSet
 
 
 class MockContainingPattsTest(unittest.TestCase):
@@ -35,7 +36,10 @@ class CellTest(unittest.TestCase):
                                 ((2, 0), (2, 1), (2, 2), (2, 3)))
         self.mp_cell = Cell(frozenset({self.mp_31c2}), frozenset())
         self.mixed_av_co_cell = Cell(
-            frozenset({Perm((0, 2, 1)), Perm((2, 0, 1))}),
+            frozenset({
+                Perm((0, 2, 1)),
+                MeshPatt(Perm((1, 0)), [(0, 0), (1, 1), (2, 2)])
+            }),
             frozenset({Perm((0, 1))})
         )
 
@@ -86,13 +90,13 @@ class CellTest(unittest.TestCase):
             "    -+-0-+-  \n"
             "     | |#|   ")
         assert str(self.mixed_av_co_cell) == (
-            "     | | |     | | |                     \n"
-            "    -+-2-+-   -2-+-+-             | |    \n"
-            "     | | |     | | |             -+-1-   \n"
-            "Av( -+-+-1- , -+-+-1- ) and Co(   | |   )\n"
-            "     | | |     | | |             -0-+-   \n"
-            "    -0-+-+-   -+-0-+-             | |    \n"
-            "     | | |     | | |                     ")
+            "     | | |                               \n"
+            "    -+-2-+-     | |#              | |    \n"
+            "     | | |     -1-+-             -+-1-   \n"
+            "Av( -+-+-1- ,   |#|   ) and Co(   | |   )\n"
+            "     | | |     -+-0-             -0-+-   \n"
+            "    -0-+-+-    #| |               | |    \n"
+            "     | | |                               ")
 
     def test_flip(self):
         flipped_cell = Cell(frozenset(), frozenset({self.mp_31c2}))
@@ -368,6 +372,15 @@ class UtilsTest(unittest.TestCase):
         padded_lines = Utils.pad_string_to_rectangle(mp_str, 9, 11).split("\n")
         for i, unpadded_line in enumerate(mp_str.split("\n"), start=2):
             assert unpadded_line.center(9) == padded_lines[i]
+
+    def test_mixed_sorting(self):
+        p1 = Perm((0, 2, 1))
+        mp1 = MeshPatt(p1, [(i, i) for i in range(4)])
+
+        p2 = Perm((1, 0))
+        mp2 = MeshPatt(p2, [(2 - i, 2 - i) for i in range(3)])
+
+        assert list(Utils.sorted({p1, mp1, p2, mp2})) == [p2, p1, mp2, mp1]
 
 
 if __name__ == '__main__':

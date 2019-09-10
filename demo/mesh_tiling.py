@@ -2,9 +2,10 @@ import logging
 from collections import deque, namedtuple
 from itertools import chain, combinations, product
 
-from combcov import CombCov, Rule
 from permuta import Av, MeshPatt, Perm, PermSet
 from permuta.misc import flatten, ordered_set_partitions
+
+from combcov import CombCov, Rule
 
 logger = logging.getLogger("MeshTiling")
 
@@ -69,8 +70,8 @@ class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
         elif self.is_anything():
             return "S"
         else:
-            Avs = ", ".join(repr(patt) for patt in sorted(self.obstructions))
-            Cos = ", ".join(repr(patt) for patt in sorted(self.requirements))
+            Avs = ", ".join(repr(p) for p in Utils.sorted(self.obstructions))
+            Cos = ", ".join(repr(p) for p in Utils.sorted(self.requirements))
             if self.is_avoiding() and not self.is_containing():
                 return "Av({})".format(Avs)
             elif self.is_containing() and not self.is_avoiding():
@@ -91,14 +92,14 @@ class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
                 Utils.pad_string_to_rectangle(
                     str(patt if isinstance(patt, MeshPatt) else
                         MeshPatt(patt, [])), dim, dim
-                ).split("\n") for patt in sorted(self.obstructions)
+                ).split("\n") for patt in Utils.sorted(self.obstructions)
             ]
 
             Co_strings = [
                 Utils.pad_string_to_rectangle(
                     str(patt if isinstance(patt, MeshPatt) else
                         MeshPatt(patt, [])), dim, dim
-                ).split("\n") for patt in sorted(self.requirements)
+                ).split("\n") for patt in Utils.sorted(self.requirements)
             ]
 
             lines = ["" for _ in range(dim)]
@@ -459,6 +460,12 @@ class Utils():
                 new_lines.appendleft(empty_line)
 
         return "\n".join(line for line in new_lines)
+
+    @staticmethod
+    def sorted(mixed_patts):
+        perms = filter(lambda perm: isinstance(perm, Perm), mixed_patts)
+        mpatts = filter(lambda mpatt: isinstance(mpatt, MeshPatt), mixed_patts)
+        yield from chain(sorted(perms), sorted(mpatts))
 
 
 def main():
