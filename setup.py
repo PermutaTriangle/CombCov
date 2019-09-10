@@ -11,7 +11,7 @@ def read(fname):
 
 setup(
     name="CombCov",
-    version="0.6.1",
+    version="0.6.2",
     author="Permuta Triangle",
     author_email="permutatriangle@gmail.com",
     description="Searching for combinatorial covers.",
@@ -26,7 +26,7 @@ setup(
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     install_requires=[
-        "permuta==1.2.0",
+        "permuta==1.2.1",
         "PuLP==1.6.10",
     ],
     setup_requires=["pytest-runner==5.1"],
