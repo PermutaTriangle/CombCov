@@ -85,26 +85,26 @@ class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
         else:
             # String representation of mesh patts are a (2N + 1) x (2N + 1)
             # matrix where N is the length of the underlying permutation
-            dim = 1 + 2 * max(len(patt) for patt in chain(self.obstructions,
-                                                          self.requirements))
+            height = 1 + 2 * max(len(patt) for patt in chain(
+                                        self.obstructions, self.requirements))
 
             Av_strings = [
                 Utils.pad_string_to_rectangle(
                     str(patt if isinstance(patt, MeshPatt) else
-                        MeshPatt(patt, [])), dim, dim
+                        MeshPatt(patt, [])), 1 + 2 * len(patt), height
                 ).split("\n") for patt in Utils.sorted(self.obstructions)
             ]
 
             Co_strings = [
                 Utils.pad_string_to_rectangle(
                     str(patt if isinstance(patt, MeshPatt) else
-                        MeshPatt(patt, [])), dim, dim
+                        MeshPatt(patt, [])), 1 + 2 * len(patt), height
                 ).split("\n") for patt in Utils.sorted(self.requirements)
             ]
 
-            lines = ["" for _ in range(dim)]
-            for row in range(dim):
-                middle_row = (row == (dim - 1) / 2)
+            lines = ["" for _ in range(height)]
+            for row in range(height):
+                middle_row = (row == (height - 1) / 2)
                 if middle_row:
                     prefix, delim, postfix = "{}( ", " , ", " )"
                 else:

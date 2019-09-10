@@ -90,13 +90,13 @@ class CellTest(unittest.TestCase):
             "    -+-0-+-  \n"
             "     | |#|   ")
         assert str(self.mixed_av_co_cell) == (
-            "     | | |                               \n"
-            "    -+-2-+-     | |#              | |    \n"
-            "     | | |     -1-+-             -+-1-   \n"
-            "Av( -+-+-1- ,   |#|   ) and Co(   | |   )\n"
-            "     | | |     -+-0-             -0-+-   \n"
-            "    -0-+-+-    #| |               | |    \n"
-            "     | | |                               ")
+            "     | | |                           \n"
+            "    -+-2-+-    | |#            | |   \n"
+            "     | | |    -1-+-           -+-1-  \n"
+            "Av( -+-+-1- ,  |#|  ) and Co(  | |  )\n"
+            "     | | |    -+-0-           -0-+-  \n"
+            "    -0-+-+-   #| |             | |   \n"
+            "     | | |                           ")
 
     def test_flip(self):
         flipped_cell = Cell(frozenset(), frozenset({self.mp_31c2}))
