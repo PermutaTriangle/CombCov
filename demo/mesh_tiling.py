@@ -154,13 +154,13 @@ class MeshTiling(Rule):
                 self.tiling[
                     self.convert_coordinates_to_linear_number(col, row)] = cell
 
-    # Linear number = (column, row)
-    #   -----------------------------------
-    #  | 3 = (0,1) | 4 = (1,1) | 5 = (2,1) |
-    #  |-----------+-----------+-----------|
-    #  | 0 = (0,0) | 1 = (1,0) | 2 = (2,0) |
-    #   -----------------------------------
     def convert_linear_number_to_coordinates(self, number):
+        # Linear number = (column, row)
+        #   -----------------------------------
+        #  | 3 = (0,1) | 4 = (1,1) | 5 = (2,1) |
+        #  |-----------+-----------+-----------|
+        #  | 0 = (0,0) | 1 = (1,0) | 2 = (2,0) |
+        #   -----------------------------------
         if number < 0 or number >= self.columns * self.rows:
             raise IndexError
         else:
