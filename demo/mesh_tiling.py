@@ -31,7 +31,12 @@ class Cell(namedtuple('Cell', ['obstructions', 'requirements'])):
     __slots__ = ()
 
     def is_empty(self):
-        return self.obstructions == frozenset({Perm((0,))})
+        return any(obstruction == Perm((0,)) or (
+                isinstance(obstruction, MeshPatt) and
+                obstruction.pattern == Perm((0,)) and
+                obstruction.shading in Utils.equivalent_shadings
+            ) for obstruction in self.obstructions
+        )
 
     def is_point(self):
         return self.obstructions == frozenset({Perm((0, 1)), Perm((1, 0))}) \
@@ -419,6 +424,19 @@ class MeshTiling(Rule):
 
 
 class Utils():
+
+    # See https://github.com/PermutaTriangle/CombCov/issues/28
+    equivalent_shadings = {
+        frozenset(),
+        frozenset([(0, 0)]),
+        frozenset([(0, 1)]),
+        frozenset([(1, 1)]),
+        frozenset([(1, 0)]),
+        frozenset([(0, 0), (0, 1)]),
+        frozenset([(1, 1), (0, 1)]),
+        frozenset([(1, 1), (1, 0)]),
+        frozenset([(0, 0), (1, 0)]),
+    }
 
     @staticmethod
     def clean_patts(perms, mesh_patts):
