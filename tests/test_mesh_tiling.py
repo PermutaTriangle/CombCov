@@ -58,6 +58,15 @@ class CellTest(unittest.TestCase):
         assert (not MeshTiling.point_cell.is_anything())
         assert (MeshTiling.anything_cell.is_anything())
 
+    def test_length_one_meshpatts_emptyness(self):
+        for equivalent_shading in ([], [(0, 0)], [(1, 0)], [(0, 1), (1, 1)]):
+            mp = MeshPatt(Perm((0,)), equivalent_shading)
+            assert Cell(frozenset({mp}), frozenset()).is_empty()
+
+        for nonequivalent_shading in ([(0, 0), (1, 1)], [(0, 1), (1, 0)]):
+            mp = MeshPatt(Perm((0,)), nonequivalent_shading)
+            assert not Cell(frozenset({mp}), frozenset()).is_empty()
+
     def test_repr(self):
         assert repr(MeshTiling.empty_cell) == " "
         assert repr(MeshTiling.point_cell) == "o"
