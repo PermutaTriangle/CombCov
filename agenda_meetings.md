@@ -1,3 +1,63 @@
+2019-09-19
+==========
+- [x] Look at covers that CombCov has already found and posted on Garpur channel
+
+### Summary
+
+Henning propses even more papers to run jobs from. The papers are on interval mesh patterns of length 3 and boxed mesh
+patterns of length 4. The authords include Woo, Kitaev and Liese. Decided to run all possible variations of BiVincular
+mesh patterns of length 3 (excluding symmetries) in addition to the jobs that we've already started from the _Wilf
+Classification of Bi-Vincular permutation patterns_ paper.
+
+
+
+2019-09-12
+==========
+- [x] Look at covers that CombCov has already found and posted on Garpur channel
+
+### Summary
+
+Some interesting Fishburn covers. Discussed that it would be interesting to look for covers for the complimentary
+containment set `Co(patts)` for every job, in addition to the normal `Av(patts)` search. Bjarni will start containment
+jobs for all the Fishburn patterns as well as do that by default when he re-runs WilfShort and Covincular jobs.
+
+Some trivial WilfShort covers where the answer is the same as the input. Turns out to be because input is a `MeshPatt`
+with empty shading, but the solution is the underlying pattern as a `Perm` object. Bjarni will make sure that this
+won't happen again and re-run the WilfShort jobs.
+
+
+
+2019-09-05
+==========
+- [x] Look at covers that CombCov has already found and posted on Garpur channel
+
+### Summary
+
+The results posted on Garpur are promising and some of the covers are really interesting. Discussed running more jobs
+such as these from Anders' first paper (_Generalised Pattern Avoidance_):
+```text
+          |#| |       | |#|   
+         -+-+-2-     -+-+-2-  
+          |#| |       | |#|   
+    Av(  -+-1-+-  ,  -+-1-+-  )
+          |#| |       | |#|   
+         -0-+-+-     -0-+-+-  
+          |#| |       | |#|   
+```
+and
+```text
+          | |#|       |#| |   
+         -+-+-2-     -+-2-+-  
+          | |#|       |#| |   
+    Av(  -+-1-+-  ,  -+-+-1-  )
+          | |#|       |#| |   
+         -0-+-+-     -0-+-+-  
+          | |#|       |#| |   
+```
+Bjarni will run these as well as everything else from the table(s) in the paper.
+
+
+
 2019-08-29
 ==========
 - [x] Review results from Garpur on length 2 mesh patterns (from Wilf paper)
