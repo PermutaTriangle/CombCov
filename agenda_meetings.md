@@ -1,10 +1,42 @@
+2019-10-03
+==========
+- [x] Review status of Bjarni's thesis writing and discuss when it's ready for (partial) reviewing
+      by Henning and/or Christian
+- [x] Discuss dates for Bjarni leaving, thesis submission, MSc presentation etc.
+- [ ] Send title and abstract for Icelandic Math Conference talk
+- [x] Review results from CombCov runs and what to highlight in the thesis and how to present it
+- [ ] Discuss updating https://github.com/PermutaTriangle/permpatts in order to
+    + draw mesh patts with highlighted occurrences
+    + draw tilings as in Struct paper
+    + make rectangle edges around coordinates of shaded squares in mesh patts
+
+### Summary
+
+Bjarni has written most of Chapters 1 (Introduction) and 2 (Methods) while 3 (Results) and 4 (Discussion) are still
+left. We discussed the time frame and various dates for reviewing the paper (first version in the next week), Bjarni
+leaving (at the end of the month) and thesis defence (last week before Christmas). Henning is talking to people to be
+on the committee.
+
+Most of our energy went into going through 318 successful jobs on Garpur, handpicking interesting results to highlight
+in the paper. Out of the 1240 started jobs 700 have timed out, 99 exhausted their search space (up to config 5x5x5)
+and the last 123 are still running but with high chance of timing out.
+
+Bjarni will continue writing his thesis and highlight the interesting results by showing the cover and discuss them in
+words as well. He will also write an abstract for the Icelandic Math Conference talk and get an approval from Henning
+before submitting it.
+
+The matter of the LaTeX library was briefly discussed but needs to be updated soon so Bjarni can use it to draw
+consistent pictures in the thesis and talk.
+
+
+
 2019-09-19
 ==========
 - [x] Look at covers that CombCov has already found and posted on Garpur channel
 
 ### Summary
 
-Henning propses even more papers to run jobs from. The papers are on interval mesh patterns of length 3 and boxed mesh
+Henning proposes even more papers to run jobs from. The papers are on interval mesh patterns of length 3 and boxed mesh
 patterns of length 4. The authords include Woo, Kitaev and Liese. Decided to run all possible variations of BiVincular
 mesh patterns of length 3 (excluding symmetries) in addition to the jobs that we've already started from the _Wilf
 Classification of Bi-Vincular permutation patterns_ paper.
