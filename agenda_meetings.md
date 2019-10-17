@@ -1,3 +1,20 @@
+2019-10-17
+==========
+- [ ] Infer the Exponential Generating Function (EGF) for Av(ab-c) cover
+- [x] Look at other comments in the thesis draft
+
+### Summary
+
+Bjarni sent his first draft of the thesis the night before the meeting in order to share some comments and questions
+in the context of the writing. Somehow Henning managed to read it, answer the questions and make comments on his own
+before the 11:00 meeting. He was happy with the progress of the thesis and expects it to be largely ready after fixing
+what he commented on and submitting it to Christian for a second opinion.
+
+Christian was sick and could not attend the meeting. The agenda item on inferring the EGF was postponed to the next
+meeting. Hopefully that will be the last edit to the thesis before submitting it to the committee.
+
+
+
 2019-10-10
 ==========
 - [x] Discuss the best way of drawing mesh tilings
