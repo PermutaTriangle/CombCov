@@ -27,7 +27,7 @@ setup(
     long_description_content_type="text/markdown",
     install_requires=[
         "permuta==1.2.1",
-        "PuLP==1.6.10",
+        "PuLP==2.0",
     ],
     setup_requires=["pytest-runner==5.2"],
     tests_require=[
