@@ -31,7 +31,7 @@ setup(
     ],
     setup_requires=["pytest-runner==5.2"],
     tests_require=[
-        "pytest==5.3.1",
+        "pytest==5.3.2",
         "pytest-cov==2.8.1",
         "pytest-pep8==1.0.6",
         "pytest-isort==0.3.1",
