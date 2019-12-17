@@ -1,7 +1,18 @@
+2019-10-29
+==========
+- [x] Infer the Exponential Generating Function (EGF) for Av(ab-c) cover
+- [x] Look at Christian's comments in the thesis draft
+
+### Summary
+
+Went over Christian's comments and made changes to thesis. Inferred the EGF on the whiteboard.
+
+
+
 2019-10-17
 ==========
-- [ ] Infer the Exponential Generating Function (EGF) for Av(ab-c) cover
-- [x] Look at other comments in the thesis draft
+- [x] Infer the Exponential Generating Function (EGF) for Av(ab-c) cover
+- [x] Look at Henning's comments in the thesis draft
 
 ### Summary
 
