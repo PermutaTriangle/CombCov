@@ -12,7 +12,7 @@ class WordSet(Rule):
         self.alphabet = tuple(alphabet)
         self.avoid = self._basis_of(avoid)
         self.prefix = prefix
-        self.max_prefix_size = max(0, max(len(av) for av in self.avoid))
+        self.max_prefix_size = max((len(av) for av in self.avoid), default=1)
 
     def contains(self, word):
         return all(av not in word for av in self.avoid)

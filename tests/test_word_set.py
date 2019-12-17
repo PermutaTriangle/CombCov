@@ -76,6 +76,11 @@ class WordSetTest(unittest.TestCase):
         self.assertNotEqual(word_set, "nonsense")
         self.assertNotEqual(word_set, None)
 
+    def test_avoiding_empty_set(self):
+        word_set = WordSet(self.alphabet, frozenset())
+        subrules = list(word_set.get_subrules())
+        self.assertTrue(len(subrules) > 1)
+
 
 if __name__ == '__main__':
     unittest.main()
