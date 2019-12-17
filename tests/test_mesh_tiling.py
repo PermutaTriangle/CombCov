@@ -2,11 +2,10 @@ import unittest
 from itertools import combinations, product
 from math import factorial
 
-from permuta import Av, MeshPatt, Perm, PermSet
-
 import pytest
 from combcov import Rule
 from demo.mesh_tiling import Cell, MeshTiling, MockAvCoPatts, Utils
+from permuta import Av, MeshPatt, Perm, PermSet
 
 
 class MockContainingPattsTest(unittest.TestCase):
