@@ -27,7 +27,7 @@ setup(
     long_description_content_type="text/markdown",
     install_requires=[
         "permuta==1.2.1",
-        "PuLP==1.6.10",
+        "PuLP==2.0",
     ],
     setup_requires=["pytest-runner==5.2"],
     tests_require=[
@@ -46,6 +46,7 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
 
