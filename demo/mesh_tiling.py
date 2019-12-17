@@ -2,15 +2,14 @@ import logging
 from collections import deque, namedtuple
 from itertools import chain, combinations, product
 
+from combcov import CombCov, Rule
 from permuta import Av, MeshPatt, Perm, PermSet
 from permuta.misc import flatten, ordered_set_partitions
-
-from combcov import CombCov, Rule
 
 logger = logging.getLogger("MeshTiling")
 
 
-class MockAvCoPatts():
+class MockAvCoPatts:
     def __init__(self, av_patts, co_patts):
         self.base_perm_set = Av(av_patts)
 
@@ -423,7 +422,7 @@ class MeshTiling(Rule):
                top_bottom_lines
 
 
-class Utils():
+class Utils:
 
     # See https://github.com/PermutaTriangle/CombCov/issues/28
     equivalent_shadings = {
