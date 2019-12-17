@@ -73,8 +73,10 @@ class CellTest(unittest.TestCase):
         assert repr(self.mp_cell) == "Av({})".format(repr(self.mp_31c2))
         assert repr(self.mp_cell.flip()) == "Co({})".format(repr(self.mp_31c2))
         assert repr(self.mixed_av_co_cell) == "Av({}) and Co({})".format(
-            ", ".join(repr(p) for p in self.mixed_av_co_cell.obstructions),
-            ", ".join(repr(p) for p in self.mixed_av_co_cell.requirements)
+            ", ".join(repr(p) for p in Utils.sorted(
+                self.mixed_av_co_cell.obstructions)),
+            ", ".join(repr(p) for p in Utils.sorted(
+                self.mixed_av_co_cell.requirements))
         )
 
     def test_str(self):
