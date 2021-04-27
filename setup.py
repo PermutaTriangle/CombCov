@@ -34,7 +34,7 @@ setup(
         "pytest==6.2.3",
         "pytest-cov==2.11.1",
         "pytest-pep8==1.0.6",
-        "pytest-isort==1.3.0",
+        "pytest-isort==2.0.0",
     ],
     python_requires=">=3.5",
     classifiers=[
