@@ -29,7 +29,7 @@ setup(
         "permuta==2.0.4",
         "PuLP==2.4",
     ],
-    setup_requires=["pytest-runner==5.3.0"],
+    setup_requires=["pytest-runner==5.3.1"],
     tests_require=[
         "pytest==6.2.4",
         "pytest-cov==2.12.0",
