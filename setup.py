@@ -26,15 +26,15 @@ setup(
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     install_requires=[
-        "permuta==1.2.1",
-        "PuLP==2.0",
+        "permuta==2.1.0",
+        "PuLP==2.5.0",
     ],
-    setup_requires=["pytest-runner==5.2"],
+    setup_requires=["pytest-runner==5.3.1"],
     tests_require=[
-        "pytest==5.3.2",
-        "pytest-cov==2.8.1",
+        "pytest==6.2.4",
+        "pytest-cov==2.12.1",
         "pytest-pep8==1.0.6",
-        "pytest-isort==0.3.1",
+        "pytest-isort==2.0.0",
     ],
     python_requires=">=3.5",
     classifiers=[
